@@ -41,10 +41,27 @@ export default {
       type: 'login',
     };
   },
+  created() {
+    // 验证是否登录
+    //this.getCookie();
+  },
   methods: {
     switchType(val) {
       this.type = val;
     },
+    // getCookie() {
+    //   const username = getUsername();
+    //   const password = getPassword();
+    //   const rememberMe = getRememberMe();
+    //   const tenantName = getTenantName();
+    //   this.loginForm = {
+    //     ...this.loginForm,
+    //     username: username ? username : this.loginForm.username,
+    //     password: password ? password : this.loginForm.password,
+    //     rememberMe: rememberMe ? getRememberMe() : false,
+    //     tenantName: tenantName ? tenantName : this.loginForm.tenantName,
+    //   };
+    // },
   },
 };
 </script>

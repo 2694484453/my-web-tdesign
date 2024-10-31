@@ -11,7 +11,7 @@
       <t-form-item name="account">
         <t-input v-model="formData.account" size="large" placeholder="请输入账号：admin">
           <template #prefix-icon>
-            <user-icon />
+            <user-icon/>
           </template>
         </t-input>
       </t-form-item>
@@ -23,14 +23,14 @@
           :type="showPsw ? 'text' : 'password'"
           clearable
           key="password"
-          placeholder="请输入登录密码：admin"
+          placeholder="请输入登录密码：admin123"
         >
           <template #prefix-icon>
-            <lock-on-icon />
+            <lock-on-icon/>
           </template>
           <template #suffix-icon>
-            <browse-icon v-if="showPsw" @click="showPsw = !showPsw" key="browse" />
-            <browse-off-icon v-else @click="showPsw = !showPsw" key="browse-off" />
+            <browse-icon v-if="showPsw" @click="showPsw = !showPsw" key="browse"/>
+            <browse-off-icon v-else @click="showPsw = !showPsw" key="browse-off"/>
           </template>
         </t-input>
       </t-form-item>
@@ -46,11 +46,11 @@
       <div class="tip-container">
         <span class="tip">请使用微信扫一扫登录</span>
         <span class="refresh"
-          >刷新
-          <refresh-icon color="#0052D9" />
+        >刷新
+          <refresh-icon color="#0052D9"/>
         </span>
       </div>
-      <qrcode-vue value="" :size="192" level="H" />
+      <qrcode-vue value="" :size="192" level="H"/>
     </template>
 
     <!-- 手机号登陆 -->
@@ -58,13 +58,13 @@
       <t-form-item name="phone">
         <t-input v-model="formData.phone" size="large" placeholder="请输入您的手机号">
           <template #prefix-icon>
-            <user-icon />
+            <user-icon/>
           </template>
         </t-input>
       </t-form-item>
 
       <t-form-item class="verification-code" name="verifyCode">
-        <t-input v-model="formData.verifyCode" size="large" placeholder="请输入验证码" key="verifyCode" />
+        <t-input v-model="formData.verifyCode" size="large" placeholder="请输入验证码" key="verifyCode"/>
         <t-button variant="outline" :disabled="countDown > 0" @click="handleCounter">
           {{ countDown == 0 ? '发送验证码' : `${countDown}秒后可重发` }}
         </t-button>
@@ -72,7 +72,7 @@
     </template>
 
     <t-form-item v-if="type !== 'qrcode'" class="btn-container">
-      <t-button block size="large" type="submit"> 登录 </t-button>
+      <t-button block size="large" type="submit"> 登录</t-button>
     </t-form-item>
 
     <div class="switch-container">
@@ -85,21 +85,21 @@
 <script lang="ts">
 import Vue from 'vue';
 import QrcodeVue from 'qrcode.vue';
-import { UserIcon, LockOnIcon, BrowseOffIcon, BrowseIcon, RefreshIcon } from 'tdesign-icons-vue';
+import {UserIcon, LockOnIcon, BrowseOffIcon, BrowseIcon, RefreshIcon} from 'tdesign-icons-vue';
 
 const INITIAL_DATA = {
   phone: '',
   account: 'admin',
-  password: 'admin',
+  password: 'admin123',
   verifyCode: '',
   checked: false,
 };
 
 const FORM_RULES = {
-  phone: [{ required: true, message: '手机号必填', type: 'error' }],
-  account: [{ required: true, message: '账号必填', type: 'error' }],
-  password: [{ required: true, message: '密码必填', type: 'error' }],
-  verifyCode: [{ required: true, message: '验证码必填', type: 'error' }],
+  phone: [{required: true, message: '手机号必填', type: 'error'}],
+  account: [{required: true, message: '账号必填', type: 'error'}],
+  password: [{required: true, message: '密码必填', type: 'error'}],
+  verifyCode: [{required: true, message: '验证码必填', type: 'error'}],
 };
 /** 高级详情 */
 export default Vue.extend({
@@ -116,7 +116,7 @@ export default Vue.extend({
     return {
       FORM_RULES,
       type: 'password',
-      formData: { ...INITIAL_DATA },
+      formData: {...INITIAL_DATA},
       showPsw: false,
       countDown: 0,
       intervalTimer: null,
@@ -130,12 +130,32 @@ export default Vue.extend({
       this.type = val;
       this.$refs.form.reset();
     },
-    async onSubmit({ validateResult }) {
+    async onSubmit({validateResult}) {
       if (validateResult === true) {
-        await this.$store.dispatch('user/login', this.formData);
-
-        this.$message.success('登录成功');
-        this.$router.replace('/').catch(() => '');
+        const data = {
+          userName: this.formData.account,
+          passWord: this.formData.password
+        }
+        await this.$store.dispatch('user/login', data);
+        this.$request.post('/login', data).then((res) => {
+          console.log(res)
+          if (res.data.code === 200) {
+            // 存入cookie
+            // this.$cookies.set('token', res.data.data.token);
+            this.$cookies.set("username", this.formData.account)
+            this.$cookies.set("token", res.data.token)
+            localStorage.setItem("ACCESS_TOKEN", res.data.token)
+            this.$message.success("登录成功")
+            setTimeout(()=>{
+              this.$router.push("/").catch(err => {
+              });
+            },2000)
+          } else {
+            this.$message.error(res.data.message);
+          }
+        }).catch((err) => {
+          this.$message.error(err.message);
+        });
       }
     },
     handleCounter() {
