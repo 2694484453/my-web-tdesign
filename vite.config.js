@@ -50,14 +50,16 @@ export default ({ mode }) => {
           // 用于开发环境下的转发请求
           // 更多请参考：https://vitejs.dev/config/#server-proxy
           target: 'https://service-exndqyuk-1257786608.gz.apigw.tencentcs.com',
-          rewrite: (path) => path.replace("^/dev-api", ''),
+          ws: true,        //如果要代理 websockets，配置这个参数
+          rewrite: (path) => path.replace("^/dev-api", '/'),
           changeOrigin: true,
         },
         "/prod-api": {
           // 用于开发环境下的转发请求
           // 更多请参考：https://vitejs.dev/config/#server-proxy
           target: "http://localhost:9099",
-          rewrite: (path) => path.replace("^/prod-api", ''),
+          ws: true,        //如果要代理 websockets，配置这个参数
+          rewrite: (path) => path.replace("^/prod-api", '/'),
           changeOrigin: true,
         },
       },
