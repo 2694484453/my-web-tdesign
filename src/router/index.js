@@ -1,5 +1,4 @@
 import VueRouter from 'vue-router';
-
 import baseRouters from './modules/base';
 // 个人
 import userInfoRouters from "@/router/modules/userinfo";
@@ -28,7 +27,7 @@ import caddyRouters from "@/router/modules/caddy";
 import backupRouters from "@/router/modules/backup";
 
 const env = import.meta.env.MODE || 'development';
-
+import proxy from '@/config/host';
 // 开发模式
 const devRouterList = [...baseRouters, ...componentsRouters, ...othersRouters, ...userInfoRouters, ...domainRouters, ...pageRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...alertRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 生产模式
