@@ -1,5 +1,5 @@
 {
-  "name": "my-web2",
+  "name": "my-web-tdesign",
   "version": "0.6.2",
   "scripts": {
     "dev:mock": "vite --open --mode mock",
