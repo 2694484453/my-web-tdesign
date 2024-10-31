@@ -12,9 +12,9 @@ const CODE = {
 };
 
 const instance = axios.create({
-  baseURL: API_HOST,
-  timeout: 1000,
-  withCredentials: true,
+  baseURL: API_HOST+ proxy[env].PATH,
+  timeout: 3000,
+  withCredentials: false,
 });
 
 // eslint-disable-next-line
@@ -22,8 +22,20 @@ const instance = axios.create({
 // axios的retry ts类型有问题
 instance.interceptors.retry = 3;
 
-instance.interceptors.request.use((config) => config);
-
+//请求发起之前拦截操作，判断发送的请求里面是否含有token
+instance.interceptors.request.use(config => {
+    if (localStorage.getItem("ACCESS_TOKEN")) {
+      //如果token存在，则请求头上面携带token给后端传输
+      config.headers['Authorization'] = 'Bearer ' + localStorage.getItem("ACCESS_TOKEN")
+      //config.headers.token = this.$cookies.VueCookies.get("token")
+    }
+    return config
+  },
+  err => {  //没有token的时候就抛出错误
+    return Promise.reject(err);
+  }
+)
+//拦截响应
 instance.interceptors.response.use(
   (response) => {
     if (response.status === 200) {
