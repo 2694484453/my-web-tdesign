@@ -1,0 +1,7 @@
+:{$PORT} {
+ root * /var/www/html
+ handle_path {$PREFIX_PATH}/* {
+ 	reverse_proxy {$PROXY}
+ }
+ file_server
+}
