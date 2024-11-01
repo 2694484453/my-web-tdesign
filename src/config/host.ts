@@ -10,8 +10,8 @@ export default {
   prod: {
     // 生产环境接口请求
     NAME: "prod",
-    //API: 'http://ecs.gpg123.vip:9099',
-    API: 'https://my-server.gpg123.vip',
+    API: 'http://ecs.gpg123.vip:9099',
+    //API: 'https://my-server.gpg123.vip',
     PATH: "", //"/prod-api/",
     // 开发环境 cdn 路径
     CDN: '',
