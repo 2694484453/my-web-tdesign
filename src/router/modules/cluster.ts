@@ -1,6 +1,5 @@
-import {SettingIcon} from 'tdesign-icons-vue';
+import {SettingIcon, DesktopIcon} from 'tdesign-icons-vue';
 import Layout from '@/layouts/index.vue';
-
 export default [
   {
     path: '/cluster',
@@ -19,6 +18,26 @@ export default [
         name: 'AddBase',
         component: () => import("@/pages/cluster/list/index.vue"),
         meta: {title: '集群列表'},
+      }
+    ],
+  },
+  {
+    path: '/vps',
+    name: 'vps',
+    component: Layout,
+    meta: {title: 'vps主机', icon: DesktopIcon},
+    children: [
+      {
+        path: 'dashboard',
+        name: 'DashboardBase',
+        component: () => import('@/pages/vps/list/index-dashboard.vue'),
+        meta: {title: '监控面板'},
+      },
+      {
+        path: "add",
+        name: 'AddBase',
+        component: () => import("@/pages/vps/list/index.vue"),
+        meta: {title: '主机列表'},
       }
     ],
   }
