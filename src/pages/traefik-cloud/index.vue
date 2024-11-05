@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'http://124.221.2.29:9000/dashboard/#/',
+      frameSrc: 'https://k3s-traefik.gpg123.vip/dashboard/#/',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };
