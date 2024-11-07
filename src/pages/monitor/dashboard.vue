@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'http://server.gpg123.vip:9090',
+      frameSrc: 'https://prometheus.server.gpg123.vip',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };
