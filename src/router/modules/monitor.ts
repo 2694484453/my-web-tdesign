@@ -49,7 +49,7 @@ export default [
     path: '/grafana',
     name: 'grafana',
     component: Layout,
-    meta: {title: 'grafana图表(主机版)', icon: MirrorIcon},
+    meta: {title: 'grafana图表', icon: MirrorIcon},
     children: [
       {
         path: 'dashboard',
