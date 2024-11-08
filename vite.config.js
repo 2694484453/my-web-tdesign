@@ -1,14 +1,14 @@
-import { loadEnv } from 'vite';
-import { viteMockServe } from 'vite-plugin-mock';
-import { createVuePlugin } from 'vite-plugin-vue2';
-import { createSvgPlugin } from 'vite-plugin-vue2-svg';
+import {loadEnv} from 'vite';
+import {viteMockServe} from 'vite-plugin-mock';
+import {createVuePlugin} from 'vite-plugin-vue2';
+import {createSvgPlugin} from 'vite-plugin-vue2-svg';
 
 import path from 'path';
 
 const CWD = process.cwd();
 
-export default ({ mode }) => {
-  const { VITE_BASE_URL } = loadEnv(mode, CWD);
+export default ({mode}) => {
+  const {VITE_BASE_URL} = loadEnv(mode, CWD);
 
   return {
     base: VITE_BASE_URL,
@@ -63,6 +63,11 @@ export default ({ mode }) => {
           rewrite: (path) => path.replace("^/prod-api", '/'),
           changeOrigin: true,
         },
+        "/gitee-api": {
+          target: "https://gitee.com/api/v5/",
+          rewrite: (path) => path.replace("^/gitee-api", "/"),
+          changeOrigin: true
+        }
       },
     },
   };
