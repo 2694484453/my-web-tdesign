@@ -10,22 +10,22 @@
         @submit="onSubmit"
         :style="{ marginBottom: '8px' }"
       >
-      <t-row justify="space-between">
-        <div class="left-operation-container">
-          <t-button @click="handleSetupContract">新建</t-button>
-          <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
-          <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
-        </div>
-        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-          <template #suffix-icon>
-            <search-icon size="20px"/>
-          </template>
-        </t-input>
-        <t-col :span="2" class="operation-container">
-          <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
-          <t-button type="reset" variant="base" theme="default"> 重置</t-button>
-        </t-col>
-      </t-row>
+        <t-row justify="space-between">
+          <div class="left-operation-container">
+            <t-button @click="formVisible = true">导入</t-button>
+            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
+            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
+          </div>
+          <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+            <template #suffix-icon>
+              <search-icon size="20px"/>
+            </template>
+          </t-input>
+          <t-col :span="2" class="operation-container">
+            <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
+            <t-button type="reset" variant="base" theme="default"> 重置</t-button>
+          </t-col>
+        </t-row>
       </t-form>
       <div class="table-container">
         <t-table
@@ -54,7 +54,7 @@
             <p v-if="row.contractType === CONTRACT_TYPES.MAIN">AMD</p>
             <p v-if="row.contractType === CONTRACT_TYPES.SUB">ARM</p>
             <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">其他</p>
-            <p>{{row.repo}}/{{row.namespace}}/{{row.name}}:{{row.version}}</p>
+            <p>{{ row.repo }}/{{ row.namespace }}/{{ row.name }}:{{ row.version }}</p>
           </template>
           <template #paymentType="{ row }">
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
@@ -75,6 +75,25 @@
         </t-table>
       </div>
     </t-card>
+    <!-- 产品管理弹窗 -->
+    <t-dialog header="从仓库导入" :visible.sync="formVisible" :width="680" :footer="false">
+      <div slot="body">
+        <!-- 表单内容 -->
+        <t-form :data="formData" ref="form" :rules="rules" @submit="onSubmit" :labelWidth="100">
+          <t-form-item label="git仓库" name="type">
+            <t-select v-model="formData.type" clearable :style="{ width: '480px' }">
+              <t-option v-for="(item, index) in options" :value="item.value" :label="item.label" :key="index">
+                {{ item.label }}
+              </t-option>
+            </t-select>
+          </t-form-item>
+          <t-form-item style="float: right">
+            <t-button variant="outline" @click="onClickCloseBtn">取消</t-button>
+            <t-button theme="primary" @click="toAuthGit">确定</t-button>
+          </t-form-item>
+        </t-form>
+      </div>
+    </t-dialog>
     <t-dialog
       header="确认删除当前所选合同？"
       :body="confirmBody"
@@ -108,6 +127,11 @@ export default Vue.extend({
       prefix,
       dataLoading: false,
       data: [],
+      options: [
+        {label: 'gitee', value: 'gitee'},
+        {label: 'github', value: 'github'},
+        {label: 'gitlab', value: 'gitlab'},
+      ],
       selectedRowKeys: [1, 2],
       value: 'first',
       columns: [
@@ -171,10 +195,14 @@ export default Vue.extend({
       },
       searchValue: '',
       confirmVisible: false,
+      formVisible: false,
       deleteIdx: -1,
       formData: {
         name: "",
         type: ""
+      },
+      rules: {
+        name: [{required: true, message: '请输入产品名称', type: 'error'}],
       },
     };
   },
@@ -193,11 +221,11 @@ export default Vue.extend({
   mounted() {
 
   },
-  created(){
+  created() {
     this.getList()
   },
   methods: {
-    getList(){
+    getList() {
       this.dataLoading = true;
       this.$request
         .get('/build/image/page')
@@ -235,7 +263,11 @@ export default Vue.extend({
     },
     handleSetupContract() {
       //this.$router.push('/build/imageForm');
-      this.$emit('transfer', "form")
+      //this.$emit('transfer', "form")
+    },
+    onClickCloseBtn(): void {
+      this.formVisible = false;
+      this.formData = {}
     },
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;
@@ -273,6 +305,55 @@ export default Vue.extend({
       console.log(this.formData);
       this.getList(this.formData);
     },
+    toAuthGit() {
+      const redirect_uri = "https://gpg123.cn/build/image";
+      // 如果是gitee
+      if (this.formData.type === "gitee") {
+        const url = "https://gitee.com/oauth/authorize?client_id=4205d9756e46effb45c437308d808f7b551414563cbec9f5aa0ec9402e0753d6&redirect_uri=" + redirect_uri + "&response_type=code"
+        console.log(url)
+        window.location.href = url;
+      }
+
+    },
+    /**
+     * 打开小窗口
+     */
+    openWindow(url, title, w, h) {
+      const dualScreenLeft =
+        window.screenLeft !== undefined ? window.screenLeft : screen.left;
+      const dualScreenTop =
+        window.screenTop !== undefined ? window.screenTop : screen.top;
+
+      const width = window.innerWidth
+        ? window.innerWidth
+        : document.documentElement.clientWidth
+          ? document.documentElement.clientWidth
+          : screen.width;
+      const height = window.innerHeight
+        ? window.innerHeight
+        : document.documentElement.clientHeight
+          ? document.documentElement.clientHeight
+          : screen.height;
+
+      const left = width / 3 - w / 3 + dualScreenLeft;
+      const top = height / 3 - h / 3 + dualScreenTop;
+      const newWindow = window.open(
+        url,
+        title,
+        "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no, width=" +
+        w +
+        ", height=" +
+        h +
+        ", top=" +
+        top +
+        ", left=" +
+        left
+      );
+
+      if (window.focus) {
+        newWindow.focus();
+      }
+    }
   },
 });
 </script>

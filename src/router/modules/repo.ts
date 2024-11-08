@@ -1,8 +1,7 @@
-import {HeartIcon, PreciseMonitorIcon, RelativityIcon} from 'tdesign-icons-vue';
+import {RelativityIcon} from 'tdesign-icons-vue';
 import Layout from '@/layouts/index.vue';
 
 export default [
-  // 域名
   {
     path: '/repo',
     name: 'repo',
