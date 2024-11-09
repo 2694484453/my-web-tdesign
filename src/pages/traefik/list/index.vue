@@ -203,7 +203,7 @@ export default Vue.extend({
       this.$emit('transfer', "detail", row)
     },
     handleSetupContract() {
-      //this.$router.push('/monitor/add');
+      //this.$router.push('/prometheus/add');
       this.$emit('transfer', "form")
     },
     handleClickDelete(row: { rowIndex: any,type: any }) {

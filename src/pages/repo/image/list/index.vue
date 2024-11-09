@@ -243,7 +243,7 @@ export default Vue.extend({
       this.$router.push('/detail/base');
     },
     handleSetupContract() {
-      this.$router.push('/monitor/add');
+      this.$router.push('/prometheus/add');
     },
     handleClickDelete(row: { rowIndex: any, type: any }) {
       this.deleteIdx = row.rowIndex;

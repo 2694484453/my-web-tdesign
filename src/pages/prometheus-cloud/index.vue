@@ -7,10 +7,10 @@
   </div>
 </template>
 <script>
-import ListBase from "@/pages/monitor/list/index.vue"
-import FormBase from "@/pages/monitor/form/base/index.vue"
-import EditBase from "@/pages/monitor/edit/base/index.vue"
-import DetailBase from "@/pages/monitor/detail/base/index.vue";
+import ListBase from "@/pages/prometheus-cloud/list/index.vue"
+import FormBase from "@/pages/prometheus-cloud/form/base/index.vue"
+import EditBase from "@/pages/prometheus-cloud/edit/base/index.vue"
+import DetailBase from "@/pages/prometheus-cloud/detail/base/index.vue";
 
 export default {
   components: {

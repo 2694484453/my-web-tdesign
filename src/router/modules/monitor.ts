@@ -4,43 +4,43 @@ import Layout from '@/layouts/index.vue';
 export default [
   // 域名
   {
-    path: '/monitor',
-    name: 'monitor',
+    path: '/prometheus',
+    name: 'prometheus',
     component: Layout,
-    //redirect: '/monitor/base',
+    //redirect: '/prometheus/base',
     meta: {title: '监控中心(主机版)', icon: PreciseMonitorIcon},
     children: [
       {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/monitor/dashboard.vue'),
+        component: () => import('@/pages/prometheus/dashboard.vue'),
         meta: {title: '监控视图'},
       },
       {
         path: 'base',
         name: 'MonitorBase',
-        component: () => import('@/pages/monitor/index.vue'),
+        component: () => import('@/pages/prometheus/index.vue'),
         meta: {title: '监控列表'},
       }
     ],
   },
   {
-    path: '/monitor-cloud',
-    name: 'monitor-cloud',
+    path: '/prometheus-cloud',
+    name: 'prometheus-cloud',
     component: Layout,
-    //redirect: '/monitor/base',
+    //redirect: '/prometheus/base',
     meta: {title: '监控中心(云原生版)', icon: PreciseMonitorIcon},
     children: [
       {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/monitor-cloud/dashboard.vue'),
+        component: () => import('@/pages/prometheus-cloud/dashboard.vue'),
         meta: {title: '监控视图'},
       },
       {
         path: 'base',
         name: 'MonitorBase',
-        component: () => import('@/pages/monitor-cloud/index.vue'),
+        component: () => import('@/pages/prometheus-cloud/index.vue'),
         meta: {title: '监控列表'},
       }
     ],
@@ -60,7 +60,7 @@ export default [
       {
         path: 'base',
         name: 'MonitorBase',
-        component: () => import('@/pages/grafana/index.vue'),
+        component: () => import('@/pages/grafana/list/index.vue'),
         meta: {title: '监控列表'},
       }
     ],

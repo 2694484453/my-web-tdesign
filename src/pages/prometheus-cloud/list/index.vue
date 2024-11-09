@@ -224,7 +224,7 @@ export default Vue.extend({
       this.$emit('transfer', "detail", rowData)
     },
     handleSetupContract() {
-      //this.$router.push('/monitor/add');
+      //this.$router.push('/prometheus/add');
       this.$emit('transfer', "form")
     },
     handleClickDelete(row: { rowIndex: any, type: any }) {
@@ -270,7 +270,7 @@ export default Vue.extend({
       this.getList(this.formData);
     },
     getTypeList() {
-      this.$request.get("/monitor/typeList").then(res => {
+      this.$request.get("/monitorCloud/typeList").then(res => {
         this.typeList = res.data.data
       }).catch((err) => {
 
@@ -279,7 +279,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/monitor/list', {
+        .get('/monitorCloud/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {

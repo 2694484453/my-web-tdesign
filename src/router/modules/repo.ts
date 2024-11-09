@@ -7,7 +7,7 @@ export default [
     name: 'repo',
     component: Layout,
     //redirect: '/repo/base',
-    meta: {title: '仓库中心', icon: RelativityIcon},
+    meta: {title: '制品中心', icon: RelativityIcon},
     children: [
       {
         path: 'image',
