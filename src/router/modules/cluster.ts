@@ -30,7 +30,7 @@ export default [
       {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/vps/list/index-dashboard.vue'),
+        component: () => import('@/pages/vps/index.vue'),
         meta: {title: '监控面板'},
       },
       {
