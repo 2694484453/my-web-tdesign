@@ -111,24 +111,42 @@ export default Vue.extend({
       columns: [
         {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: '集群名称',
+          title: '主机名称',
           align: 'left',
-          width: 120,
+          width: 160,
           ellipsis: true,
-          colKey: 'name',
+          colKey: 'hostname',
           fixed: 'left',
         },
         {
-          title: 'context名称',
-          colKey: 'name',
-          width: 120,
+          title: 'ip地址/域名',
+          width: 160,
+          ellipsis: true,
+          colKey: 'ipAddress',
+        },
+        {
+          title: '端口',
+          colKey: 'portNumber',
+          width: 60,
           cell: {col: 'status'}
         },
         {
-          title: '地址',
-          width: 250,
-          ellipsis: true,
-          colKey: 'cluster.server',
+          title: '系统',
+          colKey: 'system',
+          width: 80,
+          cell: {col: 'status'}
+        },
+        {
+          title: '用户',
+          colKey: 'username',
+          width: 80,
+          cell: {col: 'status'}
+        },
+        {
+          title: '备注',
+          colKey: 'comments',
+          width: 160,
+          cell: {col: 'status'}
         },
         {
           align: 'left',
@@ -198,7 +216,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/cluster/page', {
+        .get('/vps/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
