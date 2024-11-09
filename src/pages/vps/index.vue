@@ -7,10 +7,10 @@
   </div>
 </template>
 <script>
-import ListBase from "@/pages/cluster/list/index.vue"
-import FormBase from "@/pages/cluster/form/base/index.vue"
-import EditBase from "@/pages/cluster/edit/base/index.vue"
-import DetailBase from "@/pages/cluster/detail/base/index.vue";
+import ListBase from "@/pages/vps/list/index.vue"
+import FormBase from "@/pages/vps/form/base/index.vue"
+import EditBase from "@/pages/vps/edit/base/index.vue"
+import DetailBase from "@/pages/vps/detail/base/index.vue";
 
 export default {
   components: {
