@@ -10,7 +10,7 @@ export default [
       // {
       //   path: 'dashboard',
       //   name: 'DashboardBase',
-      //   component: () => import('@/pages/cluster/list/index-dashboard.vue'),
+      //   component: () => import('@/pages/cluster/list/dashboard.vue'),
       //   meta: {title: '监控面板'},
       // },
       {
@@ -30,7 +30,7 @@ export default [
       {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/vps/index.vue'),
+        component: () => import('@/pages/vps/dashboard.vue'),
         meta: {title: '监控面板'},
       },
       {

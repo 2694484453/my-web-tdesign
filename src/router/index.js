@@ -11,8 +11,6 @@ import buildRouters from './modules/build';
 import domainRouters from './modules/domain';
 // 监控
 import monitorRouters from "@/router/modules/monitor";
-// 告警
-import alertRouters from "@/router/modules/alert";
 // 仓库
 import repoRouters from "@/router/modules/repo";
 // traefik
@@ -29,9 +27,9 @@ import backupRouters from "@/router/modules/backup";
 const env = import.meta.env.MODE || 'development';
 import proxy from '@/config/host';
 // 开发模式
-const devRouterList = [...baseRouters, ...componentsRouters, ...othersRouters, ...userInfoRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...alertRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
+const devRouterList = [...baseRouters, ...componentsRouters, ...othersRouters, ...userInfoRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 生产模式
-const prodRouterList = [...baseRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...alertRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
+const prodRouterList = [...baseRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 存放动态路由
 export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
 //[...baseRouters, ...componentsRouters, ...othersRouters];

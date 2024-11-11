@@ -139,9 +139,9 @@ export default Vue.extend({
         {
           title: '名称',
           align: 'left',
-          width: 100,
+          width: 150,
           ellipsis: true,
-          colKey: 'name',
+          colKey: 'home',
           fixed: 'left',
         },
         {
@@ -151,16 +151,16 @@ export default Vue.extend({
           colKey: 'type',
         },
         {
-          title: '仓库',
-          width: 200,
+          title: '语言',
+          width: 80,
           ellipsis: true,
-          colKey: 'repo',
+          colKey: 'language',
         },
         {
-          title: '备注',
-          width: 100,
+          title: '仓库地址',
+          width: 250,
           ellipsis: true,
-          colKey: 'remark',
+          colKey: 'httpUrl',
         },
         {
           title: '创建时间',
@@ -227,8 +227,9 @@ export default Vue.extend({
   methods: {
     getList() {
       this.dataLoading = true;
+      const type = this.formData.type != "" ? this.formData.type : "gitee";
       this.$request
-        .get('/build/image/page')
+        .get('/git/page?type='+type)
         .then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;

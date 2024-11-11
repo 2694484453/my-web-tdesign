@@ -116,59 +116,32 @@ export default Vue.extend({
       value: 'first',
       columns: [
         {
-          title: 'ID',
-          align: 'left',
-          width: 100,
-          ellipsis: true,
-          colKey: 'ID',
-          fixed: 'left',
-        },
-        {
           title: '名称',
           align: 'left',
           width: 230,
           ellipsis: true,
-          colKey: 'Repository',
+          colKey: 'fileName',
           fixed: 'left',
-        },
-        {
-          title: '版本',
-          width: 120,
-          ellipsis: true,
-          fixed: 'left',
-          colKey: 'Tag',
         },
         {
           title: '大小',
           width: 100,
           ellipsis: true,
           fixed: 'left',
-          colKey: 'Size',
+          colKey: 'size',
         },
         {
-          title: 'Blob大小',
+          title: '路径',
           width: 100,
           ellipsis: true,
           fixed: 'left',
-          colKey: 'BlobSize',
-        },
-        {
-          title: '平台类型',
-          width: 150,
-          ellipsis: true,
-          fixed: 'left',
-          colKey: 'Platform',
-        },
-        {
-          title: '时长',
-          colKey: 'CreatedSince',
-          width: 150,
+          colKey: 'filePath',
         },
         {
           title: '创建时间',
           width: 200,
           ellipsis: true,
-          colKey: "CreatedAt"
+          colKey: "createTime"
         },
         {
           align: 'left',
@@ -297,7 +270,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/imageRepo/page', {
+        .get('/caddy/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
