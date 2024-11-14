@@ -2,7 +2,7 @@
   <div>
     <ListBase v-show="type === 'list'" @transfer="changeKey"/>
     <FormBase v-show="type === 'form'" @transfer="changeKey"/>
-    <EditBase v-show="type === 'edit'" :row="row"  @transfer="changeKey"/>
+    <EditBase v-show="type === 'edit'" :row="row" @transfer="changeKey"/>
     <DetailBase v-show="type === 'detail'" :row="row" @transfer="changeKey"/>
   </div>
 </template>
@@ -22,8 +22,18 @@ export default {
   data() {
     return {
       type: "list",
-      row: Object
+      row: Object,
+      code: ""
     };
+  },
+  created() {
+    // 获取code
+    const code = this.$route.query.code
+    if (code !== null && code !== ""){
+      console.log("code",this.code)
+    }else {
+      console.log("暂时没有code")
+    }
   },
   methods: {
     changeKey(key, row) {
