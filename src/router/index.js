@@ -1,7 +1,6 @@
 import VueRouter from 'vue-router';
 import baseRouters from './modules/base';
 // 个人
-import userInfoRouters from "@/router/modules/userinfo";
 import componentsRouters from './modules/components';
 // 其他
 import othersRouters from './modules/others';
@@ -27,7 +26,7 @@ import backupRouters from "@/router/modules/backup";
 const env = import.meta.env.MODE || 'development';
 import proxy from '@/config/host';
 // 开发模式
-const devRouterList = [...baseRouters, ...componentsRouters, ...othersRouters, ...userInfoRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
+const devRouterList = [...baseRouters, ...componentsRouters, ...othersRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 生产模式
 const prodRouterList = [...baseRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 存放动态路由
