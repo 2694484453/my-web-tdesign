@@ -26,13 +26,17 @@ export default {
       code: ""
     };
   },
-  created() {
-    // 获取code
-    const code = this.$route.query.code
-    if (code !== null && code !== ""){
-      console.log("code",this.code)
+  mounted() {
+    // 判断是否存储code
+    const code = localStorage.getItem("code");
+    if (code != null && code !== "") {
+      // 从localstorage取
+      console.log("本地取code",code)
     }else {
-      console.log("暂时没有code")
+      // 从url获取code
+      const code = this.$route.query.code
+      console.log("url取code", code)
+      localStorage.setItem("code", code)
     }
   },
   methods: {
