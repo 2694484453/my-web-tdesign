@@ -9,7 +9,6 @@ const CWD = process.cwd();
 
 export default ({mode}) => {
   const {VITE_BASE_URL} = loadEnv(mode, CWD);
-
   return {
     base: VITE_BASE_URL,
     resolve: {
@@ -18,7 +17,6 @@ export default ({mode}) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
-
     css: {
       preprocessorOptions: {
         less: {
@@ -26,7 +24,6 @@ export default ({mode}) => {
         },
       },
     },
-
     plugins: [
       createVuePlugin({
         jsx: true,
@@ -41,7 +38,6 @@ export default ({mode}) => {
     build: {
       cssCodeSplit: false,
     },
-
     server: {
       host: '0.0.0.0',
       port: 3000,

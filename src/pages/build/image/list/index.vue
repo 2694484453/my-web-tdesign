@@ -56,6 +56,10 @@
             <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">其他</p>
             <p>{{ row.repo }}/{{ row.namespace }}/{{ row.name }}:{{ row.version }}</p>
           </template>
+          <template #hasJob="{ row }">
+            <p v-if="row.hasJob === true">是</p>
+            <p v-if="row.hasJob === false">否</p>
+          </template>
           <template #paymentType="{ row }">
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
               推送失败
@@ -161,6 +165,18 @@ export default Vue.extend({
           width: 250,
           ellipsis: true,
           colKey: 'httpUrl',
+        },
+        {
+          title: '是否有流水线',
+          width: 80,
+          ellipsis: true,
+          colKey: 'hasJob',
+        },
+        {
+          title: '流水线数量',
+          width: 80,
+          ellipsis: true,
+          colKey: 'jobNumber',
         },
         {
           title: '创建时间',

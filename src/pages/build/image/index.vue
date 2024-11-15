@@ -28,22 +28,39 @@ export default {
   },
   mounted() {
     // 判断是否存储code
-    const code = localStorage.getItem("code");
-    if (code != null && code !== "") {
-      // 从localstorage取
-      console.log("本地取code",code)
-    }else {
-      // 从url获取code
-      const code = this.$route.query.code
-      console.log("url取code", code)
-      localStorage.setItem("code", code)
-    }
+    const code = this.getCode()
+    this.getGiteeAccessToken(code)
   },
   methods: {
     changeKey(key, row) {
       console.log("key:id", key, row)
       this.type = key
       this.row = row.row
+    },
+    getCode() {
+      // 先判断url是否带有code
+      let code = this.$route.query.code
+      console.log("code", code)
+      if (code != null && code !== "" && code !== 'undefined') {
+        // 从url获取code
+        console.log("url取code", code)
+        localStorage.setItem("code", code)
+      } else {
+        // 从本地取code
+        code = localStorage.getItem("code");
+        if (code != null && code !== "" && code !== 'undefined') {
+          // 从localstorage取
+          console.log("本地取code", code)
+        }
+      }
+      return code;
+    },
+    getGiteeAccessToken(code) {
+      this.$request.post("/gitee/getAccessToken?code="+code).then(res => {
+          console.log("res",res)
+      }).catch(err => {
+
+      })
     }
   }
 }
