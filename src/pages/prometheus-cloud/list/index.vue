@@ -12,7 +12,7 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="handleSetupContract">添加端点</t-button>
+            <t-button @click="handleSetupContract">添加</t-button>
             <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
@@ -107,19 +107,11 @@ export default Vue.extend({
       value: 'first',
       columns: [
         {
-          title: 'ID',
-          align: 'left',
-          width: 50,
-          ellipsis: true,
-          colKey: 'id',
-          fixed: 'left',
-        },
-        {
           title: '名称',
           align: 'left',
           width: 200,
           ellipsis: true,
-          colKey: 'name',
+          colKey: 'metadata.name',
           fixed: 'left',
         },
         {
@@ -127,19 +119,27 @@ export default Vue.extend({
           width: 200,
           ellipsis: true,
           fixed: 'left',
-          colKey: 'type',
-        },
-        {
-          title: '状态',
-          colKey: 'status',
-          width: 100, cell:
-            {col: 'status'}
+          colKey: 'kind',
         },
         {
           title: '标签',
           width: 200,
           ellipsis: true,
           colKey: 'labels',
+        },
+        {
+          title: 'namespace',
+          align: 'left',
+          width: 50,
+          ellipsis: true,
+          colKey: 'id',
+          fixed: 'left',
+        },
+        {
+          title: '状态',
+          colKey: 'metadata.namespace',
+          width: 100, cell:
+            {col: 'status'}
         },
         {
           title: '端点',
@@ -284,7 +284,7 @@ export default Vue.extend({
         }).then((res) => {
         if (res.data.code === 200) {
           //console.log(res.data.data)
-          this.data = res.data.data;
+          this.data = res.data.rows;
           //console.log(this.data)
           this.pagination = {
             ...this.pagination,
