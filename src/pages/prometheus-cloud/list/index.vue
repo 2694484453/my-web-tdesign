@@ -63,6 +63,17 @@
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
+          <template #metadata.labels="{ row }">
+            {{row}}
+            <span v-for="(v,k) in row.metadata.labels" :key="k">
+              {{k}}:{{v}}
+            </span>
+          </template>
+          <template #contractType="{ row }">
+            <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
+            <p v-if="row.contractType === CONTRACT_TYPES.SUB">待审核</p>
+            <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">待履行</p>
+          </template>
           <template #op="{row}">
             <a class="t-button-link" @click="handleClickDetail(row)">详情</a>
             <a class="t-button-link" @click="handleClickDelete(row)">删除</a>
@@ -109,30 +120,30 @@ export default Vue.extend({
         {
           title: '名称',
           align: 'left',
-          width: 200,
+          width: 180,
           ellipsis: true,
           colKey: 'metadata.name',
           fixed: 'left',
         },
         {
           title: '类型',
-          width: 200,
+          width: 120,
           ellipsis: true,
           fixed: 'left',
           colKey: 'kind',
         },
         {
           title: '标签',
-          width: 200,
+          width: 180,
           ellipsis: true,
           colKey: 'labels',
         },
         {
-          title: 'namespace',
+          title: '命名空间',
           align: 'left',
-          width: 50,
+          width: 120,
           ellipsis: true,
-          colKey: 'id',
+          colKey: 'metadata.namespace',
           fixed: 'left',
         },
         {
@@ -142,10 +153,10 @@ export default Vue.extend({
             {col: 'status'}
         },
         {
-          title: '端点',
+          title: '创建时间',
           width: 200,
           ellipsis: true,
-          colKey: "targets"
+          colKey: "metadata.creationTimestamp"
         },
         {
           align: 'left',
