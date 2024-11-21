@@ -3,27 +3,57 @@ import Layout from '@/layouts/index.vue';
 
 export default [
   {
-    path: '/build',
+    path: '/git',
     component: Layout,
-    redirect: '/build/base',
-    name: 'build',
+    redirect: '/git/base',
+    name: 'git',
     meta: {
-      title: '构建管理',
+      title: 'Git仓库管理',
       icon: RelativityIcon,
     },
     children: [
       {
-        path: 'image',
-        name: 'image',
-        component: () => import('@/pages/build/image/index.vue'),
-        meta: { title: 'image构建' },
+        path: 'gitee',
+        name: 'gitee',
+        component: () => import('@/pages/git/gitee/index.vue'),
+        meta: { title: 'Gitee' },
       },
       {
-        path: 'helm',
-        name: 'helm',
-        component: () => import('@/pages/build/helm/index.vue'),
-        meta: { title: 'chart构建' },
+        path: 'github',
+        name: 'github',
+        component: () => import('@/pages/git/github/index.vue'),
+        meta: { title: 'Github' },
+      },
+      {
+        path: 'gitlab',
+        name: 'gitlab',
+        component: () => import('@/pages/git/gitlab/index.vue'),
+        meta: { title: 'Gitlab' },
       },
     ],
   },
+  {
+    path: '/devops',
+    component: Layout,
+    redirect: '/devops/base',
+    name: 'devops',
+    meta: {
+      title: 'DevOps流水线',
+      icon: RelativityIcon,
+    },
+    children: [
+      {
+        path: 'devops',
+        name: 'devops',
+        component: () => import('@/pages/devops/index.vue'),
+        meta: { title: 'image构建' },
+      },
+      // {
+      //   path: 'helm',
+      //   name: 'helm',
+      //   component: () => import('@/pages/build/helm/index.vue'),
+      //   meta: { title: 'chart构建' },
+      // },
+    ],
+  }
 ];
