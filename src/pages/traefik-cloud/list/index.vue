@@ -37,9 +37,11 @@
           :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
+          :size="formData.pageSize"
           @page-change="rehandlePageChange"
           @change="rehandleChange"
           @select-change="rehandleSelectChange"
+          :lazy-load="true"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -178,7 +180,10 @@ export default Vue.extend({
       formData: {
         name: "",
         type: "",
-        namespace: ""
+        namespace: "",
+        pageSize: 10,
+        pageNum: 1,
+        current: 1,
       },
       typeList: []
     };
@@ -207,6 +212,10 @@ export default Vue.extend({
     },
     rehandlePageChange(curr, pageInfo) {
       console.log('分页变化', curr, pageInfo);
+      // 重新请求
+      this.formData.current = curr.current
+      this.formData.pageSize = curr.pageSize
+      this.getList()
     },
     rehandleSelectChange(selectedRowKeys: number[]) {
       this.selectedRowKeys = selectedRowKeys;

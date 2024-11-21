@@ -34,12 +34,8 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -70,6 +66,16 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
+        <div>
+          <t-pagination
+            v-model="formData.pageNum"
+            :total="pagination.total"
+            :page-size.sync="formData.pageSize"
+            @current-change="onCurrentChange"
+            @page-size-change="onPageSizeChange"
+            @change="onChange"
+          />
+        </div>
       </div>
     </t-card>
     <t-dialog
@@ -162,7 +168,9 @@ export default Vue.extend({
       formData: {
         name: "",
         type: "",
-        namespace: ""
+        namespace: "",
+        pageNum: 1,
+        pageSize: 10
       },
       typeList: []
     };
@@ -180,23 +188,28 @@ export default Vue.extend({
     },
   },
   mounted() {
+    //this.getTypeList()
+    this.getList()
   },
   created() {
-    this.getTypeList()
-    this.getList()
   },
   methods: {
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
-    rehandlePageChange(curr, pageInfo) {
-      console.log('分页变化', curr, pageInfo);
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
     },
-    rehandleSelectChange(selectedRowKeys: number[]) {
-      this.selectedRowKeys = selectedRowKeys;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
     },
-    rehandleChange(changeParams, triggerAndData) {
-      console.log('统一Change', changeParams, triggerAndData);
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
     },
     handleClickDetail(row) {
       //this.$router.push('/detail/base');
@@ -206,11 +219,11 @@ export default Vue.extend({
       //this.$router.push('/prometheus/add');
       this.$emit('transfer', "form")
     },
-    handleClickDelete(row: { rowIndex: any,type: any }) {
+    handleClickDelete(row: { rowIndex: any, type: any }) {
       this.deleteIdx = row.rowIndex;
       this.deleteType = row.type;
       this.confirmVisible = true;
-      console.log("this",this.deleteType)
+      console.log("this", this.deleteType)
     },
     onConfirmDelete() {
       // 真实业务请发起请求
@@ -222,14 +235,14 @@ export default Vue.extend({
       }
       this.confirmVisible = false;
       // 请求删除
-      this.$request.delete("/monitor/delete",{
+      this.$request.delete("/monitor/delete", {
         params: {
           index: this.deleteIdx,
           type: this.deleteType
         }
-      }).then(res=>{
+      }).then(res => {
         this.$message.success(res.data.msg);
-      }).catch(err=>{
+      }).catch(err => {
 
       })
       this.resetIdx();
@@ -245,8 +258,7 @@ export default Vue.extend({
       this.getList();
     },
     onSubmit(data) {
-      console.log(this.formData);
-      this.getList(this.formData);
+      this.getList();
     },
     getTypeList() {
       this.$request.get("/imageRepo/typeList").then(res => {
@@ -258,21 +270,18 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/traefik/page',{
+        .get('/traefik/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
-          //console.log(res.data.data)
           this.data = res.data.rows;
           this.pagination.total = res.data.total;
         }
-      })
-        .catch((e: Error) => {
-          console.log(e);
-        })
-        .finally(() => {
-          this.dataLoading = false;
-        });
+      }).catch((e: Error) => {
+        console.log(e);
+      }).finally(() => {
+        this.dataLoading = false;
+      });
     }
   },
 });

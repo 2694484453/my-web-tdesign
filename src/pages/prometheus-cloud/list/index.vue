@@ -37,7 +37,7 @@
             </t-form-item>
           </t-col>
           <!--        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>-->
-。          <!--          <template #suffix-icon>-->
+          <!--          <template #suffix-icon>-->
           <!--            <search-icon size="20px"/>-->
           <!--          </template>-->
           <!--        </t-input>-->
