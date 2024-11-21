@@ -46,7 +46,7 @@ export default [
         path: 'devops',
         name: 'devops',
         component: () => import('@/pages/devops/index.vue'),
-        meta: { title: 'image构建' },
+        meta: { title: '任务列表' },
       },
       // {
       //   path: 'helm',
