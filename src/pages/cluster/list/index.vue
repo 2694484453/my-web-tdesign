@@ -34,12 +34,8 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -71,6 +67,15 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
+        <div>
+          <t-pagination
+            v-model="formData.pageNum"
+            :total="pagination.total"
+            :page-size.sync="formData.pageSize"
+            @current-change="onCurrentChange"
+            @page-size-change="onPageSizeChange"
+            @change="onChange"/>
+        </div>
       </div>
     </t-card>
     <t-dialog
@@ -154,7 +159,9 @@ export default Vue.extend({
       deleteIdx: -1,
       formData: {
         name: "",
-        type: ""
+        type: "",
+        pageNum: 1,
+        pageSize: 10
       },
     };
   },
@@ -172,24 +179,6 @@ export default Vue.extend({
   },
   mounted() {
     this.dataLoading = true;
-    this.$request
-      .get('/api/get-list')
-      .then((res) => {
-        if (res.code === 0) {
-          const {list = []} = res.data;
-          this.data = list;
-          this.pagination = {
-            ...this.pagination,
-            total: list.length,
-          };
-        }
-      })
-      .catch((e: Error) => {
-        console.log(e);
-      })
-      .finally(() => {
-        this.dataLoading = false;
-      });
   },
   created() {
     this.getList()
@@ -202,9 +191,7 @@ export default Vue.extend({
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
-          //console.log(res.data.data)
           this.data = res.data.rows;
-          //console.log(this.data)
           this.pagination = {
             ...this.pagination,
             total: res.data.total
