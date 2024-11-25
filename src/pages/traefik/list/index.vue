@@ -73,8 +73,7 @@
             :page-size.sync="formData.pageSize"
             @current-change="onCurrentChange"
             @page-size-change="onPageSizeChange"
-            @change="onChange"
-          />
+            @change="onChange"/>
         </div>
       </div>
     </t-card>
@@ -201,6 +200,7 @@ export default Vue.extend({
       console.log('Page Size:', this.pageSize, size, pageInfo);
       // 刷新
       this.formData.pageSize = size
+      this.getList()
     },
     onCurrentChange(current, pageInfo) {
       console.log('Current Page', this.current, current, pageInfo);
