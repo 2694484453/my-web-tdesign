@@ -52,29 +52,15 @@
             <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
             <t-tag v-if="row.status === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
           </template>
-          <template #contractType="{ row }">
-            <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
-            <p v-if="row.contractType === CONTRACT_TYPES.SUB">待审核</p>
-            <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">待履行</p>
-          </template>
-          <template #paymentType="{ row }">
-            <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
-              付款
-              <trend class="dashboard-item-trend" type="up"/>
-            </p>
-            <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.RECEIPT" class="payment-col">
-              收款
-              <trend class="dashboard-item-trend" type="down"/>
-            </p>
+          <template #metadata.labels="{ row }">
+            <span v-for="(value,key) in row.metadata.labels">
+              <p>{{key}}:{{value}}</p>
+            </span>
           </template>
           <template #spec.rules="{ row }">
-            <p class="payment-col">
-              {{row.host}}
-            </p>
-            <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.RECEIPT" class="payment-col">
-              收款
-              <trend class="dashboard-item-trend" type="down"/>
-            </p>
+            <span v-for="(value,key) in row.spec.rules">
+              <a v-show="key" v-bind:href="value" class="payment-col">https://{{value.host}}</a>
+            </span>
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickDetail()">详情</a>
@@ -135,6 +121,13 @@ export default Vue.extend({
           colKey: 'metadata.namespace',
         },
         {
+          title: '标签',
+          width: 120,
+          ellipsis: true,
+          fixed: 'left',
+          colKey: 'metadata.labels',
+        },
+        {
           title: 'ingress类',
           width: 60,
           ellipsis: true,
@@ -143,7 +136,7 @@ export default Vue.extend({
         },
         {
           title: '域名',
-          width: 120,
+          width: 220,
           ellipsis: true,
           fixed: 'left',
           colKey: 'spec.rules',
