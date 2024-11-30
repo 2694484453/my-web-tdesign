@@ -46,7 +46,7 @@
               <template #icon>
                 <user-circle-icon class="header-user-avatar" />
               </template>
-              <div class="header-user-account">Tencent</div>
+              <div class="header-user-account" v-text="userInfo.userName"></div>
               <template #suffix>
                 <chevron-down-icon />
               </template>
@@ -126,6 +126,9 @@ export default Vue.extend({
       prefix,
       visibleNotice: false,
       isSearchFocus: false,
+      userInfo: {
+        userName: ""
+      }
     };
   },
   computed: {
@@ -155,6 +158,14 @@ export default Vue.extend({
         },
       ];
     },
+  },
+  mounted() {
+    const userName = this.$cookies.get('username');
+    if (userName) {
+      this.userInfo.userName = userName;
+    }else {
+      this.userInfo.userName = '未知';
+    }
   },
   methods: {
     toggleSettingPanel() {
