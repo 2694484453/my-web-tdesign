@@ -177,6 +177,12 @@ export default {
         }, 1000)
       }
     },
+    authGitee() {
+      const redirect_uri = "https://gpg123.cn/git/gitee";
+      const url = "https://gitee.com/oauth/authorize?client_id=4205d9756e46effb45c437308d808f7b551414563cbec9f5aa0ec9402e0753d6&redirect_uri=" + redirect_uri + "&response_type=code"
+      console.log(url)
+      window.location.href = url;
+    },
     repos() {
       this.$request.get('https://gitee.com/api/v5/user/repos?access_token=' + this.access_token + '&sort=full_name&page=1&per_page=100').then(res => {
          this.data = res.data.root
