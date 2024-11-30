@@ -13,7 +13,7 @@
         <div class="form-basic-item">
           <div class="form-basic-container-title" align="center">从您的帐户部署站点</div>
           <!-- 提示连接 -->
-          <div v-if="code === null || code === '' || code !== undefined ">
+          <div v-if="access_token === null">
             <t-card :cover="cover" title="Gitee" description="我的仓库" :style="{ width: '600px',height:'300px'}">
               <template #avatar>
                 <t-avatar image="https://tdesign.gtimg.com/site/avatar-boy.jpg" size="56px"></t-avatar>
@@ -47,7 +47,6 @@
                   </t-select>
                 </t-form-item>
               </t-col>
-
               <!-- 合同收付类型 -->
               <!--            <t-col :span="8">-->
               <!--              <t-form-item label="合同收付类型" name="payment">-->
@@ -196,7 +195,7 @@ const FORM_RULES = {
 
 export default {
   name: 'FormBase',
-  props: ['code'],
+  props: ['code','refresh_token','access_token'],
   data() {
     return {
       prefix,
