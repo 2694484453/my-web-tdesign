@@ -55,11 +55,7 @@ export default {
       return code;
     },
     getGiteeAccessToken(code) {
-      this.$request.post("/git/gitee/token",{
-        params: {
-          code: code
-        }
-      }).then(res => {
+      this.$request.post("/git/gitee/token?code="+code).then(res => {
         console.log("res",res)
       }).catch(err => {
 
