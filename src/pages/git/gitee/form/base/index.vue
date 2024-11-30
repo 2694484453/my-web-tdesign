@@ -24,141 +24,29 @@
               </template>
             </t-card>
           </div>
-          <!-- 合同名称,合同类型 -->
+          <!-- 卡片列表 -->
           <div v-else>
-            <t-row class="row-gap" :gutter="[16, 24]">
-              <t-col :span="6">
-                <t-form-item label="chart名称" name="name">
-                  <t-input v-model="formData.name" :style="{ width: '322px' }" placeholder="请输入内容"/>
-                </t-form-item>
-              </t-col>
-              <t-col :span="6">
-                <t-form-item label="类型" name="type">
-                  <t-select
-                    v-model="formData.type"
-                    :style="{ width: '322px' }"
-                    placeholder="请选择类型"
-                    class="demo-select-base"
-                    clearable
-                  >
-                    <t-option v-for="(item, index) in typeOptions" :key="index" :value="item.value" :label="item.label">
-                      {{ item.label }}
-                    </t-option>
-                  </t-select>
-                </t-form-item>
-              </t-col>
-              <!-- 合同收付类型 -->
-              <!--            <t-col :span="8">-->
-              <!--              <t-form-item label="合同收付类型" name="payment">-->
-              <!--                <t-radio-group v-model="formData.payment">-->
-              <!--                  <t-radio value="1"> 收款 </t-radio>-->
-              <!--                  <t-radio value="2"> 付款 </t-radio>-->
-              <!--                </t-radio-group>-->
-              <!--                <span class="space-item" />-->
-              <!--                <t-input placeholder="请输入金额" :style="{ width: '160px' }" />-->
-              <!--              </t-form-item>-->
-              <!--            </t-col>-->
-
-              <t-col :span="6">
-                <t-form-item label="模板" name="partyA">
-                  <t-select
-                    v-model="formData.partyA"
-                    :style="{ width: '322px' }"
-                    class="demo-select-base"
-                    placeholder="请选择类型"
-                    clearable
-                  >
-                    <t-option v-for="(item, index) in partyAOptions" :key="index" :value="item.value"
-                              :label="item.label">
-                      {{ item.label }}
-                    </t-option>
-                  </t-select>
-                </t-form-item>
-              </t-col>
-              <t-col :span="6">
-                <t-form-item label="仓库地址" name="partyB">
-                  <t-select
-                    v-model="formData.partyB"
-                    :style="{ width: '322px' }"
-                    placeholder="请选择类型"
-                    class="demo-select-base"
-                    clearable
-                  >
-                    <t-option v-for="(item, index) in partyBOptions" :key="index" :value="item.value"
-                              :label="item.label">
-                      {{ item.label }}
-                    </t-option>
-                  </t-select>
-                </t-form-item>
-              </t-col>
-              <t-col :span="6">
-                <t-form-item label="用户名" name="signDate">
-                  <t-input
-                    v-model="formData.signDate"
-                    :style="{ width: '322px' }"
-                    theme="primary"
-                    mode="date"
-                    separator="/"
-                  />
-                </t-form-item>
-              </t-col>
-              <t-col :span="6">
-                <t-form-item label="密码" name="startDate">
-                  <t-input
-                    v-model="formData.startDate"
-                    :style="{ width: '322px' }"
-                    theme="primary"
-                    mode="date"
-                    separator="/"
-                  />
-                </t-form-item>
-              </t-col>
-              <!--            <t-col :span="6">-->
-              <!--              <t-form-item label="合同结束日期" name="endDate">-->
-              <!--                <t-date-picker-->
-              <!--                  v-model="formData.endDate"-->
-              <!--                  :style="{ width: '322px' }"-->
-              <!--                  theme="primary"-->
-              <!--                  mode="date"-->
-              <!--                  separator="/"-->
-              <!--                />-->
-              <!--              </t-form-item>-->
-              <!--            </t-col>-->
-              <t-col :span="6">
-                <t-form-item label="" name="files">
-                  <t-upload
-                    v-model="formData.files"
-                    action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo"
-                    tips="请上传文件，大小在10M以内"
-                    :size-limit="{ size: 60, unit: 'MB' }"
-                    :format-response="formatResponse"
-                    :before-upload="beforeUpload"
-                    @fail="handleFail"
-                  >
-                    <t-button class="form-submit-upload-btn" variant="outline"> 上传chart文件</t-button>
-                  </t-upload>
-                </t-form-item>
-              </t-col>
-            </t-row>
-            <div class="form-basic-container-title form-title-gap">其它信息</div>
-            <t-form-item label="备注" name="comment">
-              <t-textarea v-model="formData.comment" :height="124" placeholder="请输入备注"/>
-            </t-form-item>
-            <t-form-item label="团队成员">
-              <t-avatar-group>
-                <t-avatar>D</t-avatar>
-                <t-avatar>S</t-avatar>
-                <t-avatar>+</t-avatar>
-              </t-avatar-group>
-            </t-form-item>
-            <div class="form-submit-container">
-              <div class="form-submit-sub">
-                <div class="form-submit-left">
-                  <t-button theme="primary" class="form-submit-confirm" type="submit"> 提交</t-button>
-                  <t-button type="reset" class="form-submit-cancel" theme="default" variant="base"> 取消</t-button>
-                </div>
+            <template v-if="pagination.total > 0">
+              <div class="list-card-items">
+                <t-row :gutter="[16, 16]">
+                  <t-col :lg="4" :xs="6" :xl="3" v-for="product in data.slice(pagination.pageSize * (pagination.current - 1),pagination.pageSize * pagination.current,)"
+                    :key="product.index">
+<!--                    <product-card :product="product" @delete-item="handleDeleteItem"-->
+<!--                                  @manage-product="handleManageProduct"/>-->
+                  </t-col>
+                </t-row>
               </div>
-            </div>
+              <div class="list-card-pagination">
+                <t-pagination
+                  v-model="pagination.current"
+                  :total="pagination.total"
+                  :pageSizeOptions="[12, 24, 36]"
+                  :page-size.sync="pagination.pageSize"
+                  @page-size-change="onPageSizeChange"
+                  @current-change="onCurrentChange"
+                />
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -167,6 +55,7 @@
 </template>
 <script>
 import {prefix} from '@/config/global';
+import ProductCard from "@/components/product-card/index.vue";
 
 const INITIAL_DATA = {
   name: '',
@@ -195,7 +84,8 @@ const FORM_RULES = {
 
 export default {
   name: 'FormBase',
-  props: ['code','refresh_token','access_token'],
+  components: {ProductCard},
+  props: ['code', 'refresh_token', 'access_token'],
   data() {
     return {
       prefix,
@@ -229,9 +119,35 @@ export default {
         startDate: [{required: false, message: '请选择日期', type: 'error'}],
         endDate: [{required: false, message: '请选择日期', type: 'error'}],
       },
+      // 与pagination对齐
+      pagination: {
+        defaultPageSize: 10,
+        total: 0,
+        defaultCurrent: 1,
+      },
+      data: [],
     };
   },
+  mounted() {
+    if (this.access_token !== null) {
+      this.repos()
+    }
+  },
   methods: {
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
+    },
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
+    },
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
+    },
     handleFail({file}) {
       this.$message.error(`文件 ${file.name} 上传失败`);
     },
@@ -261,14 +177,10 @@ export default {
         }, 1000)
       }
     },
-    authGitee() {
-      const redirect_uri = "https://gpg123.cn/git/gitee";
-      const url = "https://gitee.com/oauth/authorize?client_id=4205d9756e46effb45c437308d808f7b551414563cbec9f5aa0ec9402e0753d6&redirect_uri=" + redirect_uri + "&response_type=code"
-      console.log(url)
-      window.location.href = url;
-    },
-    getToken() {
-
+    repos() {
+      this.$request.get('https://gitee.com/api/v5/user/repos?access_token=' + this.access_token + '&sort=full_name&page=1&per_page=100').then(res => {
+         this.data = res.data.root
+      })
     }
   },
 };
