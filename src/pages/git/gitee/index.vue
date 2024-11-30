@@ -56,7 +56,8 @@ export default {
     },
     getGiteeAccessToken(code) {
       this.$request.post("/git/gitee/token?code="+code).then(res => {
-        console.log("res",res)
+        localStorage.setItem("gitee_access_token", res.data.access_token)
+        localStorage.setItem("gitee_refresh_token", res.data.refresh_token)
       }).catch(err => {
 
       })
