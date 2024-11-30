@@ -38,7 +38,7 @@ instance.interceptors.request.use(config => {
 //拦截响应
 instance.interceptors.response.use(
   (response) => {
-    if (response.status === 200) {
+    if (response.data.code === 200) {
       const { data } = response;
       if (data.code === CODE.REQUEST_SUCCESS) {
         return data;
