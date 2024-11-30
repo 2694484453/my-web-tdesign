@@ -330,7 +330,6 @@ export default Vue.extend({
         console.log(url)
         window.location.href = url;
       }
-
     },
     /**
      * 打开小窗口
