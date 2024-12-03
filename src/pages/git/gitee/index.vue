@@ -32,6 +32,8 @@ export default {
     const access_token = localStorage.getItem("gitee_access_token")
     if (access_token !== null && access_token !== 'undefined') {
       this.access_token = access_token;
+    }else {
+      this.getCode();
     }
   },
   methods: {
