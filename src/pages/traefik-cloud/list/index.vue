@@ -55,7 +55,7 @@
           </template>
           <template #spec.rules="{ row }">
             <span v-for="(value,key) in row.spec.rules">
-              <a v-show="key" v-bind:href="value" class="payment-col">https://{{value.host}}</a>
+              <a v-show="key" :href="value" class="payment-col">https://{{value.host}}</a>
             </span>
           </template>
           <template #op="slotProps">
