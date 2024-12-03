@@ -23,7 +23,6 @@ export default {
     return {
       type: "list",
       row: Object,
-      code: '',
       access_token: null,
       refresh_token: null
     };
@@ -44,19 +43,10 @@ export default {
       // 先判断url是否带有code
       let code = this.$route.query.code
       console.log("code", code)
-      if (code != null && code !== "" && code !== 'undefined') {
-        // 从url获取code
-        console.log("url取code", code)
-        localStorage.setItem("code", code)
-      } else {
-        // 从本地取code
-        code = localStorage.getItem("code");
-        if (code != null && code !== "" && code !== 'undefined') {
-          // 从localstorage取
-          console.log("本地取code", code)
-        }
+      if (code != null || code !== "" || code !== undefined) {
+        // 从url获取code后请求
+        this.getGiteeAccessToken(code)
       }
-      return code;
     },
     getGiteeAccessToken(code) {
       this.$request.post("/git/gitee/token?code=" + code).then(res => {
