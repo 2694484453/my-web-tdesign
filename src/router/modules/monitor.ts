@@ -28,19 +28,25 @@ export default [
     name: 'prometheus-cloud',
     component: Layout,
     //redirect: '/prometheus/base',
-    meta: {title: '监控中心(云原生版)', icon: PreciseMonitorIcon},
+    meta: {title: '监控中心', icon: PreciseMonitorIcon},
     children: [
       {
         path: 'dashboard',
         name: 'DashboardBase',
         component: () => import('@/pages/prometheus-cloud/dashboard.vue'),
-        meta: {title: '监控视图'},
+        meta: {title: '监控面板'},
       },
       {
-        path: 'base',
-        name: 'MonitorBase',
+        path: 'podMonitor',
+        name: 'podMonitorBase',
         component: () => import('@/pages/prometheus-cloud/index.vue'),
-        meta: {title: '监控列表'},
+        meta: {title: 'Pod监控'},
+      },
+      {
+        path: 'serviceMonitor',
+        name: 'serviceMonitorBase',
+        component: () => import('@/pages/prometheus-cloud/index.vue'),
+        meta: {title: 'Service监控'},
       }
     ],
   },
@@ -68,17 +74,23 @@ export default [
     path: '/alert-cloud',
     name: 'alert-cloud',
     component: Layout,
-    meta: {title: '告警中心(云原生版)', icon: NotificationIcon},
+    meta: {title: '告警中心', icon: NotificationIcon},
     children: [
       {
         path: 'dashboard',
         name: 'DashboardBase',
         component: () => import('@/pages/alert-cloud/index.vue'),
-        meta: {title: '监控视图'},
+        meta: {title: '监控面板'},
       },
       {
-        path: "list",
-        name: 'listBase',
+        path: "ruleList",
+        name: 'ruleListBase',
+        component: () => import("@/pages/alert-cloud/list/index.vue"),
+        meta: {title: '告警规则'},
+      },
+      {
+        path: "alertList",
+        name: 'alertListBase',
         component: () => import("@/pages/alert-cloud/list/index.vue"),
         meta: {title: '告警列表'},
       }
