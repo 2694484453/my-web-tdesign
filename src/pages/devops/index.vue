@@ -104,8 +104,7 @@
       :body="confirmBody"
       :visible.sync="confirmVisible"
       @confirm="onConfirmDelete"
-      :onCancel="onCancel"
-    >
+      :onCancel="onCancel">
     </t-dialog>
   </div>
 </template>
