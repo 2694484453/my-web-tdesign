@@ -50,12 +50,12 @@
           </template>
           <template #metadata.labels="{ row }">
             <span v-for="(value,key) in row.metadata.labels">
-              <p>{{key}}:{{value}}</p>
+              <p>{{ key }}:{{ value }}</p>
             </span>
           </template>
           <template #spec.rules="{ row }">
-            <span v-for="(value,key) in row.spec.rules">
-              <a v-show="key" :href="value" class="payment-col">https://{{value.host}}</a>
+            <span v-for="(item,index) in row.spec.rules">
+              <a v-show="item !=null" :href="'https://'+item.host" class="payment-col">https://{{ item.host }}</a>
             </span>
           </template>
           <template #op="slotProps">
@@ -229,11 +229,11 @@ export default Vue.extend({
     handleSetupContract() {
       this.$router.push('/prometheus/add');
     },
-    handleClickDelete(row: { rowIndex: any,type: any }) {
+    handleClickDelete(row: { rowIndex: any, type: any }) {
       this.deleteIdx = row.rowIndex;
       this.deleteType = row.type;
       this.confirmVisible = true;
-      console.log("this",this.deleteType)
+      console.log("this", this.deleteType)
     },
     onConfirmDelete() {
       // 真实业务请发起请求
@@ -245,14 +245,14 @@ export default Vue.extend({
       }
       this.confirmVisible = false;
       // 请求删除
-      this.$request.delete("/monitor/delete",{
+      this.$request.delete("/monitor/delete", {
         params: {
           index: this.deleteIdx,
           type: this.deleteType
         }
-      }).then(res=>{
+      }).then(res => {
         this.$message.success(res.data.msg);
-      }).catch(err=>{
+      }).catch(err => {
 
       })
       this.resetIdx();
@@ -281,7 +281,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/traefikCloud/page',{
+        .get('/traefikCloud/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {

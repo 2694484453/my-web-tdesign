@@ -8,8 +8,7 @@
         colon
         @reset="onReset"
         @submit="onSubmit"
-        :style="{ marginBottom: '8px' }"
-      >
+        :style="{ marginBottom: '8px' }">
         <t-row justify="space-between">
           <div class="left-operation-container">
             <t-button @click="handleSetupContract">添加</t-button>
@@ -28,8 +27,7 @@
                 :style="{ width: '200px' }"
                 placeholder="请选择类型"
                 class="demo-select-base"
-                clearable
-              >
+                clearable>
                 <t-option v-for="(item, index) in typeList" :key="index" :value="item" :label="item">
                   {{ item }}
                 </t-option>
