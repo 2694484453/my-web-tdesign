@@ -28,6 +28,9 @@
         </t-row>
       </t-form>
       <div class="table-container">
+        <t-drawer>
+          <p>This is a Drawer</p>
+        </t-drawer>
         <t-table
           :columns="columns"
           :data="data"
@@ -62,10 +65,21 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
+            <a class="t-button-link" @click="visible = true;handleClickDetail(slotProps.row)">查看</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
+        <t-drawer
+          v-model:visible="visible"
+          header="标题名称"
+          :on-overlay-click="() => (visible = false)"
+          placement="right"
+          :size-draggable="true"
+          :on-size-drag-end="handleSizeDrag"
+          @cancel="visible = false">
+          <p>抽屉的内容</p>
+        </t-drawer>
         <div>
           <t-pagination
             v-model="formData.pageNum"
@@ -171,7 +185,9 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10
       },
-      typeList: []
+      typeList: [],
+      // 抽屉
+      visible: false
     };
   },
   computed: {
@@ -211,9 +227,13 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
+    handleSizeDrag({size}) {
+      console.log('size drag size: ', size);
+    },
     handleClickDetail(row) {
+      console.log("detail:",row,this.visible)
       //this.$router.push('/detail/base');
-      this.$emit('transfer', "detail", row)
+      //this.$emit('transfer', "detail", row)
     },
     handleSetupContract() {
       //this.$router.push('/prometheus/add');
@@ -282,7 +302,7 @@ export default Vue.extend({
       }).finally(() => {
         this.dataLoading = false;
       });
-    }
+    },
   },
 });
 </script>

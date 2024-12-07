@@ -30,7 +30,7 @@ export default [
       {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/coredns-cloud/index.vue'),
+        component: () => import('@/pages/coredns-cloud/dashboard.vue'),
         meta: {title: '监控面板'},
       },
       {
