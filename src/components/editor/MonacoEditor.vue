@@ -1,35 +1,49 @@
 <template>
-  <a-layout>
-    <div id="container" v-bind:style="{height: height,width:width,border: '1px',marginTop: '25px'}">
-    </div>
-  </a-layout>
+    <div id="container" v-bind:style="{height: height,width:width}"/>
 </template>
 
 <script lang="js">
 import * as monaco from "monaco-editor";
 
-let editor;
 export default {
-  name: "Monaco",
+  name: "MonacoEditor",
   props: {
     width: {
       default: "100%"
     },
     height: {
-      default: "600px"
+      default: "800px"
+    },
+    fontSize: {
+      default: "15"
+    },
+    language: {
+      default: "txt"
+    },
+    theme: {
+      default: "vs"
+    },
+    value: {
+      default: ""
+    },
+    roundedSelection: {
+      default: false
+    },
+    readOnly: {
+      default: true
     }
   },
   data() {
     return {
       defaultOpts: {
-        value: '',
-        language: 'yaml',
-        theme: 'vs', // 编辑器主题：vs, hc-black, or vs-dark，更多选择详见官网
-        roundedSelection: false, // 右侧不显示编辑器预览框
+        value: this.value,
+        language: this.language,
+        theme: this.theme, // 编辑器主题：vs, hc-black, or vs-dark，更多选择详见官网
+        roundedSelection: this.roundedSelection, // 右侧不显示编辑器预览框
         autoIndent: true, // 自动缩进
-        readOnly: false, // 是否只读
+        readOnly: this.readOnly, // 是否只读
         glyphMargin: true, //字形边缘
-        fontSize: 15, //字体大小
+        fontSize: this.fontSize, //字体大小
         selectOnLineNumbers: true, //显示行号
         automaticLayout: true, //自动布局
       }

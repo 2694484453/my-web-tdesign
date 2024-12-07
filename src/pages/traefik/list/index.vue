@@ -65,32 +65,22 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="visible = true;handleClickDetail(slotProps.row)">查看</a>
+            <a class="t-button-link" @click="editor.visible = true;handleClickDetail(slotProps.row)">查看</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
-        <t-drawer
-          v-model:visible="visible"
-          header="标题名称"
-          :on-overlay-click="() => (visible = false)"
-          placement="right"
-          :size-draggable="true"
-          :on-size-drag-end="handleSizeDrag"
-          @cancel="visible = false">
-          <p>抽屉的内容</p>
-        </t-drawer>
-        <div>
-          <t-pagination
-            v-model="formData.pageNum"
-            :total="pagination.total"
-            :page-size.sync="formData.pageSize"
-            @current-change="onCurrentChange"
-            @page-size-change="onPageSizeChange"
-            @change="onChange"/>
-        </div>
       </div>
     </t-card>
+    <div>
+      <t-pagination
+        v-model="formData.pageNum"
+        :total="pagination.total"
+        :page-size.sync="formData.pageSize"
+        @current-change="onCurrentChange"
+        @page-size-change="onPageSizeChange"
+        @change="onChange"/>
+    </div>
     <t-dialog
       header="确认删除当前所选？"
       :body="confirmBody"
@@ -99,6 +89,17 @@
       :onCancel="onCancel"
     >
     </t-dialog>
+    <t-drawer
+      :visible="editor.visible"
+      :header="editor.header"
+      :on-overlay-click="() => (editor.visible = false)"
+      placement="right"
+      :sizeDraggable="true"
+      :on-size-drag-end="handleSizeDrag"
+      :size="'60%'"
+      @cancel="editor.visible = false">
+      <MonacoEditor :language="editor.language" :fontSize="editor.fontSize" :value="editor.value"/>
+    </t-drawer>
   </div>
 </template>
 <script lang="ts">
@@ -108,10 +109,12 @@ import Trend from '@/components/trend/index.vue';
 import {prefix} from '@/config/global';
 
 import {CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES} from '@/constants';
+import MonacoEditor from "@/components/editor/MonacoEditor.vue";
 
 export default Vue.extend({
   name: 'ListBase',
   components: {
+    MonacoEditor,
     SearchIcon,
     Trend,
   },
@@ -186,8 +189,15 @@ export default Vue.extend({
         pageSize: 10
       },
       typeList: [],
-      // 抽屉
-      visible: false
+      // monaco
+      editor: {
+        language: "yaml",
+        fontSize: "13",
+        value: "",
+        header: "",
+        // 抽屉
+        visible: false,
+      }
     };
   },
   computed: {
@@ -231,9 +241,8 @@ export default Vue.extend({
       console.log('size drag size: ', size);
     },
     handleClickDetail(row) {
-      console.log("detail:",row,this.visible)
-      //this.$router.push('/detail/base');
-      //this.$emit('transfer', "detail", row)
+      this.editor.value = row.config
+      this.editor.header = row.name
     },
     handleSetupContract() {
       //this.$router.push('/prometheus/add');
