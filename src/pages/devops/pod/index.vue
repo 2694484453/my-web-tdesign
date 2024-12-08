@@ -68,7 +68,7 @@
           </template>
           <template #metadata.labels="{ row }">
             <span v-for="(value,key) in row.metadata.labels">
-              <p>{{key}}:{{value}}</p>
+              <p>{{ key }}:{{ value }}</p>
             </span>
           </template>
           <template #paymentType="{ row }">
@@ -248,16 +248,19 @@ export default Vue.extend({
     },
     handleClickDetail(row) {
       // 连接ws
-
+      this.connectWebSocket({
+        podName: row.metadata.name,
+        nameSpace: row.metadata.namespace
+      })
     },
     handleSetupContract() {
       this.$router.push('/prometheus/add');
     },
-    handleClickDelete(row: { rowIndex: any,type: any }) {
+    handleClickDelete(row: { rowIndex: any, type: any }) {
       this.deleteIdx = row.rowIndex;
       this.deleteType = row.type;
       this.confirmVisible = true;
-      console.log("this",this.deleteType)
+      console.log("this", this.deleteType)
     },
     onConfirmDelete() {
       // 真实业务请发起请求
@@ -269,14 +272,14 @@ export default Vue.extend({
       }
       this.confirmVisible = false;
       // 请求删除
-      this.$request.delete("/monitor/delete",{
+      this.$request.delete("/monitor/delete", {
         params: {
           index: this.deleteIdx,
           type: this.deleteType
         }
-      }).then(res=>{
+      }).then(res => {
         this.$message.success(res.data.msg);
-      }).catch(err=>{
+      }).catch(err => {
 
       })
 
@@ -305,21 +308,21 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/podLog/page',{
+        .get('/podLog/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.rows;
-          this.pagination =  res.data.total
+          this.pagination = res.data.total
         }
       }).catch((e: Error) => {
-          console.log(e);
-        }).finally(() => {
-          this.dataLoading = false;
-        });
+        console.log(e);
+      }).finally(() => {
+        this.dataLoading = false;
+      });
     },
-    connectWebSocket() {
-      const socket = new WebSocket('ws://your-websocket-url');
+    connectWebSocket(params) {
+      const socket = new WebSocket('ws://ecs.gpg123.vip:9099/ws/podLog?podName=' + params.podName + "&nameSpace=" + params.nameSpace);
       // 连接成功时触发
       socket.onopen = () => {
         console.log('WebSocket connection established');
