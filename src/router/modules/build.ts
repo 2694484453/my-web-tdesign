@@ -48,12 +48,12 @@ export default [
         component: () => import('@/pages/devops/index.vue'),
         meta: { title: '任务列表' },
       },
-      // {
-      //   path: 'helm',
-      //   name: 'helm',
-      //   component: () => import('@/pages/build/helm/index.vue'),
-      //   meta: { title: 'chart构建' },
-      // },
+      {
+        path: 'podList',
+        name: 'podList',
+        component: () => import('@/pages/devops/pod/index.vue'),
+        meta: { title: 'pod列表' },
+      },
     ],
   }
 ];

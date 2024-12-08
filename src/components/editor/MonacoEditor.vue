@@ -1,5 +1,5 @@
 <template>
-    <div id="container" v-bind:style="{height: height,width:width}"/>
+    <div id="container" v-bind:style="{height: height,width: width}"/>
 </template>
 
 <script lang="js">
@@ -12,7 +12,7 @@ export default {
       default: "100%"
     },
     height: {
-      default: "600px"
+      default: "100%"
     },
     fontSize: {
       default: "15"

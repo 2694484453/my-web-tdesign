@@ -12,8 +12,8 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="handleSetupContract">新建</t-button>
-            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
+            <t-button @click="handleSetupContract"> 新建</t-button>
+            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
           <t-col :span="3">
@@ -21,6 +21,26 @@
               <t-input v-model="formData.name" :style="{ width: '200px' }" placeholder="请输入内容"/>
             </t-form-item>
           </t-col>
+          <t-col :span="3">
+            <t-form-item label="类型" name="type">
+              <t-select
+                v-model="formData.type"
+                :style="{ width: '200px' }"
+                placeholder="请选择类型"
+                class="demo-select-base"
+                clearable
+              >
+                <t-option v-for="(item, index) in typeList" :key="index" :value="item" :label="item">
+                  {{ item }}
+                </t-option>
+              </t-select>
+            </t-form-item>
+          </t-col>
+          <!--        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>-->
+          <!--          <template #suffix-icon>-->
+          <!--            <search-icon size="20px"/>-->
+          <!--          </template>-->
+          <!--        </t-input>-->
           <t-col :span="2" class="operation-container">
             <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
             <t-button type="reset" variant="base" theme="default"> 重置</t-button>
@@ -28,9 +48,6 @@
         </t-row>
       </t-form>
       <div class="table-container">
-        <t-drawer>
-          <p>This is a Drawer</p>
-        </t-drawer>
         <t-table
           :columns="columns"
           :data="data"
@@ -49,10 +66,10 @@
             <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
             <t-tag v-if="row.status === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
           </template>
-          <template #contractType="{ row }">
-            <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
-            <p v-if="row.contractType === CONTRACT_TYPES.SUB">待审核</p>
-            <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">待履行</p>
+          <template #metadata.labels="{ row }">
+            <span v-for="(value,key) in row.metadata.labels">
+              <p>{{key}}:{{value}}</p>
+            </span>
           </template>
           <template #paymentType="{ row }">
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
@@ -65,39 +82,29 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="editor.visible = true;handleClickDetail(slotProps.row)">查看</a>
-            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">编辑</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">日志流</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
+        <div>
+          <t-pagination
+            v-model="formData.pageNum"
+            :total="pagination.total"
+            :page-size.sync="formData.pageSize"
+            @current-change="onCurrentChange"
+            @page-size-change="onPageSizeChange"
+            @change="onChange"
+          />
+        </div>
       </div>
     </t-card>
-    <div>
-      <t-pagination
-        v-model="formData.pageNum"
-        :total="pagination.total"
-        :page-size.sync="formData.pageSize"
-        @current-change="onCurrentChange"
-        @page-size-change="onPageSizeChange"
-        @change="onChange"/>
-    </div>
     <t-dialog
-      header="确认删除当前所选？"
+      header="确认删除当前所选合同？"
       :body="confirmBody"
       :visible.sync="confirmVisible"
       @confirm="onConfirmDelete"
-      :onCancel="onCancel"/>
-    <t-drawer
-      :visible="editor.visible"
-      :header="editor.header"
-      :on-overlay-click="() => (editor.visible = false)"
-      placement="right"
-      :sizeDraggable="true"
-      :on-size-drag-end="handleSizeDrag"
-      size="50%"
-      @cancel="editor.visible = false">
-      <MonacoEditor :language="editor.language" :fontSize="editor.fontSize" :value="editor.value"/>
-    </t-drawer>
+      :onCancel="onCancel">
+    </t-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -107,12 +114,10 @@ import Trend from '@/components/trend/index.vue';
 import {prefix} from '@/config/global';
 
 import {CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES} from '@/constants';
-import MonacoEditor from "@/components/editor/MonacoEditor.vue";
 
 export default Vue.extend({
   name: 'ListBase',
   components: {
-    MonacoEditor,
     SearchIcon,
     Trend,
   },
@@ -131,30 +136,47 @@ export default Vue.extend({
         {
           title: '名称',
           align: 'left',
-          width: 200,
-          ellipsis: true,
-          colKey: 'name',
-          fixed: 'left',
-        },
-        {
-          title: '路径',
           width: 220,
           ellipsis: true,
+          colKey: 'metadata.name',
           fixed: 'left',
-          colKey: 'path',
         },
         {
-          title: '文件大小',
-          width: 100,
+          title: '类型',
+          width: 80,
           ellipsis: true,
           fixed: 'left',
-          colKey: 'length',
+          colKey: 'kind',
         },
         {
-          title: '修改时间',
+          title: '状态',
+          colKey: 'status.ready',
+          width: 100, cell:
+            {col: 'status'}
+        },
+        {
+          title: '失败',
+          colKey: 'status.failed',
+          width: 100, cell:
+            {col: 'status'}
+        },
+        {
+          title: '标签',
           width: 200,
           ellipsis: true,
-          colKey: "lastModified"
+          colKey: 'metadata.labels',
+        },
+        {
+          title: '最近一次执行',
+          width: 200,
+          ellipsis: true,
+          colKey: "status.startTime"
+        },
+        {
+          title: "创建时间",
+          width: 200,
+          ellipsis: true,
+          colKey: "metadata.creationTimestamp"
         },
         {
           align: 'left',
@@ -182,27 +204,17 @@ export default Vue.extend({
       formData: {
         name: "",
         type: "",
-        namespace: "",
         pageNum: 1,
         pageSize: 10
       },
-      typeList: [],
-      // monaco
-      editor: {
-        language: "yaml",
-        fontSize: "15",
-        value: "",
-        header: "",
-        // 抽屉
-        visible: false,
-      }
+      typeList: []
     };
   },
   computed: {
     confirmBody() {
       if (this.deleteIdx > -1) {
         const {name} = this.data?.[this.deleteIdx];
-        return `删除后，${name}的所有信息将被清空，且无法恢复`;
+        return `删除后，${name}的所有合同信息将被清空，且无法恢复`;
       }
       return '';
     },
@@ -211,10 +223,10 @@ export default Vue.extend({
     },
   },
   mounted() {
-    //this.getTypeList()
-    this.getList()
   },
   created() {
+    //this.getTypeList()
+    this.getList()
   },
   methods: {
     getContainer() {
@@ -224,7 +236,6 @@ export default Vue.extend({
       console.log('Page Size:', this.pageSize, size, pageInfo);
       // 刷新
       this.formData.pageSize = size
-      this.getList()
     },
     onCurrentChange(current, pageInfo) {
       console.log('Current Page', this.current, current, pageInfo);
@@ -235,22 +246,18 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
-    handleSizeDrag({size}) {
-      console.log('size drag size: ', size);
-    },
     handleClickDetail(row) {
-      this.editor.value = row.config
-      this.editor.header = row.name
+      // 连接ws
+
     },
     handleSetupContract() {
-      //this.$router.push('/prometheus/add');
-      this.$emit('transfer', "form")
+      this.$router.push('/prometheus/add');
     },
-    handleClickDelete(row: { rowIndex: any, type: any }) {
+    handleClickDelete(row: { rowIndex: any,type: any }) {
       this.deleteIdx = row.rowIndex;
       this.deleteType = row.type;
       this.confirmVisible = true;
-      console.log("this", this.deleteType)
+      console.log("this",this.deleteType)
     },
     onConfirmDelete() {
       // 真实业务请发起请求
@@ -262,16 +269,17 @@ export default Vue.extend({
       }
       this.confirmVisible = false;
       // 请求删除
-      this.$request.delete("/monitor/delete", {
+      this.$request.delete("/monitor/delete",{
         params: {
           index: this.deleteIdx,
           type: this.deleteType
         }
-      }).then(res => {
+      }).then(res=>{
         this.$message.success(res.data.msg);
-      }).catch(err => {
+      }).catch(err=>{
 
       })
+
       this.resetIdx();
     },
     onCancel() {
@@ -282,13 +290,13 @@ export default Vue.extend({
     },
     onReset(data) {
       console.log(data);
-      this.getList();
     },
     onSubmit(data) {
-      this.getList();
+      console.log(this.formData);
+      this.getList(this.formData);
     },
     getTypeList() {
-      this.$request.get("/imageRepo/typeList").then(res => {
+      this.$request.get("/monitor/typeList").then(res => {
         this.typeList = res.data.data
       }).catch((err) => {
 
@@ -297,19 +305,38 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/traefik/page', {
+        .get('/podLog/page',{
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.rows;
-          this.pagination.total = res.data.total;
+          this.pagination =  res.data.total
         }
       }).catch((e: Error) => {
-        console.log(e);
-      }).finally(() => {
-        this.dataLoading = false;
-      });
+          console.log(e);
+        }).finally(() => {
+          this.dataLoading = false;
+        });
     },
+    connectWebSocket() {
+      const socket = new WebSocket('ws://your-websocket-url');
+      // 连接成功时触发
+      socket.onopen = () => {
+        console.log('WebSocket connection established');
+      };
+      // 收到消息时触发
+      socket.onmessage = (event) => {
+        console.log('Message from server ', event.data);
+      };
+      // 连接关闭时触发
+      socket.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+      // 发生错误时触发
+      socket.onerror = (error) => {
+        console.error('WebSocket error observed:', error);
+      };
+    }
   },
 });
 </script>
