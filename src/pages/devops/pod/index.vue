@@ -224,7 +224,7 @@ export default Vue.extend({
       // monaco
       editor: {
         language: "yaml",
-        fontSize: "15",
+        fontSize: "12",
         value: "",
         header: "",
         // 抽屉
@@ -355,8 +355,8 @@ export default Vue.extend({
       };
       // 收到消息时触发
       socket.onmessage = (event) => {
-        console.log('Message from server ', event.data);
-        this.editor.value = event.data
+        //console.log('Message from server ', event.data);
+        this.editor.value = this.editor.value + "\n" + event.data
       };
       // 连接关闭时触发
       socket.onclose = () => {
