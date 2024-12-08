@@ -82,7 +82,7 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">日志流</a>
+            <a class="t-button-link" @click="editor.visible = true;handleClickDetail(slotProps.row)">日志流</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
@@ -105,6 +105,17 @@
       @confirm="onConfirmDelete"
       :onCancel="onCancel">
     </t-dialog>
+    <t-drawer
+      :visible="editor.visible"
+      :header="editor.header"
+      :on-overlay-click="() => (editor.visible = false)"
+      placement="right"
+      :sizeDraggable="true"
+      :on-size-drag-end="handleSizeDrag"
+      size="50%"
+      @cancel="editor.visible = false">
+      <MonacoEditor :language="editor.language" :fontSize="editor.fontSize" :value="editor.value"/>
+    </t-drawer>
   </div>
 </template>
 <script lang="ts">
@@ -114,10 +125,12 @@ import Trend from '@/components/trend/index.vue';
 import {prefix} from '@/config/global';
 
 import {CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES} from '@/constants';
+import MonacoEditor from "@/components/editor/MonacoEditor.vue";
 
 export default Vue.extend({
   name: 'ListBase',
   components: {
+    MonacoEditor,
     SearchIcon,
     Trend,
   },
@@ -207,7 +220,16 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10
       },
-      typeList: []
+      typeList: [],
+      // monaco
+      editor: {
+        language: "yaml",
+        fontSize: "15",
+        value: "",
+        header: "",
+        // 抽屉
+        visible: false,
+      }
     };
   },
   computed: {
@@ -246,7 +268,11 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
+    handleSizeDrag({size}) {
+      console.log('size drag size: ', size);
+    },
     handleClickDetail(row) {
+      this.editor.header = row.metadata.name
       // 连接ws
       this.connectWebSocket({
         podName: row.metadata.name,
@@ -330,6 +356,7 @@ export default Vue.extend({
       // 收到消息时触发
       socket.onmessage = (event) => {
         console.log('Message from server ', event.data);
+        this.editor.value = event.data
       };
       // 连接关闭时触发
       socket.onclose = () => {
