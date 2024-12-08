@@ -19,12 +19,6 @@ export default [
         name: 'AddBase',
         component: () => import("@/pages/traefik/index.vue"),
         meta: {title: '配置列表'},
-      },
-      {
-        path: "demo",
-        name: 'AddBase',
-        component: () => import("@/pages/traefik/demo.vue"),
-        meta: {title: 'demo列表'},
       }
     ],
   },

@@ -192,7 +192,7 @@ export default Vue.extend({
       // monaco
       editor: {
         language: "yaml",
-        fontSize: "13",
+        fontSize: "15",
         value: "",
         header: "",
         // 抽屉
