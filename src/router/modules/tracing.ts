@@ -1,4 +1,4 @@
-import {PreciseMonitorIcon} from 'tdesign-icons-vue';
+import {RelativityIcon} from 'tdesign-icons-vue';
 import Layout from '@/layouts/index.vue';
 
 export default [
@@ -7,25 +7,31 @@ export default [
     name: 'tracing',
     component: Layout,
     //redirect: '/prometheus/base',
-    meta: {title: '可观测链路', icon: PreciseMonitorIcon},
+    meta: {title: '可观测链路', icon: RelativityIcon},
     children: [
       {
-        path: 'dashboard',
-        name: 'DashboardBase',
+        path: 'overview',
+        name: 'overviewBase',
         component: () => import('@/pages/tracing/index.vue'),
         meta: {title: '概览'},
       },
       {
-        path: 'podMonitor',
-        name: 'podMonitorBase',
-        component: () => import('@/pages/prometheus-cloud/index.vue'),
-        meta: {title: 'Pod监控'},
+        path: 'integrations',
+        name: 'integrationsBase',
+        component: () => import('@/pages/tracing/inner/index.vue'),
+        meta: {title: '接入中心'},
       },
       {
-        path: 'serviceMonitor',
-        name: 'serviceMonitorBase',
-        component: () => import('@/pages/prometheus-cloud/index.vue'),
-        meta: {title: 'Service监控'},
+        path: 'list',
+        name: 'listBase',
+        component: () => import('@/pages/tracing/list/index.vue'),
+        meta: {title: '应用列表'},
+      },
+      {
+        path: 'tracing',
+        name: 'tracingBase',
+        component: () => import('@/pages/explorer/index.vue'),
+        meta: {title: '调用链分析'},
       }
     ],
   }
