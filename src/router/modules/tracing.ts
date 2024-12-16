@@ -30,7 +30,7 @@ export default [
       {
         path: 'tracing',
         name: 'tracingBase',
-        component: () => import('@/pages/explorer/index.vue'),
+        component: () => import('@/pages/tracing/explorer/index.vue'),
         meta: {title: '调用链分析'},
       }
     ],
