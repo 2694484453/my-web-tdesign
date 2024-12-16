@@ -168,10 +168,9 @@ export default Vue.extend({
             {col: 'status'}
         },
         {
-          title: '失败',
-          colKey: 'status.failed',
-          width: 100, cell:
-            {col: 'status'}
+          title: '命名空间',
+          colKey: 'metadata.namespace',
+          width: 100,
         },
         {
           title: '标签',
@@ -273,8 +272,9 @@ export default Vue.extend({
     },
     handleClickDetail(row) {
       this.editor.header = row.metadata.name
+      this.editor.value = ""
       // 连接ws
-      this.connectWebSocket({
+      this.connectSSE({
         podName: row.metadata.name,
         nameSpace: row.metadata.namespace
       })
@@ -355,7 +355,7 @@ export default Vue.extend({
       };
       // 收到消息时触发
       socket.onmessage = (event) => {
-        //console.log('Message from server ', event.data);
+        console.log('Message from server ', event.data);
         this.editor.value = this.editor.value + "\n" + event.data
       };
       // 连接关闭时触发
@@ -366,6 +366,13 @@ export default Vue.extend({
       socket.onerror = (error) => {
         console.error('WebSocket error observed:', error);
       };
+    },
+    connectSSE(params) {
+      const eventSource = new EventSource("https://my-server.gpg123.vip/sse/podLogs");
+      // 接受
+      eventSource.addEventListener("",function (res) {
+        console.log(res)
+      })
     }
   },
 });

@@ -12,7 +12,7 @@ export default {
       default: "100%"
     },
     height: {
-      default: "100%"
+      default: "800px"
     },
     fontSize: {
       default: "15"

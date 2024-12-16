@@ -22,13 +22,14 @@ import corednsRouters from "@/router/modules/coredns";
 import caddyRouters from "@/router/modules/caddy";
 // backup
 import backupRouters from "@/router/modules/backup";
-
+// tracing
+import tracingRouters from "@/router/modules/tracing";
 const env = import.meta.env.MODE || 'development';
 import proxy from '@/config/host';
 // 开发模式
 const devRouterList = [...baseRouters, ...componentsRouters, ...othersRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 生产模式
-const prodRouterList = [...baseRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
+const prodRouterList = [...baseRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters, ...tracingRouters]
 // 存放动态路由
 export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
 //[...baseRouters, ...componentsRouters, ...othersRouters];
