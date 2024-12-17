@@ -92,9 +92,9 @@
       :header="editor.header"
       :on-overlay-click="() => (editor.visible = false)"
       placement="right"
-      :sizeDraggable="true"
+      :size-draggable="true"
       :on-size-drag-end="handleSizeDrag"
-      size="50%"
+      size="65%"
       @cancel="editor.visible = false">
       <MonacoEditor :language="editor.language" :fontSize="editor.fontSize" :value="editor.value"/>
     </t-drawer>
