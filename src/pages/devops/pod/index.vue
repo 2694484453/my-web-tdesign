@@ -114,7 +114,7 @@
       :on-size-drag-end="handleSizeDrag"
       size="50%"
       @cancel="editor.visible = false">
-      <MonacoEditor :language="editor.language" :fontSize="editor.fontSize" :value="editor.value"/>
+      <MonacoEditor :config="editor" :value="editor.value"/>
     </t-drawer>
   </div>
 </template>
@@ -222,9 +222,10 @@ export default Vue.extend({
       typeList: [],
       // monaco
       editor: {
-        language: "yaml",
-        fontSize: "12",
+        language: "text",
+        fontSize: "15",
         value: "",
+        readOnly: true,
         header: "",
         // 抽屉
         visible: false,
@@ -308,7 +309,6 @@ export default Vue.extend({
       }).catch(err => {
 
       })
-
       this.resetIdx();
     },
     onCancel() {
@@ -368,11 +368,19 @@ export default Vue.extend({
       };
     },
     connectSSE(params) {
-      const eventSource = new EventSource("https://my-server.gpg123.vip/sse/podLogs");
+      const eventSource = new EventSource("https://my-server.gpg123.vip/sse/podLogs?podName=" + params.podName + "&nameSpace=" + params.nameSpace);
       // 接受
-      eventSource.addEventListener("",function (res) {
-        console.log(res)
-      })
+      eventSource.onmessage = (event) => {
+        //console.log(event)
+        // 传递给monaco
+        this.editor.value = this.editor.value + "\n\t" + event.data
+      }
+      eventSource.onopen = (event) => {
+        //console.log(event)
+      };
+      eventSource.onerror = (event) => {
+        //console.log(event)
+      };
     }
   },
 });
