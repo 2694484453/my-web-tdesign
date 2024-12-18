@@ -66,7 +66,7 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="editor.visible = true;handleClickDetail(slotProps.row)">查看</a>
-            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">编辑</a>
+            <a class="t-button-link" @click="editor.visible = true;handleClickDetail(slotProps.row)">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
@@ -96,7 +96,7 @@
       :on-size-drag-end="handleSizeDrag"
       size="65%"
       @cancel="editor.visible = false">
-      <MonacoEditor :language="editor.language" :fontSize="editor.fontSize" :value="editor.value"/>
+      <MonacoEditor :config="editor" :value="editor.value"/>
     </t-drawer>
   </div>
 </template>
@@ -192,6 +192,7 @@ export default Vue.extend({
         language: "yaml",
         fontSize: "15",
         value: "",
+        readOnly: true,
         header: "",
         // 抽屉
         visible: false,
