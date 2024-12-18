@@ -7,7 +7,7 @@ export default [
     name: 'tracing',
     component: Layout,
     //redirect: '/prometheus/base',
-    meta: {title: '可观测链路', icon: RelativityIcon},
+    meta: {title: 'OpenTelemetry链路', icon: RelativityIcon},
     children: [
       {
         path: 'overview',
