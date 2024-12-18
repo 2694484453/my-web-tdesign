@@ -12,8 +12,12 @@ import * as monaco from "monaco-editor";
 
 export default Vue.extend({
   name: "MonacoEditor",
-  props: ['config','value'],
+  props: ['config', 'value'],
   computed: {
+    // config() {
+    //   console.log('Created with props:', this.$props);
+    //   console.log("xx", this.defaultOpts.value)
+    // },
   },
   data() {
     return {
@@ -23,7 +27,7 @@ export default Vue.extend({
         theme: this.config.theme !== undefined ? this.config.theme : "vs", // 编辑器主题：vs, hc-black, or vs-dark，更多选择详见官网
         roundedSelection: this.config.roundedSelection !== undefined ? this.config.roundedSelection : true, // 右侧不显示编辑器预览框
         autoIndent: true, // 自动缩进
-        readOnly: this.config.readOnly !== undefined ? this.config.readOnly : true, // 是否只读
+        readOnly: this.config.readOnly, // 是否只读
         glyphMargin: true, //字形边缘
         fontSize: this.config.fontSize !== undefined ? this.config.fontSize : 15, //字体大小
         selectOnLineNumbers: true, //显示行号
@@ -38,6 +42,8 @@ export default Vue.extend({
     console.log("beforeCreate")
   },
   mounted() {
+    console.log('Created with props:', this.$props);
+    console.log("xx", this.defaultOpts.value)
     this.initEditor();
   },
   watch: {
@@ -48,6 +54,12 @@ export default Vue.extend({
           this.editor.trigger(this.editor.getValue(), 'editor.action.formatDocument')
         }
       }
+    },
+    config(newVal, oldVal) {
+      if (this.editor) {
+        if (newVal !== this.defaultOpts) {
+        }
+      }
     }
   },
   methods: {
@@ -55,7 +67,7 @@ export default Vue.extend({
       // 初始化编辑器，确保dom已经渲染
       this.editor = monaco.editor.create(document.getElementById('container'), this.defaultOpts);
       this.editor.onDidChangeModelContent(function (event) {
-      //编辑器内容changge事件
+        //编辑器内容changge事件
       })
     },
     /**

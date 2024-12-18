@@ -66,7 +66,7 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="editor.visible = true;handleClickDetail(slotProps.row)">查看</a>
-            <a class="t-button-link" @click="editor.visible = true;handleClickDetail(slotProps.row)">编辑</a>
+            <a class="t-button-link" @click="editor.visible = true;handleClickEdit(slotProps.row)">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
@@ -242,6 +242,12 @@ export default Vue.extend({
     handleClickDetail(row) {
       this.editor.value = row.config
       this.editor.header = row.name
+      this.editor.readOnly = true;
+    },
+    handleClickEdit(row) {
+      this.editor.value = row.config
+      this.editor.header = row.name
+      this.editor.readOnly = false;
     },
     handleSetupContract() {
       //this.$router.push('/prometheus/add');
