@@ -10,22 +10,22 @@
         @submit="onSubmit"
         :style="{ marginBottom: '8px' }"
       >
-      <t-row justify="space-between">
-        <div class="left-operation-container">
-          <t-button @click="handleSetupContract">新建</t-button>
-          <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
-          <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
-        </div>
-        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-          <template #suffix-icon>
-            <search-icon size="20px"/>
-          </template>
-        </t-input>
-        <t-col :span="2" class="operation-container">
-          <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
-          <t-button type="reset" variant="base" theme="default"> 重置</t-button>
-        </t-col>
-      </t-row>
+        <t-row justify="space-between">
+          <div class="left-operation-container">
+            <t-button @click="handleSetupContract">新建</t-button>
+            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
+            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
+          </div>
+          <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+            <template #suffix-icon>
+              <search-icon size="20px"/>
+            </template>
+          </t-input>
+          <t-col :span="2" class="operation-container">
+            <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
+            <t-button type="reset" variant="base" theme="default"> 重置</t-button>
+          </t-col>
+        </t-row>
       </t-form>
       <div class="table-container">
         <t-table
@@ -34,7 +34,6 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
           @page-change="rehandlePageChange"
@@ -72,6 +71,16 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
+        <div>
+          <t-pagination
+            v-model="formData.pageNum"
+            :total="pagination.total"
+            :page-size.sync="formData.pageSize"
+            @current-change="onCurrentChange"
+            @page-size-change="onPageSizeChange"
+            @change="onChange"
+          />
+        </div>
       </div>
     </t-card>
     <t-dialog
@@ -112,25 +121,19 @@ export default Vue.extend({
       columns: [
         {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: 'chart名称',
+          title: '名称',
           align: 'left',
           width: 250,
           ellipsis: true,
           colKey: 'name',
           fixed: 'left',
         },
-        {title: '状态', colKey: 'status', width: 200, cell: {col: 'status'}},
         {
-          title: '编号',
+          title: '状态',
+          colKey: 'exists',
           width: 200,
           ellipsis: true,
-          colKey: 'no',
-        },
-        {
-          title: '推送状态',
-          width: 200,
-          ellipsis: true,
-          colKey: 'paymentType',
+          cell: {col: 'status'}
         },
         {
           title: '版本',
@@ -139,10 +142,10 @@ export default Vue.extend({
           colKey: 'index',
         },
         {
-          title: '描述',
+          title: '创建时间',
           width: 200,
           ellipsis: true,
-          colKey: 'amount',
+          colKey: 'lastModified',
         },
         {
           align: 'left',
@@ -159,7 +162,7 @@ export default Vue.extend({
       rowClassName: (rowKey: string) => `${rowKey}-class`,
       // 与pagination对齐
       pagination: {
-        defaultPageSize: 20,
+        defaultPageSize: 10,
         total: 0,
         defaultCurrent: 1,
       },
@@ -168,7 +171,9 @@ export default Vue.extend({
       deleteIdx: -1,
       formData: {
         name: "",
-        type: ""
+        type: "",
+        pageNum: 1,
+        pageSize: 10
       },
     };
   },
@@ -186,14 +191,14 @@ export default Vue.extend({
   },
   mounted() {
   },
-  created(){
+  created() {
     this.getList()
   },
   methods: {
-    getList(){
+    getList() {
       this.dataLoading = true;
       this.$request
-        .get('/build/helm/page')
+        .get('/build/chart/page')
         .then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;
@@ -213,14 +218,22 @@ export default Vue.extend({
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
-    rehandlePageChange(curr, pageInfo) {
-      console.log('分页变化', curr, pageInfo);
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
     },
-    rehandleSelectChange(selectedRowKeys: number[]) {
-      this.selectedRowKeys = selectedRowKeys;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
     },
-    rehandleChange(changeParams, triggerAndData) {
-      console.log('统一Change', changeParams, triggerAndData);
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
+    },
+    handleSizeDrag({size}) {
+      console.log('size drag size: ', size);
     },
     handleClickDetail(row) {
       //this.$router.push('/build/helmDetail');
