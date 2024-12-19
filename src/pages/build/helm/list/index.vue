@@ -66,9 +66,9 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickSuccess()">执行</a>
-            <a class="t-button-link" @click="handleClickDetail(slotProps)">详情</a>
-            <a class="t-button-link" @click="handleClickEdit(slotProps)">编辑</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
+            <a class="t-button-link" @click="editor.visible=true;handleClickEdit(slotProps.row)">编辑</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
         <div>
@@ -91,6 +91,17 @@
       :onCancel="onCancel"
     >
     </t-dialog>
+    <t-drawer
+      :visible="editor.visible"
+      :header="editor.header"
+      :on-overlay-click="() => (editor.visible = false)"
+      placement="right"
+      :size-draggable="true"
+      :on-size-drag-end="handleSizeDrag"
+      size="100%"
+      @cancel="editor.visible = false">
+      <TreeContent :config="editor" :value="editor.value" :items="editor.items"/>
+    </t-drawer>
   </div>
 </template>
 <script lang="ts">
@@ -100,10 +111,14 @@ import Trend from '@/components/trend/index.vue';
 import {prefix} from '@/config/global';
 
 import {CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES} from '@/constants';
+import MonacoEditor from "@/components/editor/MonacoEditor.vue";
+import TreeContent from "@/components/tree/TreeContent.vue";
 
 export default Vue.extend({
   name: 'ListBase',
   components: {
+    TreeContent,
+    MonacoEditor,
     SearchIcon,
     Trend,
   },
@@ -175,6 +190,16 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10
       },
+      editor: {
+        language: "yaml",
+        fontSize: "15",
+        value: "",
+        readOnly: true,
+        header: "",
+        // 抽屉
+        visible: false,
+        items: {}
+      }
     };
   },
   computed: {
@@ -247,9 +272,20 @@ export default Vue.extend({
       this.deleteIdx = row.rowIndex;
       this.confirmVisible = true;
     },
+    //执行编辑
     handleClickEdit(row) {
-      //this.$router.push('/build/helmEdit');
-      this.$emit('transfer', "form", row)
+      this.editor.header = row.name;
+      // 获取目录结构
+      this.$request
+        .get('/build/chart/tree', {
+          params: {
+            path: row.path
+          }
+        }).then((res) => {
+          this.editor.items = res;
+      }).catch((e: Error) => {
+        console.log(e);
+      })
     },
     handleClickSuccess() {
       this.$router.push('/build/success');
