@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <div class="left-column" :style="{ width: leftWidth + '%' }">
-        <t-space direction="vertical" class="tdesign-tree-operations">
-          <t-space :size="'large'">
-            <t-input-adornment prepend="filter:">
-              <t-input v-model="filterByText" @change="onInputChange"/>
-            </t-input-adornment>
-          </t-space>
-          <t-tree :data="items" activable hover transition>
-
-          </t-tree>
+      <t-space direction="vertical" class="tdesign-tree-operations">
+        <t-space :size="'large'">
+          <t-input-adornment prepend="filter:">
+            <t-input v-model="filterByText" @change="onInputChange"/>
+          </t-input-adornment>
         </t-space>
+        <t-tree :data="items" activable hover transition>
+
+        </t-tree>
+      </t-space>
     </div>
     <div class="separator" @mousedown="startDrag"></div>
     <div class="right-column" :style="{ width: rightWidth + '%' }">
@@ -34,22 +34,31 @@ import MonacoEditor from "@/components/editor/MonacoEditor.vue";
 export default Vue.extend({
   name: "TreeContent",
   components: {MonacoEditor},
-  props: ["config", "value", "items"],
+  props: ["path", "url"],
   data() {
     return {
       // monaco
       editor: {
         language: "yaml",
         fontSize: "15",
-        value: this.value,
         readOnly: true,
       },
-      path: "",
+      path: this.path,
+      url: this.url,
       filterByText: "",
       leftWidth: 25, // 初始左侧宽度比例
       isDragging: true,
       startX: 0,
-      startWidth: 0
+      startWidth: 0,
+      items: []
+    }
+  },
+  watch: {
+    path(newVal, oldVal) {
+      // 当 message 发生变化时调用此方法
+      console.log('Message changed from', oldVal, 'to', newVal);
+      // 重新获取目录
+      this.treeList(newVal)
     }
   },
   mounted() {
@@ -87,6 +96,19 @@ export default Vue.extend({
       this.isDragging = false;
       document.removeEventListener('mousemove', this.onDrag);
       document.removeEventListener('mouseup', this.stopDrag);
+    },
+    // 获取目录
+    treeList(path) {
+      // 获取目录结构
+      this.$request.get(this.config.url, {
+        params: {
+          path: path
+        }
+      }).then(res => {
+        this.items = res.data.data;
+      }).catch((e: Error) => {
+        console.log(e);
+      })
     }
   }
 })

@@ -64,7 +64,7 @@
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickSuccess()">执行</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
-            <a class="t-button-link" @click="handleClickEdit(slotProps.row);editor.visible=true;">编辑</a>
+            <a class="t-button-link" @click="handleClickEdit(slotProps.row);drawer.visible=true;">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
@@ -87,15 +87,15 @@
       @confirm="onConfirmDelete"
       :onCancel="onCancel"/>
     <t-drawer
-      :visible="editor.visible"
-      :header="editor.header"
-      :on-overlay-click="() => (editor.visible = false)"
+      :visible="drawer.visible"
+      :header="drawer.header"
+      :on-overlay-click="() => (drawer.visible = false)"
       placement="right"
       :size-draggable="true"
       :on-size-drag-end="handleSizeDrag"
       size="100%"
-      @cancel="editor.visible = false">
-      <TreeContent :config="editor" :value="editor.value" :items="editor.items"/>
+      @cancel="drawer.visible = false">
+      <TreeContent :path="treeConfig.path" :url="treeConfig.url"/>
     </t-drawer>
   </div>
 </template>
@@ -185,15 +185,15 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10
       },
-      editor: {
-        language: "yaml",
-        fontSize: "15",
-        value: "",
-        readOnly: true,
-        header: "",
-        // 抽屉
+      // 抽屉
+      drawer: {
         visible: false,
-        items: []
+        header: ""
+      },
+      // 目录
+      treeConfig: {
+        url: "/build/chart/tree",
+        path: ""
       }
     };
   },
@@ -270,16 +270,7 @@ export default Vue.extend({
     //执行编辑
     handleClickEdit(row) {
       this.editor.header = row.name;
-      // 获取目录结构
-      this.$request.get('/build/chart/tree', {
-          params: {
-            path: row.path
-          }
-        }).then(res => {
-          this.editor.items = res.data.data;
-      }).catch((e: Error) => {
-        console.log(e);
-      })
+      this.editor.path = row.path;
     },
     handleClickSuccess() {
       this.$router.push('/build/success');
