@@ -31,7 +31,23 @@
     <div class="right-column" :style="{ width: rightWidth + '%' }">
       <t-layout>
         <div class="right" id="right">
-          <t-header>xxxx</t-header>
+          <t-header>
+            <t-space>
+              <t-tabs v-model="panel.value" theme="card" :addable="true" @add="addTab" @remove="removeTab">
+                <t-tab-panel
+                  v-for="data in panel.data"
+                  :key="data.value"
+                  :value="data.value"
+                  :label="data.label"
+                  :removable="data.removable"
+                >
+                  <p style="padding: 25px">
+                    {{ data.content }}
+                  </p>
+                </t-tab-panel>
+              </t-tabs>
+            </t-space>
+          </t-header>
           <t-content>
             <MonacoEditor :config="editor" :value="editor.value"
                           style="height: 800px;margin-top: 20px;margin-bottom: 20px"/>
@@ -73,7 +89,25 @@ export default Vue.extend({
         isFile: false,
         fileContent: ""
       },
-      rootPath: this.path
+      rootPath: this.path,
+      panel: {
+        data: [
+          {
+            value: 'first',
+            label: '原有选项卡1',
+            removable: true,
+            content: '原有选项卡1内容',
+          },
+          {
+            value: 'second',
+            label: '原有选项卡2',
+            removable: true,
+            content: '原有选项卡2内容',
+          },
+        ],
+        id: "",
+        value: ""
+      },
     }
   },
   watch: {
@@ -129,10 +163,31 @@ export default Vue.extend({
       // 选中之后就开始读取文件
       this.read()
     },
+    //
     onChange(checked, context) {
       console.info('onChange checked:', checked, 'context:', context);
       const {node} = context;
       console.info(node.value, 'onChange context.node.checked:', node.checked);
+    },
+    // 新增选项卡
+    addTab() {
+      this.panel.data.value.push({
+        value: `${this.panel.id}`,
+        label: `新选项卡${this.panel.id}`,
+        removable: true,
+        content: '新选项卡内容',
+      });
+      this.panel.value = `${this.panel.id}`;
+      this.panel.id += 1;
+    },
+    // 关闭选项卡
+    removeTab({value: val, index}) {
+      if (index < 0) return false;
+      this.panel.data.value.splice(index, 1);
+      if (this.panel.data.value.length === 0) return;
+      if (this.panel.value.value === val) {
+        this.panel.value.value = this.panel.value[Math.max(index - 1, 0)].value;
+      }
     },
     // 获取目录
     treeList(path) {
