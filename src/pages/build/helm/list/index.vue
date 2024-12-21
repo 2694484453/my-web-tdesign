@@ -36,9 +36,6 @@
           :hover="hover"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -67,30 +64,28 @@
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickSuccess()">执行</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
-            <a class="t-button-link" @click="editor.visible=true;handleClickEdit(slotProps.row)">编辑</a>
+            <a class="t-button-link" @click="handleClickEdit(slotProps.row);editor.visible=true;">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
-        <div>
-          <t-pagination
-            v-model="formData.pageNum"
-            :total="pagination.total"
-            :page-size.sync="formData.pageSize"
-            @current-change="onCurrentChange"
-            @page-size-change="onPageSizeChange"
-            @change="onChange"
-          />
-        </div>
       </div>
     </t-card>
+    <div>
+      <t-pagination
+        v-model="formData.pageNum"
+        :total="pagination.total"
+        :page-size.sync="formData.pageSize"
+        @current-change="onCurrentChange"
+        @page-size-change="onPageSizeChange"
+        @change="onChange"
+      />
+    </div>
     <t-dialog
       header="确认删除当前所选合同？"
       :body="confirmBody"
       :visible.sync="confirmVisible"
       @confirm="onConfirmDelete"
-      :onCancel="onCancel"
-    >
-    </t-dialog>
+      :onCancel="onCancel"/>
     <t-drawer
       :visible="editor.visible"
       :header="editor.header"
@@ -198,7 +193,7 @@ export default Vue.extend({
         header: "",
         // 抽屉
         visible: false,
-        items: {}
+        items: []
       }
     };
   },
@@ -276,13 +271,12 @@ export default Vue.extend({
     handleClickEdit(row) {
       this.editor.header = row.name;
       // 获取目录结构
-      this.$request
-        .get('/build/chart/tree', {
+      this.$request.get('/build/chart/tree', {
           params: {
             path: row.path
           }
-        }).then((res) => {
-          this.editor.items = res;
+        }).then(res => {
+          this.editor.items = res.data.data;
       }).catch((e: Error) => {
         console.log(e);
       })
