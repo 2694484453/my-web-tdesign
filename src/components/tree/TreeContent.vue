@@ -7,8 +7,23 @@
             <t-input v-model="filterByText" @change="onInputChange"/>
           </t-input-adornment>
         </t-space>
-        <t-tree :data="items" activable hover transition>
-
+        <t-tree
+          :data="items"
+          lazy activable
+          hover transition
+          :expand-level="2"
+          @change="onChange"
+          @click="onClick"
+        >
+          <template #isFile="{ row }">
+            <t-icon v-if="row.isFile" name="file-1" size="40px"/>
+            <t-icon v-else name="folder" size="40px"/>
+          </template>
+          <template #operations="{row}">
+            <!--            <t-space :size="10">-->
+            <!--              <t-button size="small" variant="base" >添加子节点</t-button>-->
+            <!--            </t-space>-->
+          </template>
         </t-tree>
       </t-space>
     </div>
@@ -34,7 +49,7 @@ import MonacoEditor from "@/components/editor/MonacoEditor.vue";
 export default Vue.extend({
   name: "TreeContent",
   components: {MonacoEditor},
-  props: ["path", "url"],
+  props: ["path"],
   data() {
     return {
       // monaco
@@ -49,7 +64,16 @@ export default Vue.extend({
       isDragging: true,
       startX: 0,
       startWidth: 0,
-      items: []
+      items: [],
+      currentSelected: {
+        name: "",
+        path: "",
+        size: "",
+        extName: "",
+        isFile: false,
+        fileContent: ""
+      },
+      rootPath: this.path
     }
   },
   watch: {
@@ -58,13 +82,7 @@ export default Vue.extend({
       console.log('Message changed from', oldVal, 'to', newVal);
       // 重新获取目录
       this.treeList(newVal)
-    },
-    url(newVal, oldVal) {
-      // 当 message 发生变化时调用此方法
-      console.log('Message changed from', oldVal, 'to', newVal);
-      // 重新获取目录
-      this.treeList(newVal)
-    },
+    }
   },
   mounted() {
     // 获取目录结构
@@ -102,10 +120,23 @@ export default Vue.extend({
       document.removeEventListener('mousemove', this.onDrag);
       document.removeEventListener('mouseup', this.stopDrag);
     },
+    // 选中文件
+    onClick(context) {
+      console.info('onClick context:', context);
+      const {node} = context;
+      this.currentSelected = node.data
+      console.log("selected:", this.currentSelected)
+      // 选中之后就开始读取文件
+      this.read()
+    },
+    onChange(checked, context) {
+      console.info('onChange checked:', checked, 'context:', context);
+      const {node} = context;
+      console.info(node.value, 'onChange context.node.checked:', node.checked);
+    },
     // 获取目录
     treeList(path) {
-      // 获取目录结构
-      this.$request.get(this.url, {
+      this.$request.get("/build/chart/tree", {
         params: {
           path: path
         }
@@ -114,6 +145,22 @@ export default Vue.extend({
       }).catch((e: Error) => {
         console.log(e);
       })
+    },
+    // 读取一个文件
+    read() {
+      if (this.currentSelected.isFile) {
+        this.$request.get("/build/chart/read", {
+          params: {
+            path: this.currentSelected.path
+          }
+        }).then(res => {
+          this.currentSelected.fileContent = res.data.data
+          this.editor.value = res.data.data
+          this.editor.language = this.currentSelected.extName
+        }).catch((e: Error) => {
+          console.log(e);
+        })
+      }
     }
   }
 })
