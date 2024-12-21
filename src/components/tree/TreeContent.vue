@@ -33,24 +33,24 @@
         <div class="right" id="right">
           <t-header>
             <t-space>
-              <t-tabs v-model="panel.value" theme="card" :addable="true" @add="addTab" @remove="removeTab">
+              <t-tabs v-model="value" theme="card" :addable="true" @add="addTab" @remove="removeTab">
                 <t-tab-panel
-                  v-for="data in panel.data"
+                  v-for="data in panelData"
                   :key="data.value"
                   :value="data.value"
                   :label="data.label"
                   :removable="data.removable"
                 >
-                  <p style="padding: 25px">
-                    {{ data.content }}
-                  </p>
+<!--                  <p style="padding: 25px">-->
+<!--                    {{ data.content }}-->
+<!--                  </p>-->
+
                 </t-tab-panel>
               </t-tabs>
             </t-space>
           </t-header>
           <t-content>
-            <MonacoEditor :config="editor" :value="editor.value"
-                          style="height: 800px;margin-top: 20px;margin-bottom: 20px"/>
+            <MonacoEditor :config="editor" :value="this.currentSelected.fileContent" style="height: 800px;margin-top: 20px;margin-bottom: 20px"/>
           </t-content>
           <t-footer>xxx</t-footer>
         </div>
@@ -90,24 +90,16 @@ export default Vue.extend({
         fileContent: ""
       },
       rootPath: this.path,
-      panel: {
-        data: [
-          {
-            value: 'first',
-            label: '原有选项卡1',
-            removable: true,
-            content: '原有选项卡1内容',
-          },
-          {
-            value: 'second',
-            label: '原有选项卡2',
-            removable: true,
-            content: '原有选项卡2内容',
-          },
-        ],
-        id: "",
-        value: ""
-      },
+      panelData: [
+        {
+          value: 'first',
+          label: '原有选项卡1',
+          removable: true,
+          content: '原有选项卡1内容',
+        },
+      ],
+      id: "",
+      value: ""
     }
   },
   watch: {
@@ -171,22 +163,22 @@ export default Vue.extend({
     },
     // 新增选项卡
     addTab() {
-      this.panel.data.value.push({
-        value: `${this.panel.id}`,
-        label: `新选项卡${this.panel.id}`,
+      this.panelData.push({
+        value: this.id,
+        label: this.currentSelected.name,
         removable: true,
-        content: '新选项卡内容',
+        content: this.currentSelected.fileContent,
       });
-      this.panel.value = `${this.panel.id}`;
-      this.panel.id += 1;
+      this.value = this.id;
+      this.id += 1;
     },
     // 关闭选项卡
     removeTab({value: val, index}) {
       if (index < 0) return false;
-      this.panel.data.value.splice(index, 1);
-      if (this.panel.data.value.length === 0) return;
-      if (this.panel.value.value === val) {
-        this.panel.value.value = this.panel.value[Math.max(index - 1, 0)].value;
+      this.panelData.splice(index, 1);
+      if (this.panelData.length === 0) return;
+      if (this.value.value === val) {
+        this.value.value = this.panelData.value[Math.max(index - 1, 0)].value;
       }
     },
     // 获取目录
@@ -212,8 +204,13 @@ export default Vue.extend({
           this.currentSelected.fileContent = res.data.data
           this.editor.value = res.data.data
           this.editor.language = this.currentSelected.extName
+          // 选中之后添加到选项卡
+          console.log("当前：",this.currentSelected.fileContent)
+          this.addTab()
         }).catch((e: Error) => {
           console.log(e);
+        }).finally(() => {
+
         })
       }
     }
