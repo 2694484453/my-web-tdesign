@@ -269,8 +269,8 @@ export default Vue.extend({
     },
     //执行编辑
     handleClickEdit(row) {
-      this.editor.header = row.name;
-      this.editor.path = row.path;
+      this.drawer.header = row.name;
+      this.drawer.path = row.path;
     },
     handleClickSuccess() {
       this.$router.push('/build/success');
