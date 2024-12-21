@@ -42,9 +42,8 @@ export default Vue.extend({
         language: "yaml",
         fontSize: "15",
         readOnly: true,
+        value: ""
       },
-      path: this.path,
-      url: this.url,
       filterByText: "",
       leftWidth: 25, // 初始左侧宽度比例
       isDragging: true,
@@ -59,7 +58,13 @@ export default Vue.extend({
       console.log('Message changed from', oldVal, 'to', newVal);
       // 重新获取目录
       this.treeList(newVal)
-    }
+    },
+    url(newVal, oldVal) {
+      // 当 message 发生变化时调用此方法
+      console.log('Message changed from', oldVal, 'to', newVal);
+      // 重新获取目录
+      this.treeList(newVal)
+    },
   },
   mounted() {
     // 获取目录结构
@@ -100,7 +105,7 @@ export default Vue.extend({
     // 获取目录
     treeList(path) {
       // 获取目录结构
-      this.$request.get(this.config.url, {
+      this.$request.get(this.url, {
         params: {
           path: path
         }

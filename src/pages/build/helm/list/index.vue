@@ -270,7 +270,7 @@ export default Vue.extend({
     //执行编辑
     handleClickEdit(row) {
       this.drawer.header = row.name;
-      this.drawer.path = row.path;
+      this.treeConfig.path = row.path;
     },
     handleClickSuccess() {
       this.$router.push('/build/success');
