@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'https://code-server.server.gpg123.vip/?folder=/home/coder/spring-boot-demo',
+      frameSrc: 'http://grafana.ecs.gpg123.vip:3000/public-dashboards/784b7efa82494264aacbb8a8fbe41841',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };

@@ -25,7 +25,7 @@ export default [
     path: '/coredns-cloud',
     name: 'coredns-cloud',
     component: Layout,
-    meta: {title: 'DNS管理', icon: CloudIcon},
+    meta: {title: 'CoreDNS管理', icon: CloudIcon},
     children: [
       {
         path: 'dashboard',

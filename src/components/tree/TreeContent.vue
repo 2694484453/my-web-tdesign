@@ -50,7 +50,9 @@
             </t-space>
           </t-header>
           <t-content>
-            <MonacoEditor :config="editor" :value="this.currentSelected.fileContent" style="height: 800px;margin-top: 20px;margin-bottom: 20px"/>
+            <div>
+             <MonacoEditor :config="editor" :value="this.currentSelected.fileContent" style="height: 800px;margin-top: 20px;margin-bottom: 20px"/>
+            </div>
           </t-content>
           <t-footer>xxx</t-footer>
         </div>
@@ -76,7 +78,7 @@ export default Vue.extend({
         value: ""
       },
       filterByText: "",
-      leftWidth: 25, // 初始左侧宽度比例
+      leftWidth: 20, // 初始左侧宽度比例
       isDragging: true,
       startX: 0,
       startWidth: 0,
@@ -220,7 +222,7 @@ export default Vue.extend({
 <style scoped lang="less">
 .container {
   display: flex;
-  height: 100vh; /* 设置为全高 */
+  height: 85vh; /* 设置为全高 */
 }
 
 .left-column, .right-column {
