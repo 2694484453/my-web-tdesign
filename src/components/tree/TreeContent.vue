@@ -190,7 +190,10 @@ export default Vue.extend({
       console.log("当前选中：",newValue)
       this.id = newValue
       // 从panelData取出数据
-
+      const map = Object.fromEntries(
+        this.panelData.map(item => [item.label, item])
+      );
+      this.editor.content = map.get(newValue)
     },
     // 获取目录
     treeList(path) {

@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-detail">
-    <t-card title="本月采购申请情况" class="dashboard-detail-card" :bordered="false">
+    <t-card title="概览" class="dashboard-detail-card" :bordered="false">
       <t-row :gutter="[16, 16]">
         <t-col v-for="(item, index) in PANE_LIST_DATA" :key="index" :xs="6" :xl="3">
           <t-card :class="['dashboard-list-card']" :description="item.title">
@@ -9,6 +9,17 @@
               <div class="dashboard-list-card__text-left">
                 环比
                 <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />
+              </div>
+              <chevron-right-icon />
+            </div>
+          </t-card>
+        </t-col>
+        <t-col  :xs="6" :xl="3">
+          <t-card :class="['dashboard-list-card']" >
+            <div class="dashboard-list-card__number">11</div>
+            <div class="dashboard-list-card__text">
+              <div class="dashboard-list-card__text-left">
+                环比
               </div>
               <chevron-right-icon />
             </div>
