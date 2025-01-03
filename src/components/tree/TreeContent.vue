@@ -2,11 +2,24 @@
   <div class="container">
     <div class="left-column" :style="{ width: leftWidth + '%' }">
       <t-space direction="vertical" class="tdesign-tree-operations">
-        <t-space :size="'large'">
-          <t-input-adornment prepend="filter:">
-            <t-input v-model="filterByText" @change="onInputChange"/>
-          </t-input-adornment>
-        </t-space>
+
+<!--          <t-input-adornment prepend="filter:">-->
+<!--            <t-input v-model="filterByText" @change="onInputChange"/>-->
+<!--          </t-input-adornment>-->
+<!--          <t-row justify="end">-->
+<!--            <t-col :span="5">-->
+<!--              <t-icon name="file-add" size="18px"></t-icon>-->
+<!--            </t-col>-->
+<!--            <t-col :span="5">-->
+<!--              <t-icon name="file-add" size="18px"></t-icon>-->
+<!--            </t-col>-->
+<!--            <t-col :span="5">-->
+<!--              <t-icon name="file-add" size="18px"></t-icon>-->
+<!--            </t-col>-->
+<!--            <t-col :span="5">-->
+<!--              <t-icon name="file-add" size="18px"></t-icon>-->
+<!--            </t-col>-->
+<!--          </t-row>-->
         <t-tree
           :data="items"
           lazy activable
@@ -33,7 +46,7 @@
         <div class="right" id="right">
           <t-header>
             <t-space>
-              <t-tabs v-model="value" theme="card" :addable="true" @add="addTab" @remove="removeTab">
+              <t-tabs v-model="value" theme="card" :addable="true" @add="addTab" @remove="removeTab" @change="handlerChange">
                 <t-tab-panel
                   v-for="data in panelData"
                   :key="data.value"
@@ -44,7 +57,6 @@
 <!--                  <p style="padding: 25px">-->
 <!--                    {{ data.content }}-->
 <!--                  </p>-->
-
                 </t-tab-panel>
               </t-tabs>
             </t-space>
@@ -54,7 +66,7 @@
              <MonacoEditor :config="editor" :value="this.currentSelected.fileContent" style="height: 800px;margin-top: 20px;margin-bottom: 20px"/>
             </div>
           </t-content>
-          <t-footer>xxx</t-footer>
+<!--          <t-footer>xxx</t-footer>-->
         </div>
       </t-layout>
     </div>
@@ -84,22 +96,15 @@ export default Vue.extend({
       startWidth: 0,
       items: [],
       currentSelected: {
-        name: "",
+        label: "",
         path: "",
         size: "",
         extName: "",
         isFile: false,
-        fileContent: ""
+        fileContent: "",
       },
       rootPath: this.path,
-      panelData: [
-        {
-          value: 'first',
-          label: '原有选项卡1',
-          removable: true,
-          content: '原有选项卡1内容',
-        },
-      ],
+      panelData: [],
       id: "",
       value: ""
     }
@@ -110,6 +115,10 @@ export default Vue.extend({
       console.log('Message changed from', oldVal, 'to', newVal);
       // 重新获取目录
       this.treeList(newVal)
+    },
+    id(newVal, oldVal){
+      // 当 message 发生变化时调用此方法
+      console.log('id changed from', oldVal, 'to', newVal);
     }
   },
   mounted() {
@@ -164,15 +173,8 @@ export default Vue.extend({
       console.info(node.value, 'onChange context.node.checked:', node.checked);
     },
     // 新增选项卡
-    addTab() {
-      this.panelData.push({
-        value: this.id,
-        label: this.currentSelected.name,
-        removable: true,
-        content: this.currentSelected.fileContent,
-      });
-      this.value = this.id;
-      this.id += 1;
+    addTab(data) {
+      this.panelData.push(data);
     },
     // 关闭选项卡
     removeTab({value: val, index}) {
@@ -182,6 +184,13 @@ export default Vue.extend({
       if (this.value.value === val) {
         this.value.value = this.panelData.value[Math.max(index - 1, 0)].value;
       }
+    },
+    // 切换显示卡
+    handlerChange(newValue) {
+      console.log("当前选中：",newValue)
+      this.id = newValue
+      // 从panelData取出数据
+
     },
     // 获取目录
     treeList(path) {
@@ -207,12 +216,17 @@ export default Vue.extend({
           this.editor.value = res.data.data
           this.editor.language = this.currentSelected.extName
           // 选中之后添加到选项卡
-          console.log("当前：",this.currentSelected.fileContent)
-          this.addTab()
+          console.log("当前：",this.currentSelected)
         }).catch((e: Error) => {
           console.log(e);
         }).finally(() => {
-
+          this.addTab({
+            value: this.currentSelected.label,
+            label: this.currentSelected.label,
+            removable: true,
+            content: this.currentSelected.fileContent,
+          })
+          this.id = this.currentSelected.label;
         })
       }
     }
