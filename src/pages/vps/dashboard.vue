@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'https://grafana.ecs.gpg123.vip/public-dashboards/2b3e85304b8342869490e9e965fb1f21',
+      frameSrc: 'https://grafana.gpg123.vip/public-dashboards/2b3e85304b8342869490e9e965fb1f21',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };
