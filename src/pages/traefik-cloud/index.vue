@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'https://traefik.ecs.gpg123.vip/dashboard/#/',
+      frameSrc: 'https://traefik.gpg123.vip/dashboard/#/',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };
