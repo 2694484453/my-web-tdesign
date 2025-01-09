@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'https://alertmanager.server.gpg123.vip',
+      frameSrc: 'http://alertmanager.gpg123.vip',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };
