@@ -181,10 +181,11 @@ export default Vue.extend({
       this.$router.push(url);
     },
     navToGitHub() {
-      window.open('https://github.com/Tencent/tdesign-vue-starter');
+      window.open('https://gitee.com/gpg-dev_admin/cloud-web');
     },
+    // 帮助文档
     navToHelper() {
-      window.open('http://tdesign.tencent.com/starter/docs/get-started');
+      window.open('https://gitbook.gpg123.vip');
     },
   },
 });
