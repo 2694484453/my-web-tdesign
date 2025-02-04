@@ -193,7 +193,7 @@ export default Vue.extend({
     getList(){
       this.dataLoading = true;
       this.$request
-        .get('/build/helm/page')
+        .get('/gitee/repos')
         .then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;

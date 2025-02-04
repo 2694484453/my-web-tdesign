@@ -12,7 +12,8 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="handleSetupContract">新建</t-button>
+<!--            <t-button @click="handleSetupContract">新建</t-button>-->
+            <t-button @click="handleSyncPull">同步</t-button>
             <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
@@ -262,6 +263,16 @@ export default Vue.extend({
     handleSetupContract() {
       //this.$router.push('/build/helmForm');
       this.$emit('transfer', "form")
+    },
+    handleSyncPull(){
+      this.$request.post("/build/chart/syncPull",{}).then(res=>{
+        console.log(res)
+          if (res.data.code === 200) {
+             this.$message.success(res.data.msg)
+          }else {
+            this.$message.error(res.data.msg)
+          }
+      })
     },
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;
