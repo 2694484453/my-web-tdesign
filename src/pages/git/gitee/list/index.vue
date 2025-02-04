@@ -10,22 +10,22 @@
         @submit="onSubmit"
         :style="{ marginBottom: '8px' }"
       >
-      <t-row justify="space-between">
-        <div class="left-operation-container">
-          <t-button @click="handleSetupContract">新建</t-button>
-          <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
-          <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
-        </div>
-        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-          <template #suffix-icon>
-            <search-icon size="20px"/>
-          </template>
-        </t-input>
-        <t-col :span="2" class="operation-container">
-          <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
-          <t-button type="reset" variant="base" theme="default"> 重置</t-button>
-        </t-col>
-      </t-row>
+        <t-row justify="space-between">
+          <div class="left-operation-container">
+            <t-button @click="handleSetupContract">新建</t-button>
+            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
+            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
+          </div>
+          <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+            <template #suffix-icon>
+              <search-icon size="20px"/>
+            </template>
+          </t-input>
+          <t-col :span="2" class="operation-container">
+            <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
+            <t-button type="reset" variant="base" theme="default"> 重置</t-button>
+          </t-col>
+        </t-row>
       </t-form>
       <div class="table-container">
         <t-table
@@ -34,12 +34,8 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -65,6 +61,9 @@
               <trend class="dashboard-item-trend" type="down"/>
             </p>
           </template>
+          <template #html_url="{ row }">
+            <a :href="row.html_url" target="_blank">{{row.html_url}}</a>
+          </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickSuccess()">执行</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps)">详情</a>
@@ -74,6 +73,15 @@
         </t-table>
       </div>
     </t-card>
+    <div>
+      <t-pagination
+        v-model="formData.pageNum"
+        :total="pagination.total"
+        :page-size.sync="formData.pageSize"
+        @current-change="onCurrentChange"
+        @page-size-change="onPageSizeChange"
+        @change="onChange"/>
+    </div>
     <t-dialog
       header="确认删除当前所选合同？"
       :body="confirmBody"
@@ -112,37 +120,43 @@ export default Vue.extend({
       columns: [
         {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: 'chart名称',
+          title: '仓库名称',
           align: 'left',
-          width: 250,
+          width: 200,
           ellipsis: true,
           colKey: 'name',
           fixed: 'left',
         },
-        {title: '状态', colKey: 'status', width: 200, cell: {col: 'status'}},
+        {title: '语言', colKey: 'language', width: 120},
         {
-          title: '编号',
-          width: 200,
+          title: '状态',
+          width: 80,
           ellipsis: true,
-          colKey: 'no',
+          colKey: 'status',
         },
         {
-          title: '推送状态',
+          title: '地址',
           width: 200,
           ellipsis: true,
-          colKey: 'paymentType',
+          colKey: 'html_url',
         },
         {
-          title: '版本',
+          title: '创建时间',
           width: 200,
           ellipsis: true,
-          colKey: 'index',
+          colKey: 'created_at',
+        },
+        {
+          title: '更新时间',
+          width: 200,
+          ellipsis: true,
+          colKey: 'updated_at',
         },
         {
           title: '描述',
           width: 200,
           ellipsis: true,
-          colKey: 'amount',
+          colKey: 'description',
         },
         {
           align: 'left',
@@ -168,7 +182,9 @@ export default Vue.extend({
       deleteIdx: -1,
       formData: {
         name: "",
-        type: ""
+        type: "",
+        pageNum: 1,
+        pageSize: 10
       },
     };
   },
@@ -186,14 +202,14 @@ export default Vue.extend({
   },
   mounted() {
   },
-  created(){
+  created() {
     this.getList()
   },
   methods: {
-    getList(){
+    getList() {
       this.dataLoading = true;
       this.$request
-        .get('/gitee/repos')
+        .get('/gitee/page')
         .then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;
@@ -213,14 +229,20 @@ export default Vue.extend({
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
-    rehandlePageChange(curr, pageInfo) {
-      console.log('分页变化', curr, pageInfo);
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
+      this.getList()
     },
-    rehandleSelectChange(selectedRowKeys: number[]) {
-      this.selectedRowKeys = selectedRowKeys;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
     },
-    rehandleChange(changeParams, triggerAndData) {
-      console.log('统一Change', changeParams, triggerAndData);
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
     },
     handleClickDetail(row) {
       //this.$router.push('/build/helmDetail');

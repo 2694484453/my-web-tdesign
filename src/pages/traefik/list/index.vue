@@ -182,7 +182,6 @@ export default Vue.extend({
       formData: {
         name: "",
         type: "",
-        namespace: "",
         pageNum: 1,
         pageSize: 10
       },
