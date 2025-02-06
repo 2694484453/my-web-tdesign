@@ -199,7 +199,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/trace/page',{
+        .get('/tracing/page',{
           params: this.formData
         }).then((res) => {
           if (res.code === 0) {
