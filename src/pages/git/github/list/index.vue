@@ -34,12 +34,8 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -65,6 +61,9 @@
               <trend class="dashboard-item-trend" type="down"/>
             </p>
           </template>
+          <template #html_url="{ row }">
+            <a :href="row.html_url" target="_blank">{{row.html_url}}</a>
+          </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickSuccess()">执行</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps)">详情</a>
@@ -74,6 +73,15 @@
         </t-table>
       </div>
     </t-card>
+    <div>
+      <t-pagination
+        v-model="formData.pageNum"
+        :total="pagination.total"
+        :page-size.sync="formData.pageSize"
+        @current-change="onCurrentChange"
+        @page-size-change="onPageSizeChange"
+        @change="onChange"/>
+    </div>
     <t-dialog
       header="确认删除当前所选合同？"
       :body="confirmBody"
@@ -112,37 +120,37 @@ export default Vue.extend({
       columns: [
         {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: 'chart名称',
+          title: '名称',
           align: 'left',
-          width: 250,
+          width: 200,
           ellipsis: true,
           colKey: 'name',
           fixed: 'left',
         },
-        {title: '状态', colKey: 'status', width: 200, cell: {col: 'status'}},
+        {title: '状态', colKey: 'status', width: 80, cell: {col: 'status'}},
         {
-          title: '编号',
+          title: '地址',
           width: 200,
           ellipsis: true,
-          colKey: 'no',
+          colKey: 'html_url',
         },
         {
-          title: '推送状态',
-          width: 200,
+          title: '创建时间',
+          width: 180,
           ellipsis: true,
-          colKey: 'paymentType',
+          colKey: 'created_at',
         },
         {
-          title: '版本',
-          width: 200,
+          title: '推送时间',
+          width: 180,
           ellipsis: true,
-          colKey: 'index',
+          colKey: 'updated_at',
         },
         {
           title: '描述',
-          width: 200,
+          width: 250,
           ellipsis: true,
-          colKey: 'amount',
+          colKey: 'description',
         },
         {
           align: 'left',
@@ -168,7 +176,9 @@ export default Vue.extend({
       deleteIdx: -1,
       formData: {
         name: "",
-        type: ""
+        type: "",
+        pageNum: 1,
+        pageSize: 10
       },
     };
   },
@@ -193,7 +203,7 @@ export default Vue.extend({
     getList(){
       this.dataLoading = true;
       this.$request
-        .get('/build/helm/page')
+        .get('/github/page')
         .then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;
@@ -213,14 +223,20 @@ export default Vue.extend({
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
-    rehandlePageChange(curr, pageInfo) {
-      console.log('分页变化', curr, pageInfo);
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
+      this.getList()
     },
-    rehandleSelectChange(selectedRowKeys: number[]) {
-      this.selectedRowKeys = selectedRowKeys;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
     },
-    rehandleChange(changeParams, triggerAndData) {
-      console.log('统一Change', changeParams, triggerAndData);
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
     },
     handleClickDetail(row) {
       //this.$router.push('/build/helmDetail');

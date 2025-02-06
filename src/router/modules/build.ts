@@ -55,6 +55,12 @@ export default [
         meta: { title: 'maven制品任务' },
       },
       {
+        path: 'maven',
+        name: 'maven',
+        component: () => import('@/pages/devops/pod/index.vue'),
+        meta: { title: '自定义任务' },
+      },
+      {
         path: 'podList',
         name: 'podList',
         component: () => import('@/pages/devops/pod/index.vue'),

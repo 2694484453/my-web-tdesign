@@ -12,7 +12,7 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="handleSetupContract"> 新建</t-button>
+            <t-button @click="repoForm.visible=true;getRepoList({type:'github'})"> 新建</t-button>
             <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
@@ -68,7 +68,7 @@
           </template>
           <template #metadata.labels="{ row }">
             <span v-for="(value,key) in row.metadata.labels">
-              <p>{{key}}:{{value}}</p>
+              <p>{{ key }}:{{ value }}</p>
             </span>
           </template>
           <template #paymentType="{ row }">
@@ -106,6 +106,44 @@
       @confirm="onConfirmDelete"
       :onCancel="onCancel">
     </t-dialog>
+    <t-dialog
+      v-show="repoForm.visible"
+      header="选择从你的git应用构建"
+      width="40%"
+      :confirm-on-enter="true"
+      :on-cancel="onFormCancel"
+      :on-esc-keydown="onFormEscKeydown"
+      :on-close-btn-click="onFormCloseBtnClick"
+      :on-overlay-click="onFormOverlayClick"
+      :on-close="formClose"
+      :on-confirm="onFormConfirmAnother"
+    >
+      <t-space direction="vertical" style="width: 100%">
+        <div>
+          <div class="list-card">
+            <!-- 搜索区域 -->
+            <div class="list-card-operation">
+              <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+                <template #suffix-icon>
+                  <search-icon v-if="searchValue === ''" size="20px"/>
+                </template>
+              </t-input>
+            </div>
+            <!-- 卡片列表 -->
+            <template>
+              <t-list :split="true">
+                <span v-for="item in repoForm.data" :key="item.index">
+                <t-list-item>
+                  <t-list-item-meta :title="item.name" :description="item.description" />
+                </t-list-item>
+                </span>
+              </t-list>
+            </template>
+          </div>
+        </div>
+        <t-pagination v-model="current" v-model:pageSize="pageSize" :total="30"/>
+      </t-space>
+    </t-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -115,10 +153,12 @@ import Trend from '@/components/trend/index.vue';
 import {prefix} from '@/config/global';
 
 import {CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES} from '@/constants';
+import ProductCard from "@/components/product-card/index.vue";
 
 export default Vue.extend({
   name: 'ListBase',
   components: {
+    ProductCard,
     SearchIcon,
     Trend,
   },
@@ -208,7 +248,12 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10
       },
-      typeList: []
+      typeList: [],
+      // 对话框
+      repoForm: {
+        visible: false,
+        data: []
+      },
     };
   },
   computed: {
@@ -253,11 +298,11 @@ export default Vue.extend({
     handleSetupContract() {
       this.$router.push('/prometheus/add');
     },
-    handleClickDelete(row: { rowIndex: any,type: any }) {
+    handleClickDelete(row: { rowIndex: any, type: any }) {
       this.deleteIdx = row.rowIndex;
       this.deleteType = row.type;
       this.confirmVisible = true;
-      console.log("this",this.deleteType)
+      console.log("this", this.deleteType)
     },
     onConfirmDelete() {
       // 真实业务请发起请求
@@ -269,14 +314,14 @@ export default Vue.extend({
       }
       this.confirmVisible = false;
       // 请求删除
-      this.$request.delete("/monitor/delete",{
+      this.$request.delete("/monitor/delete", {
         params: {
           index: this.deleteIdx,
           type: this.deleteType
         }
-      }).then(res=>{
+      }).then(res => {
         this.$message.success(res.data.msg);
-      }).catch(err=>{
+      }).catch(err => {
 
       })
 
@@ -305,18 +350,59 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/devops/page',{
+        .get('/devops/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.rows;
-          this.pagination =  res.data.total
+          this.pagination = res.data.total
         }
       }).catch((e: Error) => {
-          console.log(e);
-        }).finally(() => {
-          this.dataLoading = false;
-        });
+        console.log(e);
+      }).finally(() => {
+        this.dataLoading = false;
+      });
+    },
+    getRepoList(params) {
+      let url = "";
+      switch (params.type) {
+        case "gitee":
+          url = "/gitee/page";
+          break;
+        case "github":
+          url = "/github/page";
+          break;
+        case "gitlab":
+          break;
+      }
+      this.$request.get(url,{}).then(res=>{
+        console.log(res)
+        this.repoForm.data=res.data.rows
+      })
+    },
+    // 对话框
+    formClose(context) {
+      console.log('关闭弹窗，点击关闭按钮、按下ESC、点击蒙层等触发', context);
+    },
+    onFormCancel(context) {
+      console.log('点击了取消按钮', context);
+      this.repoForm.visible = false;
+    },
+    onFormEscKeydown(context) {
+      console.log('按下了ESC', context);
+      this.repoForm.visible = false;
+    },
+    onFormCloseBtnClick(context) {
+      console.log('点击了关闭按钮', context);
+      this.repoForm.visible = false; this.formVisible = false;
+    },
+    onFormConfirmAnother(context) {
+      console.log('点击了确认按钮', context);
+      this.repoForm.visible = false;
+    },
+    onFormOverlayClick(context) {
+      console.log('点击了蒙层', context);
+      this.repoForm.visible = false;
     }
   },
 });
