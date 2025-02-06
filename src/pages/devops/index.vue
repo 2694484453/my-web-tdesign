@@ -109,7 +109,7 @@
     <t-dialog
       v-show="repoForm.visible"
       header="选择从你的git应用构建"
-      width="40%"
+      width="65%"
       :confirm-on-enter="true"
       :on-cancel="onFormCancel"
       :on-esc-keydown="onFormEscKeydown"
@@ -130,15 +130,27 @@
               </t-input>
             </div>
             <!-- 卡片列表 -->
-            <template>
-              <t-list :split="true">
+            <template v-if="!repoForm.dataLoading" >
+              <t-row :gutter="16" style="margin-top: 10px">
                 <span v-for="item in repoForm.data" :key="item.index">
-                <t-list-item>
-                  <t-list-item-meta :title="item.name" :description="item.description" />
-                </t-list-item>
+                  <t-space direction="vertical">
+                     <t-col :span="3">
+                       <div>
+                          <t-card :title="item.name" hover-shadow :style="{ width: '250px',height: '100px' }">
+          <!--                  {{ item.description }}-->
+                            <template #actions>
+                              <a href="javascript:void(0)" @click="clickHandler">操作</a>
+                            </template>
+                           </t-card>
+                       </div>
+                    </t-col>
+                  </t-space>
                 </span>
-              </t-list>
+              </t-row>
             </template>
+            <div v-else-if="repoForm.dataLoading" class="list-card-loading">
+              <t-loading text="加载中..."></t-loading>
+            </div>
           </div>
         </div>
         <t-pagination v-model="current" v-model:pageSize="pageSize" :total="30"/>
@@ -252,7 +264,8 @@ export default Vue.extend({
       // 对话框
       repoForm: {
         visible: false,
-        data: []
+        data: [],
+        dataLoading: true
       },
     };
   },
@@ -271,7 +284,6 @@ export default Vue.extend({
   mounted() {
   },
   created() {
-    //this.getTypeList()
     this.getList()
   },
   methods: {
@@ -375,14 +387,16 @@ export default Vue.extend({
         case "gitlab":
           break;
       }
-      this.$request.get(url,{}).then(res=>{
+      this.$request.get(url, {}).then(res => {
         console.log(res)
-        this.repoForm.data=res.data.rows
+        this.repoForm.data = res.data.rows
+        this.repoForm.dataLoading = false
       })
     },
     // 对话框
     formClose(context) {
       console.log('关闭弹窗，点击关闭按钮、按下ESC、点击蒙层等触发', context);
+      this.repoForm.visible = false;
     },
     onFormCancel(context) {
       console.log('点击了取消按钮', context);
@@ -394,7 +408,7 @@ export default Vue.extend({
     },
     onFormCloseBtnClick(context) {
       console.log('点击了关闭按钮', context);
-      this.repoForm.visible = false; this.formVisible = false;
+      this.repoForm.visible = false;
     },
     onFormConfirmAnother(context) {
       console.log('点击了确认按钮', context);

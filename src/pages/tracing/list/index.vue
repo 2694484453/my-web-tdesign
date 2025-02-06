@@ -1,19 +1,32 @@
 <template>
   <div>
     <t-card class="list-card-container" :bordered="false">
+      <t-form
+        ref="form"
+        :data="formData"
+        :label-width="80"
+        colon
+        @reset="onReset"
+        @submit="onSubmit"
+        :style="{ marginBottom: '8px' }"
+      >
       <t-row justify="space-between">
         <div class="left-operation-container">
-          <t-button @click="handleSetupContract"> 新建合同 </t-button>
-          <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出合同 </t-button>
+          <t-button @click="handleSetupContract"> 新建</t-button>
+          <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
           <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
         </div>
         <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
           <template #suffix-icon>
-            <search-icon size="20px" />
+            <search-icon size="20px"/>
           </template>
         </t-input>
+        <t-col :span="2" class="operation-container">
+          <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
+          <t-button type="reset" variant="base" theme="default"> 重置</t-button>
+        </t-col>
       </t-row>
-
+      </t-form>
       <div class="table-container">
         <t-table
           :columns="columns"
@@ -21,12 +34,8 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -45,11 +54,11 @@
           <template #paymentType="{ row }">
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
               付款
-              <trend class="dashboard-item-trend" type="up" />
+              <trend class="dashboard-item-trend" type="up"/>
             </p>
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.RECEIPT" class="payment-col">
               收款
-              <trend class="dashboard-item-trend" type="down" />
+              <trend class="dashboard-item-trend" type="down"/>
             </p>
           </template>
           <template #op="slotProps">
@@ -59,6 +68,16 @@
         </t-table>
       </div>
     </t-card>
+    <div>
+      <t-pagination
+        v-model="formData.pageNum"
+        :total="pagination.total"
+        :page-size.sync="formData.pageSize"
+        @current-change="onCurrentChange"
+        @page-size-change="onPageSizeChange"
+        @change="onChange"
+      />
+    </div>
     <t-dialog
       header="确认删除当前所选合同？"
       :body="confirmBody"
@@ -71,11 +90,11 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { SearchIcon } from 'tdesign-icons-vue';
+import {SearchIcon} from 'tdesign-icons-vue';
 import Trend from '@/components/trend/index.vue';
-import { prefix } from '@/config/global';
+import {prefix} from '@/config/global';
 
-import { CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES } from '@/constants';
+import {CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES} from '@/constants';
 
 export default Vue.extend({
   name: 'ListBase',
@@ -95,7 +114,7 @@ export default Vue.extend({
       selectedRowKeys: [1, 2],
       value: 'first',
       columns: [
-        { colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left' },
+        {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
           title: '合同名称',
           align: 'left',
@@ -104,7 +123,7 @@ export default Vue.extend({
           colKey: 'name',
           fixed: 'left',
         },
-        { title: '合同状态', colKey: 'status', width: 200, cell: { col: 'status' } },
+        {title: '合同状态', colKey: 'status', width: 200, cell: {col: 'status'}},
         {
           title: '合同编号',
           width: 200,
@@ -144,9 +163,15 @@ export default Vue.extend({
       rowClassName: (rowKey: string) => `${rowKey}-class`,
       // 与pagination对齐
       pagination: {
-        defaultPageSize: 20,
+        defaultPageSize: 10,
         total: 0,
         defaultCurrent: 1,
+      },
+      formData: {
+        name: "",
+        type: "",
+        pageNum: 1,
+        pageSize: 10
       },
       searchValue: '',
       confirmVisible: false,
@@ -156,7 +181,7 @@ export default Vue.extend({
   computed: {
     confirmBody() {
       if (this.deleteIdx > -1) {
-        const { name } = this.data?.[this.deleteIdx];
+        const {name} = this.data?.[this.deleteIdx];
         return `删除后，${name}的所有合同信息将被清空，且无法恢复`;
       }
       return '';
@@ -166,39 +191,49 @@ export default Vue.extend({
     },
   },
   mounted() {
-    this.dataLoading = true;
-    this.$request
-      .get('/api/get-list')
-      .then((res) => {
-        if (res.code === 0) {
-          const { list = [] } = res.data;
-          this.data = list;
-          this.pagination = {
-            ...this.pagination,
-            total: list.length,
-          };
-        }
-      })
-      .catch((e: Error) => {
-        console.log(e);
-      })
-      .finally(() => {
-        this.dataLoading = false;
-      });
   },
-
+  created() {
+    this.getList()
+  },
   methods: {
+    getList() {
+      this.dataLoading = true;
+      this.$request
+        .get('/trace/page',{
+          params: this.formData
+        }).then((res) => {
+          if (res.code === 0) {
+            const {list = []} = res.data;
+            this.data = list;
+            this.pagination = {
+              ...this.pagination,
+              total: list.length,
+            };
+          }
+        })
+        .catch((e: Error) => {
+          console.log(e);
+        })
+        .finally(() => {
+          this.dataLoading = false;
+        });
+    },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
-    rehandlePageChange(curr, pageInfo) {
-      console.log('分页变化', curr, pageInfo);
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
     },
-    rehandleSelectChange(selectedRowKeys: number[]) {
-      this.selectedRowKeys = selectedRowKeys;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
     },
-    rehandleChange(changeParams, triggerAndData) {
-      console.log('统一Change', changeParams, triggerAndData);
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
     },
     handleClickDetail() {
       this.$router.push('/detail/base');
@@ -227,6 +262,13 @@ export default Vue.extend({
     },
     resetIdx() {
       this.deleteIdx = -1;
+    },
+    onReset(data) {
+      console.log(data);
+    },
+    onSubmit(data) {
+      console.log(this.formData);
+      this.getList(this.formData);
     },
   },
 });

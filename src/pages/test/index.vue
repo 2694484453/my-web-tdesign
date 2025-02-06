@@ -1,19 +1,13 @@
 <template>
   <div>
-    <h1>xx</h1>
-    <icon name="caret-right" />
-    <icon name="tangerinr" color="orange" />
-    <t-icon name="logo-adobe-illustrate"></t-icon>
-    <LogoQqIcon />
-    <LogoAndroidIcon />
-    <t-icon name="file-1" size="100px" />
     <t-space>
       <t-button theme="primary" @click="visible=true">基础确认对话框</t-button>
       <t-dialog
-        v-model:visible="visible"
+        v-show="visible"
         header="对话框标题"
         width="40%"
         :confirm-on-enter="true"
+        :on-close="formClose"
       >
         <t-space direction="vertical" style="width: 100%">
           <div>
@@ -35,7 +29,12 @@ export default Vue.extend({
       visible: false
     }
   },
-  methods: {}
+  methods: {
+    formClose(context) {
+      console.log('关闭弹窗，点击关闭按钮、按下ESC、点击蒙层等触发', context);
+      this.visible = false;
+    },
+  }
 })
 </script>
 
