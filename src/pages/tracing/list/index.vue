@@ -40,11 +40,8 @@
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
-            <t-tag v-if="row.status === CONTRACT_STATUS.FAIL" theme="danger" variant="light">审核失败</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
+            <t-tag v-if="row.status === 'fail'" theme="danger" variant="light">{{row.s}}</t-tag>
+            <t-tag v-if="row.status === 'ok'" theme="success" variant="light">{{row.status}}</t-tag>
           </template>
           <template #contractType="{ row }">
             <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
@@ -116,37 +113,32 @@ export default Vue.extend({
       columns: [
         {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: '合同名称',
+          title: '名称',
           align: 'left',
           width: 250,
           ellipsis: true,
           colKey: 'name',
           fixed: 'left',
         },
-        {title: '合同状态', colKey: 'status', width: 200, cell: {col: 'status'}},
         {
-          title: '合同编号',
+          title: '状态',
+          align: 'left',
           width: 200,
           ellipsis: true,
-          colKey: 'no',
+          colKey: 'status',
+          fixed: 'left',
         },
         {
-          title: '合同类型',
+          title: '类型',
           width: 200,
           ellipsis: true,
-          colKey: 'contractType',
+          colKey: 'type',
         },
         {
-          title: '合同收付类型',
+          title: '描述',
           width: 200,
           ellipsis: true,
-          colKey: 'paymentType',
-        },
-        {
-          title: '合同金额 (元)',
-          width: 200,
-          ellipsis: true,
-          colKey: 'amount',
+          colKey: 'description',
         },
         {
           align: 'left',
@@ -202,13 +194,9 @@ export default Vue.extend({
         .get('/tracing/page',{
           params: this.formData
         }).then((res) => {
-          if (res.code === 0) {
-            const {list = []} = res.data;
-            this.data = list;
-            this.pagination = {
-              ...this.pagination,
-              total: list.length,
-            };
+          if (res.data.code === 200) {
+            this.data = res.data.rows;
+            this.pagination = res.data.total
           }
         })
         .catch((e: Error) => {
