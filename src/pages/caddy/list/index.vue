@@ -16,37 +16,6 @@
               <t-input v-model="formData.name" :style="{ width: '200px' }" placeholder="请输入内容"/>
             </t-form-item>
           </t-col>
-          <t-col :span="3">
-            <t-form-item label="命名空间" name="namespace">
-                    <t-input v-model="formData.namespace" :style="{ width: '200px' }" placeholder="请输入内容"/>
-<!--                <t-select-->
-<!--                  v-model="formData.namespace"-->
-<!--                  :style="{ width: '200px' }"-->
-<!--                  placeholder="请选择类型"-->
-<!--                  class="demo-select-base"-->
-<!--                  clearable-->
-<!--                >-->
-<!--                  <t-option v-for="(item, index) in namespaceList" :key="index" :value="item" :label="item">-->
-<!--                    {{ item }}-->
-<!--                  </t-option>-->
-<!--                </t-select>-->
-            </t-form-item>
-          </t-col>
-          <t-col :span="3">
-            <t-form-item label="类型" name="type">
-              <t-select
-                v-model="formData.type"
-                :style="{ width: '200px' }"
-                placeholder="请选择类型"
-                class="demo-select-base"
-                clearable
-              >
-                <t-option v-for="(item, index) in typeList" :key="index" :value="item" :label="item">
-                  {{ item }}
-                </t-option>
-              </t-select>
-            </t-form-item>
-          </t-col>
           <t-col :span="2" class="operation-container">
             <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
             <t-button type="reset" variant="base" theme="default"> 重置</t-button>
