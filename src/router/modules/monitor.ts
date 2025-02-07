@@ -40,14 +40,20 @@ export default [
         path: 'podMonitor',
         name: 'podMonitorBase',
         component: () => import('@/pages/prometheus-cloud/index.vue'),
-        meta: {title: 'Pod监控'},
+        meta: {title: 'PodMonitor配置'},
       },
       {
         path: 'serviceMonitor',
         name: 'serviceMonitorBase',
         component: () => import('@/pages/prometheus-cloud/index.vue'),
-        meta: {title: 'Service监控'},
-      }
+        meta: {title: 'ServiceMonitor配置'},
+      },
+      {
+        path: 'serviceMonitor',
+        name: 'serviceMonitorBase',
+        component: () => import('@/pages/prometheus-cloud/index.vue'),
+        meta: {title: '端点查询'},
+      },
     ],
   },
   // {
@@ -85,20 +91,20 @@ export default [
       {
         path: "ruleConfigList",
         name: 'ruleConfigListBase',
-        component: () => import("@/pages/alert-cloud/list/index.vue"),
+        component: () => import("@/pages/alert-config/list/index.vue"),
         meta: {title: '规则配置'},
       },
       {
         path: "ruleList",
         name: 'ruleListBase',
-        component: () => import("@/pages/alert-cloud/list/index.vue"),
-        meta: {title: '规则列表'},
+        component: () => import("@/pages/alert-rules/list/index.vue"),
+        meta: {title: '告警规则'},
       },
       {
         path: "alertList",
         name: 'alertListBase',
         component: () => import("@/pages/alert-message/list/index.vue"),
-        meta: {title: '告警列表'},
+        meta: {title: '告警消息'},
       }
     ],
   },

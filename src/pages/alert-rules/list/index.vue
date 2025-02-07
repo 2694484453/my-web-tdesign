@@ -11,36 +11,16 @@
         :style="{ marginBottom: '8px' }"
       >
         <t-row justify="space-between">
-          <div class="left-operation-container">
-            <t-button @click="handleSetupContract"> 新建</t-button>
-            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>
-            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
-          </div>
-          <t-col :span="3">
-            <t-form-item label="名称" name="name">
-              <t-input v-model="formData.name" :style="{ width: '200px' }" placeholder="请输入内容"/>
-            </t-form-item>
-          </t-col>
-          <t-col :span="3">
-            <t-form-item label="类型" name="type">
-              <t-select
-                v-model="formData.type"
-                :style="{ width: '200px' }"
-                placeholder="请选择类型"
-                class="demo-select-base"
-                clearable
-              >
-                <t-option v-for="(item, index) in typeList" :key="index" :value="item" :label="item">
-                  {{ item }}
-                </t-option>
-              </t-select>
-            </t-form-item>
-          </t-col>
-          <!--        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>-->
-          <!--          <template #suffix-icon>-->
-          <!--            <search-icon size="20px"/>-->
-          <!--          </template>-->
-          <!--        </t-input>-->
+<!--          <div class="left-operation-container">-->
+<!--            <t-button @click="handleSetupContract">新建</t-button>-->
+<!--            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>-->
+<!--            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>-->
+<!--          </div>-->
+          <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+             <template #suffix-icon>
+                  <search-icon size="20px"/>
+             </template>
+          </t-input>
           <t-col :span="2" class="operation-container">
             <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
             <t-button type="reset" variant="base" theme="default"> 重置</t-button>
@@ -56,18 +36,15 @@
           :hover="hover"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
-          <template #status="{ row }">
-            <t-tag v-if="row.status === CONTRACT_STATUS.FAIL" theme="danger" variant="light">审核失败</t-tag>
+          <template #state="{ row }">
+            <t-tag v-if="row.state === 'firing'" theme="danger" variant="light">触发</t-tag>
             <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>
             <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
             <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
+            <t-tag v-if="row.state === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
           </template>
           <template #contractType="{ row }">
             <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
@@ -83,6 +60,9 @@
               收款
               <trend class="dashboard-item-trend" type="down"/>
             </p>
+          </template>
+          <template #rules="{ row }">
+            <p class="payment-col">{{row.rules.length}}</p>
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickDetail()">详情</a>
@@ -139,46 +119,35 @@ export default Vue.extend({
         {
           title: '名称',
           align: 'left',
-          width: 200,
+          width: 260,
           ellipsis: true,
-          colKey: 'metadata.name',
+          colKey: 'name',
           fixed: 'left',
         },
         {
-          title: '类型',
+          title: '间隔(s)',
+          width: 120,
+          ellipsis: true,
+          fixed: 'left',
+          colKey: 'interval',
+        },
+        {
+          title: '规则数量(条)',
+          colKey: 'rules',
+          width: 100,
+          fixed: 'left',
+        },
+        {
+          title: '消耗时间',
           width: 180,
           ellipsis: true,
-          fixed: 'left',
-          colKey: 'kind',
+          colKey: 'evaluationTime',
         },
         {
-          title: '命名空间',
-          colKey: 'metadata.namespace',
-          width: 100, cell:
-            {col: 'status'}
-        },
-        {
-          title: '等待时间',
-          colKey: 'spec.route.groupWait',
-          width: 100, cell:
-            {col: 'status'}
-        },
-        {
-          title: '重复时间',
-          width: 100,
+          title: '更新时间',
+          width: 220,
           ellipsis: true,
-          colKey: 'spec.route.repeatInterval',
-        },
-        {
-          title: "发送方式",
-          width: 100,
-          colKey: "spec.route.receiver"
-        },
-        {
-          title: '创建时间',
-          width: 200,
-          ellipsis: true,
-          colKey: "metadata.creationTimestamp"
+          colKey: 'lastEvaluation',
         },
         {
           align: 'left',
@@ -307,7 +276,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/prometheus/prometheusRule/page',{
+        .get('/prometheus/rules/page',{
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
