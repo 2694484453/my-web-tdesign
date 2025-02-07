@@ -83,15 +83,21 @@ export default [
         meta: {title: '监控面板'},
       },
       {
+        path: "ruleConfigList",
+        name: 'ruleConfigListBase',
+        component: () => import("@/pages/alert-cloud/list/index.vue"),
+        meta: {title: '规则配置'},
+      },
+      {
         path: "ruleList",
         name: 'ruleListBase',
         component: () => import("@/pages/alert-cloud/list/index.vue"),
-        meta: {title: '告警规则'},
+        meta: {title: '规则列表'},
       },
       {
         path: "alertList",
         name: 'alertListBase',
-        component: () => import("@/pages/alert-cloud/list/index.vue"),
+        component: () => import("@/pages/alert-message/list/index.vue"),
         meta: {title: '告警列表'},
       }
     ],
