@@ -49,9 +49,9 @@ export default [
         meta: {title: 'ServiceMonitor配置'},
       },
       {
-        path: 'serviceMonitor',
-        name: 'serviceMonitorBase',
-        component: () => import('@/pages/prometheus-cloud/index.vue'),
+        path: 'targetsMonitor',
+        name: 'targetsMonitorBase',
+        component: () => import('@/pages/prometheus-targets/list/index.vue'),
         meta: {title: '端点查询'},
       },
     ],
