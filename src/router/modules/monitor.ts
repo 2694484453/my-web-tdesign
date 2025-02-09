@@ -34,7 +34,7 @@ export default [
         path: 'dashboard',
         name: 'DashboardBase',
         component: () => import('@/pages/prometheus-cloud/dashboard.vue'),
-        meta: {title: '监控面板'},
+        meta: {title: '服务面板'},
       },
       {
         path: 'podMonitor',
@@ -86,7 +86,7 @@ export default [
         path: 'dashboard',
         name: 'DashboardBase',
         component: () => import('@/pages/alert-cloud/index.vue'),
-        meta: {title: '监控面板'},
+        meta: {title: '服务面板'},
       },
       {
         path: "ruleConfigList",
