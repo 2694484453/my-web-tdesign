@@ -118,7 +118,7 @@ export default [
         path: 'dashboard',
         name: 'DashboardBase',
         component: () => import('@/pages/grafana/dashboard.vue'),
-        meta: {title: '配置面板'},
+        meta: {title: '服务面板'},
       }
     ],
   },

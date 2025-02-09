@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'http://124.221.2.29:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=2025-02-08T17:24:08.983Z&to=2025-02-09T17:24:08.983Z&timezone=browser&var-datasource=default&var-job=ecs-node-exporter&var-node=47.97.162.27:19100&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B%7Cmmcblk%5B0-9%5D%2B&refresh=5s',
+      frameSrc: 'https://grafana.gpg123.vip/d/k8s_views_global/kubernetes-views-global?orgId=1&from=now-1h&to=now&timezone=browser&var-datasource=bcbe8c6b-5b42-48e1-8e9d-e6e30f72084a&var-cluster=&var-resolution=30s&var-job=node-exporter&var-job=ecs-node-exporter&refresh=30s',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };

@@ -7,12 +7,12 @@ export default [
     component: Layout,
     meta: {title: '边缘云集群', icon: SettingIcon},
     children: [
-      // {
-      //   path: 'dashboard',
-      //   name: 'DashboardBase',
-      //   component: () => import('@/pages/cluster/list/dashboard.vue'),
-      //   meta: {title: '监控面板'},
-      // },
+      {
+        path: 'dashboard',
+        name: 'DashboardBase',
+        component: () => import('@/pages/cluster/dashboard.vue'),
+        meta: {title: '监控面板'},
+      },
       {
         path: "add",
         name: 'AddBase',
