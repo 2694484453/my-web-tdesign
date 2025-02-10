@@ -129,7 +129,15 @@ export default Vue.extend({
           fixed: 'left',
         },
         {
-          title: '类型',
+          title: '标签',
+          align: 'left',
+          width: 200,
+          ellipsis: true,
+          colKey: 'tags',
+          fixed: 'left',
+        },
+        {
+          title: '探针类型',
           width: 200,
           ellipsis: true,
           colKey: 'type',

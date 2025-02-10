@@ -116,6 +116,7 @@ export default Vue.extend({
       selectedRowKeys: [1, 2],
       value: 'first',
       columns: [
+        {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
           title: '分组名称',
           align: 'left',

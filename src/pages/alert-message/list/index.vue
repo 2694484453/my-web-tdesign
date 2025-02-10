@@ -11,11 +11,11 @@
         :style="{ marginBottom: '8px' }"
       >
         <t-row justify="space-between">
-<!--          <div class="left-operation-container">-->
-<!--            <t-button @click="handleSetupContract">新建</t-button>-->
-<!--            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>-->
-<!--            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>-->
-<!--          </div>-->
+            <div class="left-operation-container">
+<!--        <t-button @click="handleSetupContract">新建</t-button>-->
+              <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
+<!--              <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>-->
+            </div>
           <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
              <template #suffix-icon>
                   <search-icon size="20px"/>
@@ -47,6 +47,7 @@
             <t-tag v-if="row.labels.severity === 'warning'" theme="warning">警告</t-tag>
             <t-tag v-if="row.labels.severity === 'info'">信息</t-tag>
             <t-tag v-if="row.labels.severity === 'unknown'">未知</t-tag>
+            <t-tag v-if="row.labels.severity === 'none'">none</t-tag>
           </template>
           <template #paymentType="{ row }">
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
@@ -110,6 +111,7 @@ export default Vue.extend({
       selectedRowKeys: [1, 2],
       value: 'first',
       columns: [
+        {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
           title: '告警名称',
           align: 'left',
