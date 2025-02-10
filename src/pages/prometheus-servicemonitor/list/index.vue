@@ -61,10 +61,9 @@
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
-          <template #metadata.labels="{ row }">
-            {{row}}
-            <span v-for="(v,k) in row.metadata.labels" :key="k">
-              {{k}}:{{v}}
+          <template #spec.selector.matchLabels="{ row }">
+            <span v-for="(v,k) in row.spec.selector.matchLabels" :key="k">
+              <t-tag theme="primary" variant="light">{{k}}:{{v}}</t-tag>
             </span>
           </template>
           <template #contractType="{ row }">
@@ -134,7 +133,7 @@ export default Vue.extend({
           title: '标签',
           width: 180,
           ellipsis: true,
-          colKey: 'labels',
+          colKey: 'spec.selector.matchLabels',
         },
         {
           title: '命名空间',
@@ -145,9 +144,9 @@ export default Vue.extend({
           fixed: 'left',
         },
         {
-          title: '状态',
-          colKey: 'metadata.namespace',
-          width: 100, cell:
+          title: 'api版本',
+          colKey: 'apiVersion',
+          width: 120, cell:
             {col: 'status'}
         },
         {
@@ -288,7 +287,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/monitorCloud/page', {
+        .get('/prometheus/serviceMonitor/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {

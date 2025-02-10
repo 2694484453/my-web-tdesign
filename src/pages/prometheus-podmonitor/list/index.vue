@@ -288,7 +288,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/monitorCloud/page', {
+        .get('/prometheus/podMonitor/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {

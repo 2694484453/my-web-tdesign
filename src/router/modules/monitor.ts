@@ -39,13 +39,13 @@ export default [
       {
         path: 'podMonitor',
         name: 'podMonitorBase',
-        component: () => import('@/pages/prometheus-cloud/index.vue'),
+        component: () => import('@/pages/prometheus-podmonitor/list/index.vue'),
         meta: {title: 'PodMonitor配置'},
       },
       {
         path: 'serviceMonitor',
         name: 'serviceMonitorBase',
-        component: () => import('@/pages/prometheus-cloud/index.vue'),
+        component: () => import('@/pages/prometheus-servicemonitor/list/index.vue'),
         meta: {title: 'ServiceMonitor配置'},
       },
       {

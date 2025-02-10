@@ -62,9 +62,8 @@
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #labels="{ row }">
-            {{row}}
             <span v-for="(v,k) in row.labels" :key="k">
-              {{k}}:{{v}}
+              <t-tag theme="primary" variant="light">{{k}}:{{v}}</t-tag>
             </span>
           </template>
           <template #health="{ row }">
@@ -134,7 +133,7 @@ export default Vue.extend({
         },
         {
           title: '间隔（s）',
-          width: 100,
+          width: 80,
           ellipsis: true,
           fixed: 'left',
           colKey: 'scrapeInterval',
