@@ -14,21 +14,21 @@ export default [
     children: [
       {
         path: 'overView',
-        name: '概览',
+        name: 'overView',
         component: () => import('@/pages/git/github/index.vue'),
-        meta: {title: 'Gitee'},
+        meta: {title: '概览'},
       },
       {
-        path: 'repoList',
-        name: '仓库列表',
+        path: 'repos',
+        name: 'repos',
         component: () => import('@/pages/git/github/index.vue'),
-        meta: {title: 'Github'},
+        meta: {title: '仓库列表'},
       },
       {
         path: 'other',
-        name: '其他',
+        name: 'other',
         component: () => import('@/pages/git/gitlab/index.vue'),
-        meta: {title: 'Gitlab'},
+        meta: {title: '其他'},
       },
     ],
   },
