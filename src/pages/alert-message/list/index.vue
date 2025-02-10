@@ -63,7 +63,7 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
-        <div>
+        <div style="margin-top: 10px">
           <t-pagination
             v-model="formData.pageNum"
             :total="pagination.total"
