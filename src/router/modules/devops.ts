@@ -21,7 +21,7 @@ export default [
       {
         path: 'maven',
         name: 'maven',
-        component: () => import('@/pages/devops/pod/index.vue'),
+        component: () => import('@/pages/devops/list/index.vue'),
         meta: { title: '任务管理' },
       },
       // {

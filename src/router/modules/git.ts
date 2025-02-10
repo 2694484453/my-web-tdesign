@@ -21,7 +21,7 @@ export default [
       {
         path: 'repos',
         name: 'repos',
-        component: () => import('@/pages/git/github/index.vue'),
+        component: () => import('@/pages/git/github/list/index.vue'),
         meta: {title: '仓库列表'},
       },
       {
