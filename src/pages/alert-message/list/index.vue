@@ -39,13 +39,9 @@
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
-<!--          <template #state="{ row }">-->
-<!--            <t-tag v-if="row.state === 'firing'" theme="danger" variant="light">触发</t-tag>-->
-<!--            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>-->
-<!--            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>-->
-<!--            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>-->
-<!--            <t-tag v-if="row.state === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>-->
-<!--          </template>-->
+          <template #state="{ row }">
+            <p v-if="row.state === 'firing'" >触发</p>
+          </template>
           <template #labels.severity="{ row }">
             <t-tag v-if="row.labels.severity === 'critical'" theme="danger">严重</t-tag>
             <t-tag v-if="row.labels.severity === 'warning'" theme="warning">警告</t-tag>
@@ -148,6 +144,7 @@ export default Vue.extend({
         {
           title: "消息内容",
           width: 250,
+          ellipsis: true,
           colKey: "annotations.description"
         },
         {
