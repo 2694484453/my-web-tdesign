@@ -10,8 +10,8 @@ export default [
     meta: {title: '云测试', icon: AppIcon},
     children: [
       {
-        path: 'test',
-        name: 'TestBase',
+        path: 'overView',
+        name: 'OverViewBase',
         component: () => import('@/pages/test/index.vue'),
         meta: {title: '概览'},
       },

@@ -13,10 +13,10 @@ export default [
     },
     children: [
       {
-        path: 'docker',
-        name: 'docker',
+        path: 'overView',
+        name: 'OverViewBase',
         component: () => import('@/pages/devops/index.vue'),
-        meta: { title: '镜像制品任务' },
+        meta: {title: '概览'},
       },
       {
         path: 'maven',
