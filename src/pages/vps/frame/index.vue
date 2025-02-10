@@ -71,7 +71,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import '@/style/variables';
+@import 'variables';
 
 .@{starter-prefix}-iframe-page {
   &__main {

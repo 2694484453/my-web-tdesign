@@ -12,7 +12,7 @@ export default [
   //     {
   //       path: 'dashboard',
   //       name: 'DashboardBase',
-  //       component: () => import('@/pages/prometheus/dashboard.vue'),
+  //       component: () => import('@/pages/prometheus/index.vue'),
   //       meta: {title: '监控视图'},
   //     },
   //     {

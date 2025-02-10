@@ -10,7 +10,7 @@ export default [
       {
         path: 'overView',
         name: 'overViewBase',
-        component: () => import('@/pages/vps/dashboard.vue'),
+        component: () => import('@/pages/vps/frame/index.vue'),
         meta: {title: '概览'},
       },
       {
@@ -36,13 +36,13 @@ export default [
       {
         path: 'overView',
         name: 'overViewBase',
-        component: () => import('@/pages/vps/dashboard.vue'),
+        component: () => import('@/pages/vps/index.vue'),
         meta: {title: '概览'},
       },
       {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/vps/dashboard.vue'),
+        component: () => import('@/pages/vps/frame/index.vue'),
         meta: {title: '监控面板'},
       },
       {
