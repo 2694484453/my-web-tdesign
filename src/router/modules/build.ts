@@ -1,37 +1,7 @@
-import { RelativityIcon, LogoGithubIcon, BulletpointIcon } from 'tdesign-icons-vue';
+import { RelativityIcon, BulletpointIcon } from 'tdesign-icons-vue';
 import Layout from '@/layouts/index.vue';
 
 export default [
-  {
-    path: '/git',
-    component: Layout,
-    redirect: '/git/base',
-    name: 'git',
-    meta: {
-      title: 'Git仓库管理',
-      icon: LogoGithubIcon,
-    },
-    children: [
-      {
-        path: 'gitee',
-        name: 'gitee',
-        component: () => import('@/pages/git/gitee/index.vue'),
-        meta: { title: 'Gitee' },
-      },
-      {
-        path: 'github',
-        name: 'github',
-        component: () => import('@/pages/git/github/index.vue'),
-        meta: { title: 'Github' },
-      },
-      {
-        path: 'gitlab',
-        name: 'gitlab',
-        component: () => import('@/pages/git/gitlab/index.vue'),
-        meta: { title: 'Gitlab' },
-      },
-    ],
-  },
   {
     path: '/devops',
     component: Layout,

@@ -26,6 +26,8 @@ import backupRouters from "@/router/modules/backup";
 import tracingRouters from "@/router/modules/tracing";
 // ide
 import IdeRouters from "@/router/modules/ide";
+// git
+import gitRouters from "@/router/modules/git";
 // test
 import testRouters from "@/router/modules/test";
 const env = import.meta.env.MODE || 'development';
@@ -33,7 +35,7 @@ import proxy from '@/config/host';
 // 开发模式
 const devRouterList = [...baseRouters, ...componentsRouters, ...othersRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 生产模式
-const prodRouterList = [...baseRouters, ...domainRouters, ...buildRouters, ...IdeRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters,  ...testRouters]
+const prodRouterList = [...baseRouters, ...gitRouters, ...buildRouters, ...IdeRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters,  ...testRouters]
 // 存放动态路由
 export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
 //[...baseRouters, ...componentsRouters, ...othersRouters];

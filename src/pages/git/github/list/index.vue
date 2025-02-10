@@ -73,7 +73,7 @@
         </t-table>
       </div>
     </t-card>
-    <div>
+    <div style="margin-top: 10px">
       <t-pagination
         v-model="formData.pageNum"
         :total="pagination.total"
@@ -203,8 +203,9 @@ export default Vue.extend({
     getList(){
       this.dataLoading = true;
       this.$request
-        .get('/github/page')
-        .then((res) => {
+        .get('/github/page',{
+          params: this.formData
+        }).then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;
             this.pagination = {
