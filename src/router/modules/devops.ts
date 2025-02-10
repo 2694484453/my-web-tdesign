@@ -22,20 +22,20 @@ export default [
         path: 'maven',
         name: 'maven',
         component: () => import('@/pages/devops/pod/index.vue'),
-        meta: { title: 'maven制品任务' },
+        meta: { title: '任务管理' },
       },
-      {
-        path: 'maven',
-        name: 'maven',
-        component: () => import('@/pages/devops/pod/index.vue'),
-        meta: { title: '自定义任务' },
-      },
-      {
-        path: 'podList',
-        name: 'podList',
-        component: () => import('@/pages/devops/pod/index.vue'),
-        meta: { title: 'pod列表' },
-      },
+      // {
+      //   path: 'maven',
+      //   name: 'maven',
+      //   component: () => import('@/pages/devops/pod/index.vue'),
+      //   meta: { title: '自定义任务' },
+      // },
+      // {
+      //   path: 'podList',
+      //   name: 'podList',
+      //   component: () => import('@/pages/devops/pod/index.vue'),
+      //   meta: { title: 'pod列表' },
+      // },
     ],
   },
 ]
