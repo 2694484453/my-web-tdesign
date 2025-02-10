@@ -39,17 +39,18 @@
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
-          <template #state="{ row }">
-            <t-tag v-if="row.state === 'firing'" theme="danger" variant="light">触发</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
-            <t-tag v-if="row.state === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
-          </template>
-          <template #contractType="{ row }">
-            <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
-            <p v-if="row.contractType === CONTRACT_TYPES.SUB">待审核</p>
-            <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">待履行</p>
+<!--          <template #state="{ row }">-->
+<!--            <t-tag v-if="row.state === 'firing'" theme="danger" variant="light">触发</t-tag>-->
+<!--            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>-->
+<!--            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>-->
+<!--            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>-->
+<!--            <t-tag v-if="row.state === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>-->
+<!--          </template>-->
+          <template #labels.severity="{ row }">
+            <t-tag v-if="row.labels.severity === 'critical'" theme="danger">严重</t-tag>
+            <t-tag v-if="row.labels.severity === 'warning'" theme="warning">警告</t-tag>
+            <t-tag v-if="row.labels.severity === 'info'">信息</t-tag>
+            <t-tag v-if="row.labels.severity === 'unknown'">未知</t-tag>
           </template>
           <template #paymentType="{ row }">
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
