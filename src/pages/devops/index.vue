@@ -1,456 +1,242 @@
 <template>
-  <div>
-    <t-card class="list-card-container" :bordered="false">
-      <t-form
-        ref="form"
-        :data="formData"
-        :label-width="80"
-        colon
-        @reset="onReset"
-        @submit="onSubmit"
-        :style="{ marginBottom: '8px' }"
-      >
-        <t-row justify="space-between">
-          <div class="left-operation-container">
-            <t-button @click="repoForm.visible=true;getRepoList({type:'github'})"> 新建</t-button>
-            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>
-            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
-          </div>
-          <t-col :span="3">
-            <t-form-item label="名称" name="name">
-              <t-input v-model="formData.name" :style="{ width: '200px' }" placeholder="请输入内容"/>
-            </t-form-item>
-          </t-col>
-          <t-col :span="3">
-            <t-form-item label="类型" name="type">
-              <t-select
-                v-model="formData.type"
-                :style="{ width: '200px' }"
-                placeholder="请选择类型"
-                class="demo-select-base"
-                clearable
-              >
-                <t-option v-for="(item, index) in typeList" :key="index" :value="item" :label="item">
-                  {{ item }}
-                </t-option>
-              </t-select>
-            </t-form-item>
-          </t-col>
-          <!--        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>-->
-          <!--          <template #suffix-icon>-->
-          <!--            <search-icon size="20px"/>-->
-          <!--          </template>-->
-          <!--        </t-input>-->
-          <t-col :span="2" class="operation-container">
-            <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
-            <t-button type="reset" variant="base" theme="default"> 重置</t-button>
-          </t-col>
-        </t-row>
-      </t-form>
-      <div class="table-container">
-        <t-table
-          :columns="columns"
-          :data="data"
-          :rowKey="rowKey"
-          :verticalAlign="verticalAlign"
-          :hover="hover"
-          :selected-row-keys="selectedRowKeys"
-          :loading="dataLoading"
-          :headerAffixedTop="true"
-          :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
-        >
-          <template #status="{ row }">
-            <t-tag v-if="row.status === CONTRACT_STATUS.FAIL" theme="danger" variant="light">审核失败</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
-          </template>
-          <template #metadata.labels="{ row }">
-            <span v-for="(value,key) in row.metadata.labels">
-              <p>{{ key }}:{{ value }}</p>
-            </span>
-          </template>
-          <template #paymentType="{ row }">
-            <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
-              付款
-              <trend class="dashboard-item-trend" type="up"/>
-            </p>
-            <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.RECEIPT" class="payment-col">
-              收款
-              <trend class="dashboard-item-trend" type="down"/>
-            </p>
-          </template>
-          <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickDetail()">执行</a>
-            <a class="t-button-link" @click="handleClickDetail()">详情</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
-          </template>
-        </t-table>
-        <div>
-          <t-pagination
-            v-model="formData.pageNum"
-            :total="pagination.total"
-            :page-size.sync="formData.pageSize"
-            @current-change="onCurrentChange"
-            @page-size-change="onPageSizeChange"
-            @change="onChange"
-          />
-        </div>
-      </div>
+  <div class="dashboard-detail">
+    <t-card title="本月采购申请情况" class="dashboard-detail-card" :bordered="false">
+      <t-row :gutter="[16, 16]">
+        <t-col v-for="(item, index) in PANE_LIST_DATA" :key="index" :xs="6" :xl="3">
+          <t-card :class="['dashboard-list-card']" :description="item.title">
+            <div class="dashboard-list-card__number">{{ item.number }}</div>
+            <div class="dashboard-list-card__text">
+              <div class="dashboard-list-card__text-left">
+                环比
+                <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />
+              </div>
+              <chevron-right-icon />
+            </div>
+          </t-card>
+        </t-col>
+      </t-row>
     </t-card>
-    <t-dialog
-      header="确认删除当前所选合同？"
-      :body="confirmBody"
-      :visible.sync="confirmVisible"
-      @confirm="onConfirmDelete"
-      :onCancel="onCancel">
-    </t-dialog>
-    <t-dialog
-      v-show="repoForm.visible"
-      header="选择从你的git应用构建"
-      width="65%"
-      :confirm-on-enter="true"
-      :on-cancel="onFormCancel"
-      :on-esc-keydown="onFormEscKeydown"
-      :on-close-btn-click="onFormCloseBtnClick"
-      :on-overlay-click="onFormOverlayClick"
-      :on-close="formClose"
-      :on-confirm="onFormConfirmAnother"
-    >
-      <t-space direction="vertical" style="width: 100%">
-        <div>
-          <div class="list-card">
-            <!-- 搜索区域 -->
-            <div class="list-card-operation">
-              <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-                <template #suffix-icon>
-                  <search-icon v-if="searchValue === ''" size="20px"/>
-                </template>
-              </t-input>
-            </div>
-            <!-- 卡片列表 -->
-            <template v-if="!repoForm.dataLoading" >
-              <t-row :gutter="16" style="margin-top: 10px">
-                <span v-for="item in repoForm.data" :key="item.index">
-                  <t-space direction="vertical">
-                     <t-col :span="3">
-                       <div>
-                          <t-card :title="item.name" hover-shadow :style="{ width: '250px',height: '100px' }">
-          <!--                  {{ item.description }}-->
-                            <template #actions>
-                              <a href="javascript:void(0)" @click="clickHandler">操作</a>
-                            </template>
-                           </t-card>
-                       </div>
-                    </t-col>
-                  </t-space>
-                </span>
-              </t-row>
-            </template>
-            <div v-else-if="repoForm.dataLoading" class="list-card-loading">
-              <t-loading text="加载中..."></t-loading>
-            </div>
-          </div>
-        </div>
-        <t-pagination v-model="current" v-model:pageSize="pageSize" :total="30"/>
-      </t-space>
-    </t-dialog>
+    <t-row :gutter="[16, 16]" class="row-margin">
+      <t-col :xs="12" :xl="9">
+        <t-card :class="{ 'dashboard-detail-card': true }" title="采购商品申请趋势" subtitle="(件)" :bordered="false">
+          <template #actions>
+            <t-date-range-picker
+              style="width: 250px"
+              :default-value="LAST_7_DAYS"
+              theme="primary"
+              mode="date"
+              @change="onMaterialChange"
+            />
+          </template>
+          <div id="lineContainer" ref="lineContainer" style="width: 100%; height: 410px"></div>
+        </t-card>
+      </t-col>
+      <t-col :xs="12" :xl="3">
+        <product-card
+          v-for="(item, index) in PRODUCT_LIST"
+          :key="index"
+          :product="item"
+          :class="{ 'row-margin': index !== 0 }"
+        />
+      </t-col>
+    </t-row>
+    <t-card :class="{ 'dashboard-detail-card': true }" title="采购商品满意度分布" class="row-margin" :bordered="false">
+      <template #actions>
+        <t-date-range-picker
+          style="display: inline-block; margin-right: 8px; width: 250px"
+          :defaultValue="LAST_7_DAYS"
+          theme="primary"
+          mode="date"
+          @change="onSatisfyChange"
+        >
+        </t-date-range-picker>
+        <t-button>导出数据</t-button>
+      </template>
+      <div id="scatterContainer" style="width: 100%; height: 374px"></div>
+    </t-card>
   </div>
 </template>
 <script lang="ts">
-import Vue from 'vue';
-import {SearchIcon} from 'tdesign-icons-vue';
+import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
+import { LineChart, ScatterChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
+import * as echarts from 'echarts/core';
+import { mapState } from 'vuex';
+import { ChevronRightIcon } from 'tdesign-icons-vue';
+
 import Trend from '@/components/trend/index.vue';
-import {prefix} from '@/config/global';
+import ProductCard from '@/components/product-card/index.vue';
 
-import {CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES} from '@/constants';
-import ProductCard from "@/components/product-card/index.vue";
+import { LAST_7_DAYS } from '@/utils/date';
+import { changeChartsTheme } from '@/utils/color';
 
-export default Vue.extend({
-  name: 'ListBase',
-  components: {
-    ProductCard,
-    SearchIcon,
-    Trend,
-  },
+import { PANE_LIST_DATA, PRODUCT_LIST } from '@/service/service-detail';
+import { getFolderLineDataSet, getScatterDataSet } from './index';
+
+echarts.use([GridComponent, LegendComponent, TooltipComponent, LineChart, ScatterChart, CanvasRenderer]);
+
+export default {
+  name: 'DashboardDetail',
+  components: { Trend, ProductCard, ChevronRightIcon },
   data() {
     return {
-      CONTRACT_STATUS,
-      CONTRACT_STATUS_OPTIONS,
-      CONTRACT_TYPES,
-      CONTRACT_PAYMENT_TYPES,
-      prefix,
-      dataLoading: false,
-      data: [],
-      selectedRowKeys: [1, 2],
-      value: 'first',
-      columns: [
+      PANE_LIST_DATA,
+      PRODUCT_LIST,
+      dashboardBase: '',
+      lineContainer: '',
+      scatterContainer: '',
+      lineChart: '',
+      scatterChart: '',
+      productList: [
         {
-          title: '名称',
-          align: 'left',
-          width: 220,
-          ellipsis: true,
-          colKey: 'metadata.name',
-          fixed: 'left',
-        },
-        {
-          title: '类型',
-          width: 80,
-          ellipsis: true,
-          fixed: 'left',
-          colKey: 'kind',
-        },
-        {
-          title: '状态',
-          colKey: 'status.ready',
-          width: 100, cell:
-            {col: 'status'}
-        },
-        {
-          title: '失败',
-          colKey: 'status.failed',
-          width: 100, cell:
-            {col: 'status'}
-        },
-        {
-          title: '标签',
-          width: 200,
-          ellipsis: true,
-          colKey: 'metadata.labels',
-        },
-        {
-          title: '最近一次执行',
-          width: 200,
-          ellipsis: true,
-          colKey: "status.startTime"
-        },
-        {
-          title: "创建时间",
-          width: 200,
-          ellipsis: true,
-          colKey: "metadata.creationTimestamp"
-        },
-        {
-          align: 'left',
-          fixed: 'right',
-          width: 150,
-          colKey: 'op',
-          title: '操作',
+          description: 'SSL证书又叫服务器证书，腾讯云为您提供证书的一站式服务，包括免费、付费证书的申请、管理及部',
+          index: 1,
+          isSetup: true,
+          name: 'SSL证书',
+          type: 4,
         },
       ],
-      rowKey: 'index',
-      tableLayout: 'auto',
-      verticalAlign: 'top',
-      hover: true,
-      rowClassName: (rowKey: string) => `${rowKey}-class`,
-      // 与pagination对齐
-      pagination: {
-        defaultPageSize: 10,
-        total: 0,
-        defaultCurrent: 1,
-      },
-      searchValue: '',
-      confirmVisible: false,
-      deleteIdx: -1,
-      deleteType: -1,
-      formData: {
-        name: "",
-        type: "",
-        pageNum: 1,
-        pageSize: 10
-      },
-      typeList: [],
-      // 对话框
-      repoForm: {
-        visible: false,
-        data: [],
-        dataLoading: true
-      },
+      LAST_7_DAYS,
     };
   },
   computed: {
-    confirmBody() {
-      if (this.deleteIdx > -1) {
-        const {name} = this.data?.[this.deleteIdx];
-        return `删除后，${name}的所有合同信息将被清空，且无法恢复`;
-      }
-      return '';
+    ...mapState('setting', ['brandTheme', 'mode']),
+  },
+  watch: {
+    brandTheme() {
+      changeChartsTheme([this.lineChart, this.scatterChart]);
     },
-    offsetTop() {
-      return this.$store.state.setting.isUseTabsRouter ? 48 : 0;
+    mode() {
+      this.renderCharts();
     },
   },
   mounted() {
-  },
-  created() {
-    this.getList()
+    this.$nextTick(() => {
+      this.updateContainer();
+    });
+    this.renderCharts();
   },
   methods: {
-    getContainer() {
-      return document.querySelector('.tdesign-starter-layout');
-    },
-    onPageSizeChange(size, pageInfo) {
-      console.log('Page Size:', this.pageSize, size, pageInfo);
-      // 刷新
-      this.formData.pageSize = size
-    },
-    onCurrentChange(current, pageInfo) {
-      console.log('Current Page', this.current, current, pageInfo);
-      // 刷新
-      this.formData.pageNum = current
-      this.getList()
-    },
-    onChange(pageInfo) {
-      console.log('Page Info: ', pageInfo);
-    },
-    handleClickDetail() {
-      this.$router.push('/detail/base');
-    },
-    handleSetupContract() {
-      this.$router.push('/prometheus/add');
-    },
-    handleClickDelete(row: { rowIndex: any, type: any }) {
-      this.deleteIdx = row.rowIndex;
-      this.deleteType = row.type;
-      this.confirmVisible = true;
-      console.log("this", this.deleteType)
-    },
-    onConfirmDelete() {
-      // 真实业务请发起请求
-      this.data.splice(this.deleteIdx, 1);
-      this.pagination.total = this.data.length;
-      const selectedIdx = this.selectedRowKeys.indexOf(this.deleteIdx);
-      if (selectedIdx > -1) {
-        this.selectedRowKeys.splice(selectedIdx, 1);
-      }
-      this.confirmVisible = false;
-      // 请求删除
-      this.$request.delete("/monitor/delete", {
-        params: {
-          index: this.deleteIdx,
-          type: this.deleteType
-        }
-      }).then(res => {
-        this.$message.success(res.data.msg);
-      }).catch(err => {
+    /** 采购商品满意度选择 */
+    onSatisfyChange(value: string) {
+      const { chartColors } = this.$store.state.setting;
 
-      })
+      this.scatterChart.setOption(getScatterDataSet({ dateTime: value, ...chartColors }));
+    },
+    /** 采购商品申请趋势选择 */
+    onMaterialChange(value: string) {
+      const { chartColors } = this.$store.state.setting;
 
-      this.resetIdx();
+      this.lineChart.setOption(getFolderLineDataSet({ dateTime: value, ...chartColors }));
     },
-    onCancel() {
-      this.resetIdx();
-    },
-    resetIdx() {
-      this.deleteIdx = -1;
-    },
-    onReset(data) {
-      console.log(data);
-    },
-    onSubmit(data) {
-      console.log(this.formData);
-      this.getList(this.formData);
-    },
-    getTypeList() {
-      this.$request.get("/monitor/typeList").then(res => {
-        this.typeList = res.data.data
-      }).catch((err) => {
-
-      })
-    },
-    getList() {
-      this.dataLoading = true;
-      this.$request
-        .get('/devops/page', {
-          params: this.formData
-        }).then((res) => {
-        if (res.data.code === 200) {
-          this.data = res.data.rows;
-          this.pagination = res.data.total
-        }
-      }).catch((e: Error) => {
-        console.log(e);
-      }).finally(() => {
-        this.dataLoading = false;
+    updateContainer() {
+      this.lineChart.resize?.({
+        width: this.lineContainer.clientWidth,
+        height: this.lineContainer.clientHeight,
+      });
+      this.scatterChart.resize?.({
+        width: this.scatterContainer.clientWidth,
+        height: this.scatterContainer.clientHeight,
       });
     },
-    getRepoList(params) {
-      let url = "";
-      switch (params.type) {
-        case "gitee":
-          url = "/gitee/page";
-          break;
-        case "github":
-          url = "/github/page";
-          break;
-        case "gitlab":
-          break;
+    renderCharts() {
+      const { chartColors } = this.$store.state.setting;
+
+      if (!this.lineContainer) {
+        this.lineContainer = document.getElementById('lineContainer');
       }
-      this.$request.get(url, {}).then(res => {
-        console.log(res)
-        this.repoForm.data = res.data.rows
-        this.repoForm.dataLoading = false
-      })
+      this.lineChart = echarts.init(this.lineContainer);
+      this.lineChart.setOption(getFolderLineDataSet({ ...chartColors }));
+
+      window.addEventListener('resize', this.updateContainer, false);
+
+      if (!this.scatterContainer) {
+        this.scatterContainer = document.getElementById('scatterContainer');
+      }
+      this.scatterChart = echarts.init(this.scatterContainer);
+      this.scatterChart.setOption(getScatterDataSet({ ...chartColors }));
     },
-    // 对话框
-    formClose(context) {
-      console.log('关闭弹窗，点击关闭按钮、按下ESC、点击蒙层等触发', context);
-      this.repoForm.visible = false;
-    },
-    onFormCancel(context) {
-      console.log('点击了取消按钮', context);
-      this.repoForm.visible = false;
-    },
-    onFormEscKeydown(context) {
-      console.log('按下了ESC', context);
-      this.repoForm.visible = false;
-    },
-    onFormCloseBtnClick(context) {
-      console.log('点击了关闭按钮', context);
-      this.repoForm.visible = false;
-    },
-    onFormConfirmAnother(context) {
-      console.log('点击了确认按钮', context);
-      this.repoForm.visible = false;
-    },
-    onFormOverlayClick(context) {
-      console.log('点击了蒙层', context);
-      this.repoForm.visible = false;
-    }
   },
-});
+};
 </script>
-
 <style lang="less" scoped>
-@import '@/style/variables';
+@import '@/style/variables.less';
 
-.payment-col {
-  display: flex;
+.row-margin {
+  margin-top: 16px;
+}
 
-  .trend-container {
+// 统一增加8px;
+.dashboard-detail-card {
+  padding: 8px;
+
+  /deep/ .t-card__title {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  /deep/ .t-card__actions {
     display: flex;
     align-items: center;
-    margin-left: 8px;
   }
 }
 
-.left-operation-container {
-  padding: 0 0 6px 0;
-  margin-bottom: 16px;
+.dashboard-list-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 170px;
+  padding: 8px;
 
-  .selected-count {
-    display: inline-block;
-    margin-left: var(--td-comp-margin-s);
-    color: var(--td-text-color-secondary);
+  /deep/ .t-card__header {
+    padding-bottom: 8px;
   }
-}
 
-.search-input {
-  width: 360px;
-}
+  /deep/ .t-card__body {
+    flex: 1;
+    display: flex;
+    padding-top: 0;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 
-.t-button + .t-button {
-  margin-left: var(--td-comp-margin-s);
+  &.dark {
+    &:hover {
+      background: var(--td-gray-color-14);
+      cursor: pointer;
+    }
+  }
+
+  &.light {
+    &:hover {
+      background: var(--td-gray-color-14);
+      cursor: pointer;
+    }
+  }
+
+  &__number {
+    font-size: 36px;
+    line-height: 44px;
+    color: var(--td-text-color-primary);
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--td-text-color-placeholder);
+    text-align: left;
+    line-height: 18px;
+
+    &-left {
+      display: flex;
+
+      .icon {
+        margin: 0 8px;
+      }
+    }
+  }
 }
 </style>

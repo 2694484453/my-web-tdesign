@@ -113,9 +113,9 @@ export default Vue.extend({
       columns: [
         {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: '名称',
+          title: '应用名称',
           align: 'left',
-          width: 250,
+          width: 220,
           ellipsis: true,
           colKey: 'name',
           fixed: 'left',
@@ -123,14 +123,22 @@ export default Vue.extend({
         {
           title: '状态',
           align: 'left',
-          width: 200,
+          width: 150,
           ellipsis: true,
           colKey: 'status',
           fixed: 'left',
         },
         {
-          title: '类型',
-          width: 200,
+          title: '标签',
+          align: 'left',
+          width: 120,
+          ellipsis: true,
+          colKey: 'tags',
+          fixed: 'left',
+        },
+        {
+          title: '探针类型',
+          width: 120,
           ellipsis: true,
           colKey: 'type',
         },

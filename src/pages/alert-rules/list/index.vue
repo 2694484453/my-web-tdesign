@@ -69,7 +69,7 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
-        <div>
+        <div style="margin-top: 10px">
           <t-pagination
             v-model="formData.pageNum"
             :total="pagination.total"
@@ -116,8 +116,9 @@ export default Vue.extend({
       selectedRowKeys: [1, 2],
       value: 'first',
       columns: [
+        {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: '名称',
+          title: '分组名称',
           align: 'left',
           width: 260,
           ellipsis: true,
@@ -125,7 +126,7 @@ export default Vue.extend({
           fixed: 'left',
         },
         {
-          title: '间隔(s)',
+          title: '重复间隔(s)',
           width: 120,
           ellipsis: true,
           fixed: 'left',

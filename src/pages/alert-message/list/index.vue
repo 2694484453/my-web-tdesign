@@ -11,11 +11,11 @@
         :style="{ marginBottom: '8px' }"
       >
         <t-row justify="space-between">
-<!--          <div class="left-operation-container">-->
-<!--            <t-button @click="handleSetupContract">新建</t-button>-->
-<!--            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>-->
-<!--            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>-->
-<!--          </div>-->
+            <div class="left-operation-container">
+<!--        <t-button @click="handleSetupContract">新建</t-button>-->
+              <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
+<!--              <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>-->
+            </div>
           <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
              <template #suffix-icon>
                   <search-icon size="20px"/>
@@ -40,16 +40,14 @@
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #state="{ row }">
-            <t-tag v-if="row.state === 'firing'" theme="danger" variant="light">触发</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
-            <t-tag v-if="row.state === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
+            <p v-if="row.state === 'firing'" >触发</p>
           </template>
-          <template #contractType="{ row }">
-            <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
-            <p v-if="row.contractType === CONTRACT_TYPES.SUB">待审核</p>
-            <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">待履行</p>
+          <template #labels.severity="{ row }">
+            <t-tag v-if="row.labels.severity === 'critical'" theme="danger">严重</t-tag>
+            <t-tag v-if="row.labels.severity === 'warning'" theme="warning">警告</t-tag>
+            <t-tag v-if="row.labels.severity === 'info'">信息</t-tag>
+            <t-tag v-if="row.labels.severity === 'unknown'">未知</t-tag>
+            <t-tag v-if="row.labels.severity === 'none'">none</t-tag>
           </template>
           <template #paymentType="{ row }">
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
@@ -66,7 +64,7 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
-        <div>
+        <div style="margin-top: 10px">
           <t-pagination
             v-model="formData.pageNum"
             :total="pagination.total"
@@ -113,6 +111,7 @@ export default Vue.extend({
       selectedRowKeys: [1, 2],
       value: 'first',
       columns: [
+        {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
           title: '告警名称',
           align: 'left',
@@ -147,6 +146,7 @@ export default Vue.extend({
         {
           title: "消息内容",
           width: 250,
+          ellipsis: true,
           colKey: "annotations.description"
         },
         {
