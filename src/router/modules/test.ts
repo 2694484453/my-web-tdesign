@@ -16,14 +16,14 @@ export default [
         meta: {title: '概览'},
       },
       {
-        path: 'test',
-        name: 'TestBase',
+        path: 'testTool',
+        name: 'TestToolBase',
         component: () => import('@/pages/test/frame/index.vue'),
         meta: {title: '调试工具'},
       },
       {
-        path: 'test',
-        name: 'TestBase',
+        path: 'testList',
+        name: 'TestListBase',
         component: () => import('@/pages/test/index.vue'),
         meta: {title: '测试页'},
       },

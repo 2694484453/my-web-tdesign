@@ -1,4 +1,4 @@
-import { RelativityIcon } from 'tdesign-icons-vue';
+import { RelativityIcon, LogoGithubIcon, BulletpointIcon } from 'tdesign-icons-vue';
 import Layout from '@/layouts/index.vue';
 
 export default [
@@ -9,7 +9,7 @@ export default [
     name: 'git',
     meta: {
       title: 'Git仓库管理',
-      icon: RelativityIcon,
+      icon: LogoGithubIcon,
     },
     children: [
       {
@@ -75,7 +75,7 @@ export default [
     name: 'build',
     meta: {
       title: 'Helm&Chart编排',
-      icon: RelativityIcon,
+      icon: BulletpointIcon,
     },
     children: [
       {
