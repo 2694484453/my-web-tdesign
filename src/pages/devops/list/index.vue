@@ -2,13 +2,13 @@
   <div>
     <t-card class="list-card-container" :bordered="false">
       <t-form
-        ref="form"
-        :data="formData"
-        :label-width="80"
-        colon
-        @reset="onReset"
-        @submit="onSubmit"
-        :style="{ marginBottom: '8px' }"
+          ref="form"
+          :data="formData"
+          :label-width="80"
+          colon
+          @reset="onReset"
+          @submit="onSubmit"
+          :style="{ marginBottom: '8px' }"
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
@@ -16,11 +16,11 @@
             <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
-            <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-              <template #suffix-icon>
-                  <search-icon size="20px"/>
-              </template>
-            </t-input>
+          <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+            <template #suffix-icon>
+              <search-icon size="20px"/>
+            </template>
+          </t-input>
           <t-col :span="2" class="operation-container">
             <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
             <t-button type="reset" variant="base" theme="default"> 重置</t-button>
@@ -29,15 +29,15 @@
       </t-form>
       <div class="table-container">
         <t-table
-          :columns="columns"
-          :data="data"
-          :rowKey="rowKey"
-          :verticalAlign="verticalAlign"
-          :hover="hover"
-          :selected-row-keys="selectedRowKeys"
-          :loading="dataLoading"
-          :headerAffixedTop="true"
-          :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
+            :columns="columns"
+            :data="data"
+            :rowKey="rowKey"
+            :verticalAlign="verticalAlign"
+            :hover="hover"
+            :selected-row-keys="selectedRowKeys"
+            :loading="dataLoading"
+            :headerAffixedTop="true"
+            :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
             <span v-if="row.status.succeeded === 1">
@@ -58,7 +58,7 @@
           </template>
           <template #metadata.labels="{ row }">
             <span v-for="(v,k) in row.metadata.labels">
-              <t-tag theme="primary" variant="light">{{ k }}:{{ v}}</t-tag>
+              <t-tag theme="primary" variant="light">{{ k }}:{{ v }}</t-tag>
             </span>
           </template>
           <template #paymentType="{ row }">
@@ -79,32 +79,33 @@
         </t-table>
         <div style="margin-top: 10px">
           <t-pagination
-            v-model="formData.pageNum"
-            :total="pagination.total"
-            :page-size.sync="formData.pageSize"
-            @current-change="onCurrentChange"
-            @page-size-change="onPageSizeChange"
-            @change="onChange"
+              v-model="formData.pageNum"
+              :total="pagination.total"
+              :page-size.sync="formData.pageSize"
+              @current-change="onCurrentChange"
+              @page-size-change="onPageSizeChange"
+              @change="onChange"
           />
         </div>
       </div>
     </t-card>
     <t-dialog
-      header="确认删除当前所选？"
-      :body="confirmBody"
-      :visible.sync="confirmVisible"
-      @confirm="onConfirmDelete"
-      :onCancel="onCancel">
+        header="确认删除当前所选？"
+        :body="confirmBody"
+        :visible.sync="confirmVisible"
+        @confirm="onConfirmDelete"
+        :onCancel="onCancel">
     </t-dialog>
     <t-drawer
-      :visible="editor.visible"
-      :header="editor.header"
-      :on-overlay-click="() => (editor.visible = false)"
-      placement="right"
-      :sizeDraggable="true"
-      :on-size-drag-end="handleSizeDrag"
-      size="50%"
-      @cancel="editor.visible = false">
+        :visible="editor.visible"
+        :header="editor.header"
+        :on-overlay-click="() => (editor.visible = false)"
+        placement="right"
+        :sizeDraggable="true"
+        :on-size-drag-end="handleSizeDrag"
+        size="50%"
+        @cancel="editor.visible = false"
+        @onClose="onClose">
       <MonacoEditor :config="editor" :value="editor.value"/>
     </t-drawer>
   </div>
@@ -213,8 +214,8 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10,
         selectedJob: {
-           jobName: "",
-           nameSpace: ""
+          jobName: "",
+          nameSpace: ""
         }
       },
       typeList: [],
@@ -278,7 +279,7 @@ export default Vue.extend({
       this.connectSSE({
         jobName: row.metadata.name,
         nameSpace: row.metadata.namespace
-      },"onmessage")
+      }, "onmessage")
     },
     handleSetupContract() {
       this.$router.push('/prometheus/add');
@@ -314,6 +315,9 @@ export default Vue.extend({
     onCancel() {
       this.resetIdx();
     },
+    onClose() {
+      this.connectSSE(this.formData.selectedJob, "close")
+    },
     resetIdx() {
       this.deleteIdx = -1;
     },
@@ -334,9 +338,9 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/devops/job/page', {
-          params: this.formData
-        }).then((res) => {
+          .get('/devops/job/page', {
+            params: this.formData
+          }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.rows;
           this.pagination = res.data.total
