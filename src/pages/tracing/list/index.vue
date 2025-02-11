@@ -2,46 +2,46 @@
   <div>
     <t-card class="list-card-container" :bordered="false">
       <t-form
-        ref="form"
-        :data="formData"
-        :label-width="80"
-        colon
-        @reset="onReset"
-        @submit="onSubmit"
-        :style="{ marginBottom: '8px' }"
+          ref="form"
+          :data="formData"
+          :label-width="80"
+          colon
+          @reset="onReset"
+          @submit="onSubmit"
+          :style="{ marginBottom: '8px' }"
       >
-      <t-row justify="space-between">
-        <div class="left-operation-container">
-          <t-button @click="handleSetupContract"> 新建</t-button>
-          <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
-          <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
-        </div>
-        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-          <template #suffix-icon>
-            <search-icon size="20px"/>
-          </template>
-        </t-input>
-        <t-col :span="2" class="operation-container">
-          <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
-          <t-button type="reset" variant="base" theme="default"> 重置</t-button>
-        </t-col>
-      </t-row>
+        <t-row justify="space-between">
+          <div class="left-operation-container">
+            <t-button @click="handleSetupContract"> 新建</t-button>
+            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
+            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
+          </div>
+          <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+            <template #suffix-icon>
+              <search-icon size="20px"/>
+            </template>
+          </t-input>
+          <t-col :span="2" class="operation-container">
+            <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
+            <t-button type="reset" variant="base" theme="default"> 重置</t-button>
+          </t-col>
+        </t-row>
       </t-form>
       <div class="table-container">
         <t-table
-          :columns="columns"
-          :data="data"
-          :rowKey="rowKey"
-          :verticalAlign="verticalAlign"
-          :hover="hover"
-          :selected-row-keys="selectedRowKeys"
-          :loading="dataLoading"
-          :headerAffixedTop="true"
-          :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
+            :columns="columns"
+            :data="data"
+            :rowKey="rowKey"
+            :verticalAlign="verticalAlign"
+            :hover="hover"
+            :selected-row-keys="selectedRowKeys"
+            :loading="dataLoading"
+            :headerAffixedTop="true"
+            :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
-            <t-tag v-if="row.status === 'fail'" theme="danger" variant="light">{{row.s}}</t-tag>
-            <t-tag v-if="row.status === 'ok'" theme="success" variant="light">{{row.status}}</t-tag>
+            <t-tag v-if="row.status === 'fail'" theme="danger" variant="light">{{ row.s }}</t-tag>
+            <t-tag v-if="row.status === 'ok'" theme="success" variant="light">{{ row.status }}</t-tag>
           </template>
           <template #contractType="{ row }">
             <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
@@ -59,28 +59,28 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickDetail()">详情</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">查看</a>
+            <!--            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>-->
           </template>
         </t-table>
       </div>
     </t-card>
     <div>
       <t-pagination
-        v-model="formData.pageNum"
-        :total="pagination.total"
-        :page-size.sync="formData.pageSize"
-        @current-change="onCurrentChange"
-        @page-size-change="onPageSizeChange"
-        @change="onChange"
+          v-model="formData.pageNum"
+          :total="pagination.total"
+          :page-size.sync="formData.pageSize"
+          @current-change="onCurrentChange"
+          @page-size-change="onPageSizeChange"
+          @change="onChange"
       />
     </div>
     <t-dialog
-      header="确认删除当前所选合同？"
-      :body="confirmBody"
-      :visible.sync="confirmVisible"
-      @confirm="onConfirmDelete"
-      :onCancel="onCancel"
+        header="确认删除当前所选合同？"
+        :body="confirmBody"
+        :visible.sync="confirmVisible"
+        @confirm="onConfirmDelete"
+        :onCancel="onCancel"
     >
     </t-dialog>
   </div>
@@ -199,20 +199,20 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/tracing/traces/page',{
-          params: this.formData
-        }).then((res) => {
-          if (res.data.code === 200) {
-            this.data = res.data.rows;
-            this.pagination = res.data.total
-          }
-        })
-        .catch((e: Error) => {
-          console.log(e);
-        })
-        .finally(() => {
-          this.dataLoading = false;
-        });
+          .get('/tracing/app/page', {
+            params: this.formData
+          }).then((res) => {
+        if (res.data.code === 200) {
+          this.data = res.data.rows;
+          this.pagination = res.data.total
+        }
+      })
+          .catch((e: Error) => {
+            console.log(e);
+          })
+          .finally(() => {
+            this.dataLoading = false;
+          });
     },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
@@ -231,8 +231,9 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
-    handleClickDetail() {
-      this.$router.push('/detail/base');
+    handleClickDetail(row) {
+      console.log(row)
+      this.$router.push('/tracing/traces?service=' + row.name);
     },
     handleSetupContract() {
       this.$router.push('/form/base');

@@ -115,6 +115,7 @@ export default {
       this.updateContainer();
     });
     this.renderCharts();
+    this.getOverViews();
   },
   methods: {
     /** 采购商品满意度选择 */
@@ -156,6 +157,11 @@ export default {
       this.scatterChart = echarts.init(this.scatterContainer);
       this.scatterChart.setOption(getScatterDataSet({ ...chartColors }));
     },
+    getOverViews(){
+      this.$request.get("/devops/job/overView").then(res=>{
+          console.log(res)
+      })
+    }
   },
 };
 </script>

@@ -169,6 +169,7 @@ export default Vue.extend({
       },
       formData: {
         name: "",
+        service: "",
         type: "",
         pageNum: 1,
         pageSize: 10
@@ -191,6 +192,8 @@ export default Vue.extend({
     },
   },
   mounted() {
+    // 路径取参数
+    this.formData.service = this.$route.query.service
   },
   created() {
     this.getList()

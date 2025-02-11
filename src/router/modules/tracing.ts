@@ -28,7 +28,7 @@ export default [
         meta: {title: '应用列表'},
       },
       {
-        path: 'tracing',
+        path: 'traces',
         name: 'tracingBase',
         component: () => import('@/pages/tracing/list/traces.vue'),
         meta: {title: '调用链分析'},
