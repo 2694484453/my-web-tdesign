@@ -63,7 +63,7 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickSuccess()">执行</a>
+            <a class="t-button-link" @click="handleClickSuccess()">打包</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
             <a class="t-button-link" @click="handleClickEdit(slotProps.row);drawer.visible=true;">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>

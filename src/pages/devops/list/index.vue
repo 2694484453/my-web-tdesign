@@ -97,15 +97,18 @@
         :onCancel="onCancel">
     </t-dialog>
     <t-drawer
-        :visible="editor.visible"
+        :visible.sync="editor.visible"
         :header="editor.header"
         :on-overlay-click="() => (editor.visible = false)"
         placement="right"
+        destroyOnClose
+        showOverlay
         :sizeDraggable="true"
         :on-size-drag-end="handleSizeDrag"
         size="50%"
-        @cancel="editor.visible = false;connectSSE(selectedJob,'close')"
-        @onClose="onClose">
+        @cancel="closeSSE;editor.visible = false"
+        @close="handleClose"
+        :onConfirm="handleClose">
       <MonacoEditor :config="editor" :value="editor.value"/>
     </t-drawer>
   </div>
@@ -228,7 +231,8 @@ export default Vue.extend({
       selectedJob: {
         jobName: "",
         nameSpace: ""
-      }
+      },
+      eventSource: null,
     };
   },
   computed: {
@@ -248,6 +252,11 @@ export default Vue.extend({
   created() {
     //this.getTypeList()
     this.getList()
+  },
+  beforeDestroy() {
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
   },
   methods: {
     getContainer() {
@@ -315,8 +324,8 @@ export default Vue.extend({
     onCancel() {
       this.resetIdx();
     },
-    onClose() {
-      this.connectSSE(this.selectedJob, "close")
+    handleClose() {
+      this.closeSSE();
     },
     resetIdx() {
       this.deleteIdx = -1;
@@ -371,38 +380,36 @@ export default Vue.extend({
         console.error('WebSocket error observed:', error);
       };
     },
-    connectSSE(params, operation) {
-      const eventSource = new EventSource("https://my-server.gpg123.vip/devops/job/jobLogs?jobName=" + params.jobName + "&nameSpace=" + params.nameSpace);
-      eventSource.onmessage = (event) => {
-        //console.log(event)
-        // 传递给monaco
-        this.editor.value = this.editor.value + "\n\t" + event.data
+    connectSSE(params) {
+      if (!!window.EventSource) {
+        // 打开连接
+        this.eventSource = new EventSource("https://my-server.gpg123.vip/devops/job/jobLogs?jobName=" + params.jobName + "&nameSpace=" + params.nameSpace);
+        // 接收消息
+        this.eventSource.onmessage = (event) => {
+          //console.log(event)
+          // 传递给monaco
+          this.editor.value = this.editor.value + "\n\t" + event.data
+        }
+        // 打开通道
+        this.eventSource.onopen = (event) => {
+          //console.log(event)
+        };
+        // 异常
+        this.eventSource.onerror = (event) => {
+          //console.log(event)
+        };
+      } else {
+        console.log('您的浏览器不支持SSE.');
       }
-      switch (operation) {
-          // 接受
-        case "onmessage":
-          eventSource.onmessage = (event) => {
-            //console.log(event)
-            // 传递给monaco
-            this.editor.value = this.editor.value + "\n\t" + event.data
-          }
-          break;
-        case "onopen":
-          eventSource.onopen = (event) => {
-            //console.log(event)
-          };
-          break;
-        case "onerror":
-          eventSource.onerror = (event) => {
-            //console.log(event)
-          };
-          break;
-        case "close":
-          eventSource.close();
-          break;
+    },
+    closeSSE() {
+      console.log("调用关闭SSE...");
+      if (this.eventSource) {
+        this.eventSource.close();
+        console.log("SSE连接已关闭");
       }
-    }
-  },
+    },
+  }
 });
 </script>
 

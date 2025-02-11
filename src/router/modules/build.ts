@@ -1,4 +1,4 @@
-import { RelativityIcon, BulletpointIcon } from 'tdesign-icons-vue';
+import { BulletpointIcon } from 'tdesign-icons-vue';
 import Layout from '@/layouts/index.vue';
 
 export default [
@@ -14,15 +14,15 @@ export default [
     children: [
       {
         path: 'chart',
-        name: 'chart',
+        name: 'chartBase',
         component: () => import('@/pages/build/helm/index.vue'),
         meta: { title: 'chart制作' },
       },
       {
-        path: 'podList',
-        name: 'podList',
-        component: () => import('@/pages/devops/pod/index.vue'),
-        meta: { title: 'chart仓库' },
+        path: 'chartRepo',
+        name: 'chartRepoBase',
+        component: () => import('@/pages/repo/helm/index.vue'),
+        meta: { title: '本地制品' },
       },
     ],
   }
