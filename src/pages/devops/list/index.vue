@@ -213,10 +213,6 @@ export default Vue.extend({
         type: "",
         pageNum: 1,
         pageSize: 10,
-        selectedJob: {
-          jobName: "",
-          nameSpace: ""
-        }
       },
       typeList: [],
       // monaco
@@ -228,6 +224,10 @@ export default Vue.extend({
         header: "",
         // 抽屉
         visible: false,
+      },
+      selectedJob: {
+        jobName: "",
+        nameSpace: ""
       }
     };
   },
@@ -316,7 +316,7 @@ export default Vue.extend({
       this.resetIdx();
     },
     onClose() {
-      this.connectSSE(this.formData.selectedJob, "close")
+      this.connectSSE(this.selectedJob, "close")
     },
     resetIdx() {
       this.deleteIdx = -1;
