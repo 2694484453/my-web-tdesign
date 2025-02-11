@@ -72,6 +72,7 @@
             </p>
           </template>
           <template #op="slotProps">
+            <a class="t-button-link" @click="">重试</a>
             <a class="t-button-link" @click="editor.visible = true;handleClickDetail(slotProps.row)">日志流</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
@@ -186,7 +187,7 @@ export default Vue.extend({
         {
           align: 'left',
           fixed: 'right',
-          width: 150,
+          width: 200,
           colKey: 'op',
           title: '操作',
         },
