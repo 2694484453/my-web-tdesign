@@ -211,7 +211,11 @@ export default Vue.extend({
         name: "",
         type: "",
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
+        selectedJob: {
+           jobName: "",
+           nameSpace: ""
+        }
       },
       typeList: [],
       // monaco
@@ -268,11 +272,13 @@ export default Vue.extend({
     handleClickDetail(row) {
       this.editor.header = row.metadata.name
       this.editor.value = ""
+      this.formData.selectedJob.jobName = row.metadata.name;
+      this.formData.selectedJob.nameSpace = row.metadata.namespace;
       // 连接sse
       this.connectSSE({
         jobName: row.metadata.name,
         nameSpace: row.metadata.namespace
-      })
+      },"onmessage")
     },
     handleSetupContract() {
       this.$router.push('/prometheus/add');
@@ -361,20 +367,31 @@ export default Vue.extend({
         console.error('WebSocket error observed:', error);
       };
     },
-    connectSSE(params) {
+    connectSSE(params, operation) {
       const eventSource = new EventSource("https://my-server.gpg123.vip/devops/job/podLogs?jobName=" + params.jobName + "&nameSpace=" + params.nameSpace);
-      // 接受
-      eventSource.onmessage = (event) => {
-        //console.log(event)
-        // 传递给monaco
-        this.editor.value = this.editor.value + "\n\t" + event.data
+      switch (operation) {
+          // 接受
+        case "onmessage":
+          eventSource.onmessage = (event) => {
+            //console.log(event)
+            // 传递给monaco
+            this.editor.value = this.editor.value + "\n\t" + event.data
+          }
+          break;
+        case "onopen":
+          eventSource.onopen = (event) => {
+            //console.log(event)
+          };
+          break;
+        case "onerror":
+          eventSource.onerror = (event) => {
+            //console.log(event)
+          };
+          break;
+        case "close":
+          eventSource.close();
+          break;
       }
-      eventSource.onopen = (event) => {
-        //console.log(event)
-      };
-      eventSource.onerror = (event) => {
-        //console.log(event)
-      };
     }
   },
 });
