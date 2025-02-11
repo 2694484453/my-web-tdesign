@@ -28,9 +28,15 @@ export default [
     meta: {title: 'CoreDNS管理', icon: CloudIcon},
     children: [
       {
+        path: 'overView',
+        name: 'OverViewBase',
+        component: () => import('@/pages/coredns-cloud/index.vue'),
+        meta: {title: '概览'},
+      },
+      {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/coredns-cloud/dashboard.vue'),
+        component: () => import('@/pages/coredns-cloud/frame/index.vue'),
         meta: {title: '监控面板'},
       },
       {

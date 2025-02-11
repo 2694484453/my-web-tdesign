@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'http://grafana.ecs.gpg123.vip:3000/public-dashboards/784b7efa82494264aacbb8a8fbe41841',
+      frameSrc: 'https://grafana.gpg123.vip/d/k8s_system_coredns/kubernetes-system-coredns?orgId=1&from=now-1h&to=now&timezone=browser&var-datasource=bcbe8c6b-5b42-48e1-8e9d-e6e30f72084a&var-cluster=&var-instance=$__all&var-protocol=udp&var-resolution=30s&var-job=coredns&refresh=30s',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };
