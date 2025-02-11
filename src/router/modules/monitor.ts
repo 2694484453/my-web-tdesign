@@ -31,9 +31,15 @@ export default [
     meta: {title: '监控中心', icon: PreciseMonitorIcon},
     children: [
       {
+        path: 'overView',
+        name: 'OverViewBase',
+        component: () => import('@/pages/prometheus-cloud/index.vue'),
+        meta: {title: '概览'},
+      },
+      {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/prometheus-cloud/dashboard.vue'),
+        component: () => import('@/pages/prometheus-cloud/frame/index.vue'),
         meta: {title: '服务面板'},
       },
       {
@@ -83,9 +89,15 @@ export default [
     meta: {title: '告警中心', icon: NotificationIcon},
     children: [
       {
+        path: 'overView',
+        name: 'overViewBase',
+        component: () => import('@/pages/alert-cloud/index.vue'),
+        meta: {title: '服务面板'},
+      },
+      {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/alert-cloud/index.vue'),
+        component: () => import('@/pages/alert-cloud/frame/index.vue'),
         meta: {title: '服务面板'},
       },
       {
