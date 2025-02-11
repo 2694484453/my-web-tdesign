@@ -268,9 +268,9 @@ export default Vue.extend({
     handleClickDetail(row) {
       this.editor.header = row.metadata.name
       this.editor.value = ""
-      // 连接ws
+      // 连接sse
       this.connectSSE({
-        podName: row.metadata.name,
+        jobName: row.metadata.name,
         nameSpace: row.metadata.namespace
       })
     },
@@ -362,7 +362,7 @@ export default Vue.extend({
       };
     },
     connectSSE(params) {
-      const eventSource = new EventSource("https://my-server.gpg123.vip/sse/podLogs?podName=" + params.podName + "&nameSpace=" + params.nameSpace);
+      const eventSource = new EventSource("https://my-server.gpg123.vip/devops/job/podLogs?jobName=" + params.jobName + "&nameSpace=" + params.nameSpace);
       // 接受
       eventSource.onmessage = (event) => {
         //console.log(event)
