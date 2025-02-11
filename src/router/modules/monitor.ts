@@ -92,7 +92,7 @@ export default [
         path: 'overView',
         name: 'overViewBase',
         component: () => import('@/pages/alert-cloud/index.vue'),
-        meta: {title: '服务面板'},
+        meta: {title: '概览'},
       },
       {
         path: 'dashboard',

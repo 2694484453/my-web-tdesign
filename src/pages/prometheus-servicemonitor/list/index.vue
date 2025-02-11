@@ -15,30 +15,11 @@
             <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出配置</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
-          <t-col :span="3">
-            <t-form-item label="名称" name="name">
-              <t-input v-model="formData.name" :style="{ width: '200px' }" placeholder="请输入内容"/>
-            </t-form-item>
-          </t-col>
-          <t-col :span="3">
-            <t-form-item label="类型" name="type">
-              <t-select
-                v-model="formData.type"
-                :style="{ width: '200px' }"
-                placeholder="请选择类型"
-                class="demo-select-base"
-                clearable>
-                <t-option v-for="(item, index) in typeList" :key="index" :value="item" :label="item">
-                  {{ item }}
-                </t-option>
-              </t-select>
-            </t-form-item>
-          </t-col>
-          <!--        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>-->
-          <!--          <template #suffix-icon>-->
-          <!--            <search-icon size="20px"/>-->
-          <!--          </template>-->
-          <!--        </t-input>-->
+             <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+               <template #suffix-icon>
+                   <search-icon size="20px"/>
+               </template>
+             </t-input>
           <t-col :span="2" class="operation-container">
             <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
             <t-button type="reset" variant="base" theme="default"> 重置</t-button>
@@ -52,7 +33,6 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
           @page-change="rehandlePageChange"
@@ -78,6 +58,15 @@
         </t-table>
       </div>
     </t-card>
+    <div style="margin-top: 10px">
+      <t-pagination
+          v-model="formData.pageNum"
+          :total="pagination.total"
+          :page-size.sync="formData.pageSize"
+          @current-change="onCurrentChange"
+          @page-size-change="onPageSizeChange"
+          @change="onChange"/>
+    </div>
     <t-dialog
       header="确认删除当前所选合同？"
       :body="confirmBody"
@@ -180,7 +169,11 @@ export default Vue.extend({
       deleteType: -1,
       formData: {
         name: "",
-        type: ""
+        type: "",
+        namespace: "",
+        pageSize: 10,
+        pageNum: 1,
+        current: 1,
       },
       typeList: []
     };
@@ -207,14 +200,20 @@ export default Vue.extend({
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
-    rehandlePageChange(curr, pageInfo) {
-      console.log('分页变化', curr, pageInfo);
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
+      this.getList()
     },
-    rehandleSelectChange(selectedRowKeys: number[]) {
-      this.selectedRowKeys = selectedRowKeys;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
     },
-    rehandleChange(changeParams, triggerAndData) {
-      console.log('统一Change', changeParams, triggerAndData);
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
     },
     handleClickDetail(row) {
       //this.$router.push('/detail/base');
@@ -294,10 +293,7 @@ export default Vue.extend({
           //console.log(res.data.data)
           this.data = res.data.rows;
           //console.log(this.data)
-          this.pagination = {
-            ...this.pagination,
-            total: res.data.data.length,
-          };
+          this.pagination.total = res.data.total;
         }
       })
         .catch((e: Error) => {

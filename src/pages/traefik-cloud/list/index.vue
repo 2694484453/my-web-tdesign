@@ -63,17 +63,17 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
-        <div>
-          <t-pagination
-            v-model="formData.pageNum"
-            :total="pagination.total"
-            :page-size.sync="formData.pageSize"
-            @current-change="onCurrentChange"
-            @page-size-change="onPageSizeChange"
-            @change="onChange"/>
-        </div>
       </div>
     </t-card>
+    <div style="margin-top: 10px">
+      <t-pagination
+          v-model="formData.pageNum"
+          :total="pagination.total"
+          :page-size.sync="formData.pageSize"
+          @current-change="onCurrentChange"
+          @page-size-change="onPageSizeChange"
+          @change="onChange"/>
+    </div>
     <t-dialog
       header="确认删除当前所选？"
       :body="confirmBody"

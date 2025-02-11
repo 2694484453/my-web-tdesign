@@ -22,7 +22,7 @@ export default [
         path: 'maven',
         name: 'maven',
         component: () => import('@/pages/devops/list/index.vue'),
-        meta: { title: '任务管理' },
+        meta: { title: 'Job任务' },
       },
       // {
       //   path: 'maven',

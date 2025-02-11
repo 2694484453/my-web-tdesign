@@ -40,15 +40,25 @@
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
-            <t-tag v-if="row.status === CONTRACT_STATUS.FAIL" theme="danger" variant="light">审核失败</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
+            <span v-if="row.status.succeeded === 1">
+              <t-tag theme="success" variant="light">已完成</t-tag>
+            </span>
+            <span v-if="row.status.successed === 0">
+              <span v-if="row.status.ready === 0">
+                <t-tag variant="light">未运行</t-tag>
+              </span>
+              <span v-if="row.status.ready === 1">
+                <t-tag theme="warning" variant="light">运行中</t-tag>
+              </span>
+              <span v-if="row.status.terminating === 1">
+                 <t-tag theme="warning" variant="light">等待中</t-tag>
+              </span>
+               <t-tag theme="danger" variant="light">失败</t-tag>
+            </span>
           </template>
           <template #metadata.labels="{ row }">
-            <span v-for="(value,key) in row.metadata.labels">
-              <p>{{ key }}:{{ value }}</p>
+            <span v-for="(v,k) in row.metadata.labels">
+              <t-tag theme="primary" variant="light">{{ k }}:{{ v}}</t-tag>
             </span>
           </template>
           <template #paymentType="{ row }">
@@ -66,7 +76,7 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
-        <div>
+        <div style="margin-top: 10px">
           <t-pagination
             v-model="formData.pageNum"
             :total="pagination.total"
@@ -79,7 +89,7 @@
       </div>
     </t-card>
     <t-dialog
-      header="确认删除当前所选合同？"
+      header="确认删除当前所选？"
       :body="confirmBody"
       :visible.sync="confirmVisible"
       @confirm="onConfirmDelete"
@@ -128,7 +138,7 @@ export default Vue.extend({
       columns: [
         {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: '名称',
+          title: '任务名称',
           align: 'left',
           width: 220,
           ellipsis: true,
@@ -143,21 +153,23 @@ export default Vue.extend({
           colKey: 'kind',
         },
         {
-          title: '状态',
-          colKey: 'status.ready',
-          width: 100, cell:
-            {col: 'status'}
-        },
-        {
-          title: '命名空间',
-          colKey: 'metadata.namespace',
-          width: 100,
-        },
-        {
           title: '标签',
           width: 200,
           ellipsis: true,
           colKey: 'metadata.labels',
+        },
+        {
+          title: '状态',
+          colKey: 'status',
+          width: 100,
+          ellipsis: true,
+          cell: {col: 'status'}
+        },
+        {
+          title: '命名空间',
+          colKey: 'metadata.namespace',
+          ellipsis: true,
+          width: 100,
         },
         {
           title: '最近一次执行',
@@ -315,7 +327,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/podLog/page', {
+        .get('/devops/job/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
