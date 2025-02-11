@@ -104,7 +104,7 @@
         :sizeDraggable="true"
         :on-size-drag-end="handleSizeDrag"
         size="50%"
-        @cancel="editor.visible = false"
+        @cancel="editor.visible = false;connectSSE(selectedJob,'close')"
         @onClose="onClose">
       <MonacoEditor :config="editor" :value="editor.value"/>
     </t-drawer>
@@ -273,8 +273,8 @@ export default Vue.extend({
     handleClickDetail(row) {
       this.editor.header = row.metadata.name
       this.editor.value = ""
-      this.formData.selectedJob.jobName = row.metadata.name;
-      this.formData.selectedJob.nameSpace = row.metadata.namespace;
+      this.selectedJob.jobName = row.metadata.name;
+      this.selectedJob.nameSpace = row.metadata.namespace;
       // 连接sse
       this.connectSSE({
         jobName: row.metadata.name,
@@ -372,7 +372,12 @@ export default Vue.extend({
       };
     },
     connectSSE(params, operation) {
-      const eventSource = new EventSource("https://my-server.gpg123.vip/devops/job/podLogs?jobName=" + params.jobName + "&nameSpace=" + params.nameSpace);
+      const eventSource = new EventSource("https://my-server.gpg123.vip/devops/job/jobLogs?jobName=" + params.jobName + "&nameSpace=" + params.nameSpace);
+      eventSource.onmessage = (event) => {
+        //console.log(event)
+        // 传递给monaco
+        this.editor.value = this.editor.value + "\n\t" + event.data
+      }
       switch (operation) {
           // 接受
         case "onmessage":
