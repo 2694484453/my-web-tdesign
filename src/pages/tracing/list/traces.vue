@@ -96,6 +96,27 @@
         @cancel="drawer.visible = false"
         @close="drawer.visible = false"
         @onConfirm="drawer.visible = false">
+      <t-space direction="vertical" style="width: 100%">
+        <t-collapse @change="handlePanelChange">
+          <t-collapse-panel header="tags">
+            <t-collapse>
+              <span v-for="(k,v) in drawer.value.processes">
+                <span v-for="tagItem in v.tags">
+                  <span v-for="item in tagItem">
+                    <t-tag theme="primary"> 这是子面板1</t-tag>
+                  </span>
+                </span>
+              </span>
+            </t-collapse>
+
+          </t-collapse-panel>
+          <!--          <t-collapse-panel header="process">-->
+          <!--            <t-collapse v-for="(k,v) in drawer.value.processes.p1.tags">-->
+          <!--              <t-collapse-panel header="子面板1"> 这是子面板1</t-collapse-panel>-->
+          <!--            </t-collapse>-->
+          <!--          </t-collapse-panel>-->
+        </t-collapse>
+      </t-space>
     </t-drawer>
   </div>
 </template>
@@ -196,7 +217,8 @@ export default Vue.extend({
       //drawer
       drawer: {
         visible: false,
-        header: ""
+        header: "",
+        value: {}
       }
     };
   },
@@ -260,6 +282,7 @@ export default Vue.extend({
     },
     handleClickDetail(row) {
       this.drawer.header = row.traceID;
+      this.drawer.value = row;
     },
     handleSetupContract() {
       this.$router.push('/form/base');
@@ -295,6 +318,10 @@ export default Vue.extend({
     onSubmit(data) {
       console.log(this.formData);
       this.getList(this.formData);
+    },
+    // 折叠面板
+    handlePanelChange(val) {
+      this.currentItem = val;
     },
   },
 });
