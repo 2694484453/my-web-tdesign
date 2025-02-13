@@ -40,7 +40,7 @@
             :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
-            <t-tag v-if="row.status === 'fail'" theme="danger" variant="light">{{ row.s }}</t-tag>
+            <t-tag v-if="row.status === 'fail'" theme="danger" variant="light">{{ row.status }}</t-tag>
             <t-tag v-if="row.status === 'ok'" theme="success" variant="light">{{ row.status }}</t-tag>
           </template>
           <template #contractType="{ row }">
@@ -59,7 +59,7 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="dialog.visible=true">查看</a>
+            <a class="t-button-link" @click="drawer.visible=true;handleClickDetail(slotProps.row)">查看</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
@@ -83,22 +83,20 @@
         :onCancel="onCancel"
     >
     </t-dialog>
-    <t-space>
-      <t-dialog
-          v-show="dialog.visible"
-          :header="dialog.header"
-          width="75%"
-          :confirm-on-enter="true"
-          :onclose="close"
-      >
-        <t-space direction="vertical" style="width: 100%">
-          <div>
-            <p>这是弹框内容</p>
-            <p>This is Dialog Content</p>
-          </div>
-        </t-space>
-      </t-dialog>
-    </t-space>
+    <t-drawer
+        :visible.sync="drawer.visible"
+        :header="drawer.header"
+        :on-overlay-click="() => (drawer.visible = false)"
+        placement="right"
+        destroyOnClose
+        showOverlay
+        :sizeDraggable="true"
+        :on-size-drag-end="handleSizeDrag"
+        size="50%"
+        @cancel="drawer.visible = false"
+        @close="drawer.visible = false"
+        @onConfirm="drawer.visible = false">
+    </t-drawer>
   </div>
 </template>
 <script lang="ts">
@@ -108,10 +106,12 @@ import Trend from '@/components/trend/index.vue';
 import {prefix} from '@/config/global';
 
 import {CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES} from '@/constants';
+import MonacoEditor from "@/components/editor/MonacoEditor.vue";
 
 export default Vue.extend({
   name: 'ListBase',
   components: {
+    MonacoEditor,
     SearchIcon,
     Trend,
   },
@@ -193,7 +193,8 @@ export default Vue.extend({
       searchValue: '',
       confirmVisible: false,
       deleteIdx: -1,
-      dialog: {
+      //drawer
+      drawer: {
         visible: false,
         header: ""
       }
@@ -214,9 +215,11 @@ export default Vue.extend({
   mounted() {
     // 路径取参数
     this.formData.service = this.$route.query.service
+    // 获取列表
+    this.getList()
   },
   created() {
-    this.getList()
+
   },
   methods: {
     getList() {
@@ -229,13 +232,11 @@ export default Vue.extend({
           this.data = res.data.rows;
           this.pagination = res.data.total
         }
-      })
-          .catch((e: Error) => {
-            console.log(e);
-          })
-          .finally(() => {
-            this.dataLoading = false;
-          });
+      }).catch((e: Error) => {
+        console.log(e);
+      }).finally(() => {
+        this.dataLoading = false;
+      });
     },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
@@ -254,8 +255,11 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
-    handleClickDetail() {
-      this.$router.push('/detail/base');
+    handleSizeDrag({size}) {
+      console.log('size drag size: ', size);
+    },
+    handleClickDetail(row) {
+      this.drawer.header = row.traceID;
     },
     handleSetupContract() {
       this.$router.push('/form/base');
@@ -279,7 +283,7 @@ export default Vue.extend({
     onCancel() {
       this.resetIdx();
     },
-    close(){
+    close() {
       this.dialog.visible = false;
     },
     resetIdx() {
