@@ -102,7 +102,7 @@
             <t-collapse>
               <span v-for="(k,v) in drawer.value.processes">
                 <span v-for="tagItem in v.tags">
-                  <span v-for="item in tagItem">
+                  <span v-for="(spanKey,SpanValue) in tagItem">
                     <t-tag theme="primary"> 这是子面板1</t-tag>
                   </span>
                 </span>
