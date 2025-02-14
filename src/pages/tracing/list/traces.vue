@@ -2,13 +2,13 @@
   <div>
     <t-card class="list-card-container" :bordered="false">
       <t-form
-          ref="form"
-          :data="formData"
-          :label-width="80"
-          colon
-          @reset="onReset"
-          @submit="onSubmit"
-          :style="{ marginBottom: '8px' }"
+        ref="form"
+        :data="formData"
+        :label-width="80"
+        colon
+        @reset="onReset"
+        @submit="onSubmit"
+        :style="{ marginBottom: '8px' }"
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
@@ -29,19 +29,22 @@
       </t-form>
       <div class="table-container">
         <t-table
-            :columns="columns"
-            :data="data"
-            :rowKey="rowKey"
-            :verticalAlign="verticalAlign"
-            :hover="hover"
-            :selected-row-keys="selectedRowKeys"
-            :loading="dataLoading"
-            :headerAffixedTop="true"
-            :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
+          :columns="columns"
+          :data="data"
+          :rowKey="rowKey"
+          :verticalAlign="verticalAlign"
+          :hover="hover"
+          :selected-row-keys="selectedRowKeys"
+          :loading="dataLoading"
+          :headerAffixedTop="true"
+          :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
-          <template #status="{ row }">
-            <t-tag v-if="row.status === 'fail'" theme="danger" variant="light">{{ row.status }}</t-tag>
-            <t-tag v-if="row.status === 'ok'" theme="success" variant="light">{{ row.status }}</t-tag>
+          <template #warnings="{ row }">
+            <t-tag v-if="row.warnings !== null" theme="danger" variant="light">{{ row.status }}</t-tag>
+            <t-tag v-if="row.warnings === null" theme="success" variant="light">无</t-tag>
+          </template>
+          <template #spans="{ row }">
+            <span>{{ row.spans.length }}</span>
           </template>
           <template #contractType="{ row }">
             <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
@@ -67,54 +70,59 @@
     </t-card>
     <div>
       <t-pagination
-          v-model="formData.pageNum"
-          :total="pagination.total"
-          :page-size.sync="formData.pageSize"
-          @current-change="onCurrentChange"
-          @page-size-change="onPageSizeChange"
-          @change="onChange"
+        v-model="formData.pageNum"
+        :total="pagination.total"
+        :page-size.sync="formData.pageSize"
+        @current-change="onCurrentChange"
+        @page-size-change="onPageSizeChange"
+        @change="onChange"
       />
     </div>
     <t-dialog
-        header="确认删除当前所选合同？"
-        :body="confirmBody"
-        :visible.sync="confirmVisible"
-        @confirm="onConfirmDelete"
-        :onCancel="onCancel"
+      header="确认删除当前所选？"
+      :body="confirmBody"
+      :visible.sync="confirmVisible"
+      @confirm="onConfirmDelete"
+      :onCancel="onCancel"
     >
     </t-dialog>
     <t-drawer
-        :visible.sync="drawer.visible"
-        :header="drawer.header"
-        :on-overlay-click="() => (drawer.visible = false)"
-        placement="right"
-        destroyOnClose
-        showOverlay
-        :sizeDraggable="true"
-        :on-size-drag-end="handleSizeDrag"
-        size="50%"
-        @cancel="drawer.visible = false"
-        @close="drawer.visible = false"
-        @onConfirm="drawer.visible = false">
+      :visible.sync="drawer.visible"
+      :header="drawer.header"
+      :on-overlay-click="() => (drawer.visible = false)"
+      placement="right"
+      destroyOnClose
+      showOverlay
+      :sizeDraggable="true"
+      :on-size-drag-end="handleSizeDrag"
+      size="50%"
+      @cancel="drawer.visible = false"
+      @close="drawer.visible = false"
+      @onConfirm="drawer.visible = false">
       <t-space direction="vertical" style="width: 100%">
         <t-collapse @change="handlePanelChange">
           <t-collapse-panel header="tags">
             <t-collapse>
-              <span v-for="(k,v) in drawer.value.processes">
-                <span v-for="tagItem in v.tags">
-                  <span v-for="(spanKey,SpanValue) in tagItem">
-                    <t-tag theme="primary"> 这是子面板1</t-tag>
-                  </span>
+              <t-descriptions title="" bordered layout="vertical" itemLayout="horizontal" :column="3">
+              <span v-for="span in drawer.value.spans">
+                <span v-for="tag in span.tags">
+                    <t-descriptions-item :label="tag.key">{{ tag.value }}</t-descriptions-item>
                 </span>
               </span>
+              </t-descriptions>
             </t-collapse>
-
           </t-collapse-panel>
-          <!--          <t-collapse-panel header="process">-->
-          <!--            <t-collapse v-for="(k,v) in drawer.value.processes.p1.tags">-->
-          <!--              <t-collapse-panel header="子面板1"> 这是子面板1</t-collapse-panel>-->
-          <!--            </t-collapse>-->
-          <!--          </t-collapse-panel>-->
+          <t-collapse-panel header="process">
+            <t-collapse>
+              <t-descriptions title="" bordered layout="vertical" itemLayout="horizontal" :column="3">
+                <span v-for="(v,k,index) in drawer.value.processes">
+                  <span v-for="tag in v.tags">
+                        <t-descriptions-item :label="tag.key">{{ tag.value }}</t-descriptions-item>
+                  </span>
+                </span>
+              </t-descriptions>
+            </t-collapse>
+          </t-collapse-panel>
         </t-collapse>
       </t-space>
     </t-drawer>
@@ -158,19 +166,19 @@ export default Vue.extend({
           fixed: 'left',
         },
         {
-          title: '状态',
+          title: '警告',
           align: 'left',
           width: 150,
           ellipsis: true,
-          colKey: 'status',
+          colKey: 'warnings',
           fixed: 'left',
         },
         {
-          title: '标签',
+          title: '标签数量',
           align: 'left',
           width: 120,
           ellipsis: true,
-          colKey: 'tags',
+          colKey: 'spans',
           fixed: 'left',
         },
         {
@@ -247,9 +255,9 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-          .get('/tracing/traces/page', {
-            params: this.formData
-          }).then((res) => {
+        .get('/tracing/traces/page', {
+          params: this.formData
+        }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.rows;
           this.pagination = res.data.total
