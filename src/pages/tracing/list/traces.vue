@@ -43,8 +43,18 @@
             <t-tag v-if="row.warnings !== null" theme="danger" variant="light">{{ row.status }}</t-tag>
             <t-tag v-if="row.warnings === null" theme="success" variant="light">无</t-tag>
           </template>
+          <!-- 请求路径-->
           <template #spans="{ row }">
-            <span>{{ row.spans.length }}</span>
+            <span v-for="span in row.spans">{{span.operationName}}</span>
+          </template>
+          <template #appName="{ row }">
+            <span>{{ formData.service }}</span>
+          </template>
+          <template #type="{ row }">
+            <span>OpenTelemetry</span>
+          </template>
+          <template #description="{ row }">
+            <span></span>
           </template>
           <template #contractType="{ row }">
             <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
@@ -68,7 +78,7 @@
         </t-table>
       </div>
     </t-card>
-    <div>
+    <div style="margin-top: 10px">
       <t-pagination
         v-model="formData.pageNum"
         :total="pagination.total"
@@ -166,17 +176,23 @@ export default Vue.extend({
           fixed: 'left',
         },
         {
+          title: '应用名称',
+          width: 160,
+          ellipsis: true,
+          colKey: 'appName',
+        },
+        {
           title: '警告',
           align: 'left',
-          width: 150,
+          width: 120,
           ellipsis: true,
           colKey: 'warnings',
           fixed: 'left',
         },
         {
-          title: '标签数量',
+          title: '请求路径',
           align: 'left',
-          width: 120,
+          width: 160,
           ellipsis: true,
           colKey: 'spans',
           fixed: 'left',
@@ -226,7 +242,7 @@ export default Vue.extend({
       drawer: {
         visible: false,
         header: "",
-        value: {}
+        value: {},
       }
     };
   },
@@ -244,7 +260,7 @@ export default Vue.extend({
   },
   mounted() {
     // 路径取参数
-    this.formData.service = this.$route.query.service
+    this.formData.service = this.$route.query.service;
     // 获取列表
     this.getList()
   },
@@ -260,7 +276,7 @@ export default Vue.extend({
         }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.rows;
-          this.pagination = res.data.total
+          this.pagination.total = res.data.total
         }
       }).catch((e: Error) => {
         console.log(e);
