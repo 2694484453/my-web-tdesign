@@ -11,7 +11,7 @@
             </t-anchor>
           </t-row>
         </t-space>
-        <t-space >
+        <t-space>
           <t-row>
             <t-space align="center" class="space-border">
               <t-row :gutter="16">
@@ -29,37 +29,18 @@
               </t-row>
             </t-space>
             <t-space align="start" class="space-border" style="margin-top: 40px">
-              <t-row :gutter="16" >
-                <t-col :span="3">
-                  <t-card title="Java链路追踪" hover-shadow
-                          :style="{ width: '230px',height:'120px' }"
-                          @click="clickHandler('java')">
-                    <t-image src="https://dev-1306623386.cos.ap-shanghai.myqcloud.com/icon/code/java.png"
-                             :style="{ width: '40px', height: '40px' }"></t-image>
+              <t-row :gutter="16">
+                <span v-for="(value,key,index) in data" :key="key">
+                 <t-col :span="3">
+                  <t-card :title="value.title +'链路追踪'" hover-shadow :style="{ width: '280px',height:'140px' }">
+                    {{ value.description }}
+                    <template #actions>
+                      <a href="javascript:void(0)" @click="drawer.visible = true;clickHandler(key)"
+                         style="line-height: 24px">操作</a>
+                    </template>
                   </t-card>
                 </t-col>
-                <t-col :span="3">
-                  <t-card title="Go链路追踪" hover-shadow
-                          :style="{ width: '230px',height:'120px' }"
-                          @click="clickHandler('go')">
-                    <t-image src="https://dev-1306623386.cos.ap-shanghai.myqcloud.com/icon/code/Golang.png"
-                             :style="{ width: '40px', height: '40px' }"></t-image>
-                  </t-card>
-                </t-col>
-                <t-col :span="3">
-                  <t-card title="Nodejs链路追踪" hover-shadow
-                          :style="{ width: '230px',height:'120px' }" @click="clickHandler('go')">
-                    <t-image src="https://dev-1306623386.cos.ap-shanghai.myqcloud.com/icon/code/Node.js.png"
-                             :style="{ width: '40px', height: '40px' }"></t-image>
-                  </t-card>
-                </t-col>
-                <t-col :span="3">
-                  <t-card title="Python链路追踪" hover-shadow
-                          :style="{ width: '230px',height:'120px' }" @click="clickHandler('go')">
-                    <t-image src="https://dev-1306623386.cos.ap-shanghai.myqcloud.com/icon/code/Python.png"
-                             :style="{ width: '40px', height: '40px' }"></t-image>
-                  </t-card>
-                </t-col>
+                </span>
               </t-row>
             </t-space>
           </t-row>
@@ -71,11 +52,27 @@
         </t-drawer>
       </div>
     </t-card>
+    <t-drawer
+        :visible.sync="drawer.visible"
+        :header="drawer.header"
+        :on-overlay-click="() => (drawer.visible = false)"
+        placement="right"
+        destroyOnClose
+        showOverlay
+        :sizeDraggable="true"
+        :on-size-drag-end="handleSizeDrag"
+        size="50%"
+        @cancel="drawer.visible = false"
+        @close="drawer.visible = false"
+        @onConfirm="drawer.visible = false">
+      <span v-html="markdownContent"></span>
+    </t-drawer>
   </div>
 </template>
 <script lang="ts">
 import Vue from "vue";
 import {SearchIcon} from "tdesign-icons-vue";
+import {marked} from "marked";
 
 export default Vue.extend({
   name: "index",
@@ -86,37 +83,67 @@ export default Vue.extend({
     return {
       visible: false,
       map: null,
-      data: [
-        {
+      data: {
+        java: {
           name: "java",
-          title: "",
-          description: ""
+          title: "Java",
+          description: "卡片内容，以描述性为主，可以是文字、图片或图文组合的形式。按业务需求进行自定义组合。"
+        },
+        nodejs: {
+          name: "java",
+          title: "Nodejs",
+          description: "卡片内容，以描述性为主，可以是文字、图片或图文组合的形式。按业务需求进行自定义组合。"
+        },
+        go: {
+          name: "java",
+          title: "Go",
+          description: "卡片内容，以描述性为主，可以是文字、图片或图文组合的形式。按业务需求进行自定义组合。"
+        },
+        python: {
+          name: "java",
+          title: "Python",
+          description: "卡片内容，以描述性为主，可以是文字、图片或图文组合的形式。按业务需求进行自定义组合。"
         }
-      ],
-      searchValue: ""
+      },
+      searchValue: "",
+      //drawer
+      drawer: {
+        visible: false,
+        header: "",
+        value: {},
+        action: ""
+      },
+      //
+      markdownContent: ''
     }
   },
   created() {
 
   },
+  computed() {
+
+  },
   mounted() {
-    // 转化
-    const map = {};
-    for (const item of this.data) {
-      map[item.name] = item;
-    }
-    this.map = map;
+
   },
   methods: {
     clickHandler(name) {
-      // 显示
-      this.visible = true;
-      // 选择name
-      this.map.get(name)
+      this.drawer.header = name + "应用接入指引";
+      this.drawer.action = name;
+      // 假设你的 Markdown 文件位于 public 目录下名为 example.md
+      fetch("/docs/" + name + ".md")
+          .then(response => response.text())
+          .then(text => {
+            this.markdownContent = marked(text);
+          })
+          .catch(error => console.error('Error loading the markdown file:', error));
     },
     onClickConfirm() {
 
-    }
+    },
+    handleSizeDrag({size}) {
+      console.log('size drag size: ', size);
+    },
   }
 })
 </script>

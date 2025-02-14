@@ -32,6 +32,12 @@ export default [
         name: 'tracingBase',
         component: () => import('@/pages/tracing/list/traces.vue'),
         meta: {title: '调用链分析'},
+      },
+      {
+        path: 'metrics',
+        name: 'metricsBase',
+        component: () => import('@/pages/tracing/frame/index.vue'),
+        meta: {title: '指标可视化'},
       }
     ],
   }

@@ -2,24 +2,25 @@
   <div class="dashboard-detail">
     <t-card title="概览" class="dashboard-detail-card" :bordered="false">
       <t-row :gutter="[16, 16]">
-        <t-col v-for="(item, index) in PANE_LIST_DATA" :key="index" :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" :description="item.title">
-            <div class="dashboard-list-card__number">{{ item.number }}</div>
+        <t-col :xs="6" :xl="3">
+          <t-card :class="['dashboard-list-card']" description="应用总数">
+            <div class="dashboard-list-card__number">12</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
-                <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />
+<!--                <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
               </div>
               <chevron-right-icon />
             </div>
           </t-card>
         </t-col>
-        <t-col  :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" >
-            <div class="dashboard-list-card__number">11</div>
+        <t-col :xs="6" :xl="3">
+          <t-card :class="['dashboard-list-card']" description="应用总数">
+            <div class="dashboard-list-card__number">12</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
+                <!--                <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
               </div>
               <chevron-right-icon />
             </div>
@@ -126,6 +127,8 @@ export default {
       this.updateContainer();
     });
     this.renderCharts();
+    // 请求
+    this.getList();
   },
   methods: {
     /** 采购商品满意度选择 */
@@ -166,6 +169,22 @@ export default {
       }
       this.scatterChart = echarts.init(this.scatterContainer);
       this.scatterChart.setOption(getScatterDataSet({ ...chartColors }));
+    },
+    getList() {
+      this.dataLoading = true;
+      this.$request
+          .get('/tracing/traces/overView', {
+            params: this.formData
+          }).then((res) => {
+        if (res.data.code === 200) {
+          this.data = res.data.rows;
+          this.pagination.total = res.data.total
+        }
+      }).catch((e: Error) => {
+        console.log(e);
+      }).finally(() => {
+        this.dataLoading = false;
+      });
     },
   },
 };
