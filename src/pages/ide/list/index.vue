@@ -260,7 +260,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/ide/page',{
+        .get('/ide/codeSpace/page',{
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
