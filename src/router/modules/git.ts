@@ -8,7 +8,7 @@ export default [
     redirect: '/git/base',
     name: 'git',
     meta: {
-      title: 'Git仓库管理',
+      title: 'Github仓库管理',
       icon: LogoGithubIcon,
     },
     children: [
