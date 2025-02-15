@@ -17,7 +17,7 @@ export default [
         path: "list",
         name: 'ListBase',
         component: () => import("@/pages/ai/list/index.vue"),
-        meta: {title: '配置列表'},
+        meta: {title: '模型列表'},
       }
     ],
   }

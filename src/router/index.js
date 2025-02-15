@@ -30,6 +30,8 @@ import IdeRouters from "@/router/modules/ide";
 import gitRouters from "@/router/modules/git";
 // devops
 import devopsRouters from "@/router/modules/devops";
+// ai
+import AiRouters from "@/router/modules/ai";
 // test
 import testRouters from "@/router/modules/test";
 
@@ -38,40 +40,40 @@ import proxy from '@/config/host';
 // 开发模式
 const devRouterList = [...baseRouters, ...componentsRouters, ...othersRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 生产模式
-const prodRouterList = [...baseRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...buildRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters, ...testRouters]
+const prodRouterList = [...baseRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...buildRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...AiRouters, ...backupRouters, ...testRouters]
 // 存放动态路由
 export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
 //[...baseRouters, ...componentsRouters, ...othersRouters];
 
 // 存放固定的路由
 const defaultRouterList = [
-    {
-        path: '/login',
-        name: 'login',
-        component: () => import('@/pages/login/index.vue'),
-    },
-    {
-        path: '*',
-        redirect: '/dashboard/base',
-    },
-    ...asyncRouterList,
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/pages/login/index.vue'),
+  },
+  {
+    path: '*',
+    redirect: '/dashboard/base',
+  },
+  ...asyncRouterList,
 ];
 
 const createRouter = () =>
-    new VueRouter({
-        mode: 'history',
-        base: env === 'site' ? '/starter/vue/' : null,
-        routes: defaultRouterList,
-        scrollBehavior() {
-            return {x: 0, y: 0};
-        },
-    });
+  new VueRouter({
+    mode: 'history',
+    base: env === 'site' ? '/starter/vue/' : null,
+    routes: defaultRouterList,
+    scrollBehavior() {
+      return {x: 0, y: 0};
+    },
+  });
 
 const router = createRouter();
 
 export function resetRouter() {
-    const newRouter = createRouter();
-    router.matcher = newRouter.matcher; // reset router
+  const newRouter = createRouter();
+  router.matcher = newRouter.matcher; // reset router
 }
 
 export default router;
