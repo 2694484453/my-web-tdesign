@@ -12,14 +12,14 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-<!--            <t-button @click="handleSetupContract"> 新建</t-button>-->
-<!--            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>-->
-<!--            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>-->
+            <!--            <t-button @click="handleSetupContract"> 新建</t-button>-->
+            <!--            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>-->
+            <!--            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>-->
           </div>
           <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-              <template #suffix-icon>
-                <search-icon size="20px"/>
-                </template>
+            <template #suffix-icon>
+              <search-icon size="20px"/>
+            </template>
           </t-input>
           <t-col :span="2" class="operation-container">
             <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
@@ -34,12 +34,8 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -66,14 +62,24 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickDetail()">详情</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">访问</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
       </div>
     </t-card>
+    <div style="margin-top: 10px">
+      <t-pagination
+        v-model="formData.pageNum"
+        :total="pagination.total"
+        :page-size.sync="formData.pageSize"
+        @current-change="onCurrentChange"
+        @page-size-change="onPageSizeChange"
+        @change="onChange"
+      />
+    </div>
     <t-dialog
-      header="确认删除当前所选合同？"
+      header="确认删除当前所选？"
       :body="confirmBody"
       :visible.sync="confirmVisible"
       @confirm="onConfirmDelete"
@@ -117,29 +123,29 @@ export default Vue.extend({
           fixed: 'left',
         },
         {
-          title: '类型',
+          title: '标签',
           width: 200,
           ellipsis: true,
           fixed: 'left',
           colKey: 'type',
         },
         {
-          title: '状态',
-          colKey: 'status',
+          title: '创建者',
+          colKey: 'createBy',
           width: 100, cell:
-            {col: 'status'}
+          {col: 'status'}
         },
         {
-          title: '标签',
+          title: '创建时间',
           width: 200,
           ellipsis: true,
-          colKey: 'labels',
+          colKey: 'createTime',
         },
         {
-          title: '端点',
+          title: '描述',
           width: 200,
           ellipsis: true,
-          colKey: "targets"
+          colKey: "description"
         },
         {
           align: 'left',
@@ -166,7 +172,9 @@ export default Vue.extend({
       deleteType: -1,
       formData: {
         name: "",
-        type: ""
+        type: "",
+        pageNum: 1,
+        pageSize: 10
       },
       typeList: []
     };
@@ -190,29 +198,54 @@ export default Vue.extend({
     this.getList()
   },
   methods: {
+    getList() {
+      this.dataLoading = true;
+      this.$request
+        .get('/ide/codeSpace/page', {
+          params: this.formData
+        }).then((res) => {
+        if (res.data.code === 200) {
+          this.data = res.data.rows;
+          this.pagination.total = res.data.total;
+        }
+      }).catch((e: Error) => {
+        console.log(e);
+      })
+        .finally(() => {
+          this.dataLoading = false;
+        });
+    },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
-    rehandlePageChange(curr, pageInfo) {
-      console.log('分页变化', curr, pageInfo);
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
     },
-    rehandleSelectChange(selectedRowKeys: number[]) {
-      this.selectedRowKeys = selectedRowKeys;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
     },
-    rehandleChange(changeParams, triggerAndData) {
-      console.log('统一Change', changeParams, triggerAndData);
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
     },
-    handleClickDetail() {
-      this.$router.push('/detail/base');
+    handleSizeDrag({size}) {
+      console.log('size drag size: ', size);
+    },
+    handleClickDetail(row) {
+      window.open('https://code-server.gpg123.vip/?folder='+row.workPath, '_blank');
     },
     handleSetupContract() {
       this.$router.push('/prometheus/add');
     },
-    handleClickDelete(row: { rowIndex: any,type: any }) {
+    handleClickDelete(row: { rowIndex: any, type: any }) {
       this.deleteIdx = row.rowIndex;
       this.deleteType = row.type;
       this.confirmVisible = true;
-      console.log("this",this.deleteType)
+      console.log("this", this.deleteType)
     },
     onConfirmDelete() {
       // 真实业务请发起请求
@@ -224,14 +257,14 @@ export default Vue.extend({
       }
       this.confirmVisible = false;
       // 请求删除
-      this.$request.delete("/monitor/delete",{
+      this.$request.delete("/monitor/delete", {
         params: {
           index: this.deleteIdx,
           type: this.deleteType
         }
-      }).then(res=>{
+      }).then(res => {
         this.$message.success(res.data.msg);
-      }).catch(err=>{
+      }).catch(err => {
 
       })
 
@@ -257,29 +290,6 @@ export default Vue.extend({
 
       })
     },
-    getList() {
-      this.dataLoading = true;
-      this.$request
-        .get('/ide/codeSpace/page',{
-          params: this.formData
-        }).then((res) => {
-        if (res.data.code === 200) {
-          //console.log(res.data.data)
-          this.data = res.data.data;
-          //console.log(this.data)
-          this.pagination = {
-            ...this.pagination,
-            total: res.data.data.length,
-          };
-        }
-      })
-        .catch((e: Error) => {
-          console.log(e);
-        })
-        .finally(() => {
-          this.dataLoading = false;
-        });
-    }
   },
 });
 </script>
