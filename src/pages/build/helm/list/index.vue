@@ -219,7 +219,9 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/build/chart/page')
+        .get('/build/chart/page',{
+          params: this.formData
+        })
         .then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;
