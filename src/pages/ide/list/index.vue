@@ -63,7 +63,8 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">访问</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+            <a class="t-button-link" @click="editForm.visible=true;handleClickEdit(slotProps.row)">修改</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
       </div>
@@ -78,6 +79,36 @@
         @change="onChange"
       />
     </div>
+    <!--编辑对话框-->
+    <t-dialog
+      v-show="editForm.visible"
+      header="修改提示"
+      width="40%"
+      :confirm-on-enter="true"
+      @cancel="editForm.visible=false"
+      @close="editForm.visible=false"
+      @confirm="editForm.visible=false;handleClickEditConfirm()"
+    >
+      <t-space direction="vertical" style="width: 100%">
+        <div>
+          <template>
+            <t-form :data="editForm.data">
+              <t-form-item label="姓名" name="name" initial-data="TDesign">
+                <t-input v-model="editForm.data.name" name="name"  placeholder="请输入内容" readonly />
+              </t-form-item>
+              <t-form-item label="标签" name="tel" initial-data="123456">
+                <!-- 标签数量超出时，换行显示 -->
+                <t-tag-input v-model="editForm.data.tag" label="BreakLine: " excess-tags-display-type="break-line" clearable />
+              </t-form-item>
+              <t-form-item label="描述" name="description">
+                <t-textarea v-model="editForm.data.description"></t-textarea>
+              </t-form-item>
+            </t-form>
+          </template>
+        </div>
+      </t-space>
+    </t-dialog>
+    <!--删除对话框 -->
     <t-dialog
       header="确认删除当前所选？"
       :body="confirmBody"
@@ -176,6 +207,10 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10
       },
+      editForm: {
+        visible: false,
+        data: {}
+      },
       typeList: []
     };
   },
@@ -237,6 +272,18 @@ export default Vue.extend({
     },
     handleClickDetail(row) {
       window.open('https://code-server.gpg123.vip/?folder='+row.workPath, '_blank');
+    },
+    handleClickEdit(row) {
+      console.log("当前选择：",row)
+      this.editForm.data = row
+    },
+    // 确认修改
+    handleClickEditConfirm() {
+      this.$request.put("/ide/codeSpace/edit",this.editForm.data).then(res=>{
+         if (res.data.code==200) {
+           this.$message.success(res.data.msg)
+         }
+      })
     },
     handleSetupContract() {
       this.$router.push('/prometheus/add');

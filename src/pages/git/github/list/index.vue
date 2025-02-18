@@ -2,13 +2,13 @@
   <div>
     <t-card class="list-card-container" :bordered="false">
       <t-form
-          ref="form"
-          :data="formData"
-          :label-width="80"
-          colon
-          @reset="onReset"
-          @submit="onSubmit"
-          :style="{ marginBottom: '8px' }"
+        ref="form"
+        :data="formData"
+        :label-width="80"
+        colon
+        @reset="onReset"
+        @submit="onSubmit"
+        :style="{ marginBottom: '8px' }"
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
@@ -29,15 +29,15 @@
       </t-form>
       <div class="table-container">
         <t-table
-            :columns="columns"
-            :data="data"
-            :rowKey="rowKey"
-            :verticalAlign="verticalAlign"
-            :hover="hover"
-            :selected-row-keys="selectedRowKeys"
-            :loading="dataLoading"
-            :headerAffixedTop="true"
-            :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
+          :columns="columns"
+          :data="data"
+          :rowKey="rowKey"
+          :verticalAlign="verticalAlign"
+          :hover="hover"
+          :selected-row-keys="selectedRowKeys"
+          :loading="dataLoading"
+          :headerAffixedTop="true"
+          :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
             <t-tag v-if="row.status === CONTRACT_STATUS.FAIL" theme="danger" variant="light">校验失败</t-tag>
@@ -68,7 +68,7 @@
             <a :href="row.html_url" target="_blank">{{ row.html_url }}</a>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="">打开</a>
+            <a class="t-button-link" @click="handleClickOpen(slotProps.row)">打开</a>
             <a class="t-button-link" @click="drawer.visible = true;handleClickDetail(slotProps.row)">详情</a>
             <!--            <a class="t-button-link" @click="handleClickEdit(slotProps)">编辑</a>-->
             <!--            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>-->
@@ -78,34 +78,34 @@
     </t-card>
     <div style="margin-top: 10px">
       <t-pagination
-          v-model="formData.pageNum"
-          :total="pagination.total"
-          :page-size.sync="formData.pageSize"
-          @current-change="onCurrentChange"
-          @page-size-change="onPageSizeChange"
-          @change="onChange"/>
+        v-model="formData.pageNum"
+        :total="pagination.total"
+        :page-size.sync="formData.pageSize"
+        @current-change="onCurrentChange"
+        @page-size-change="onPageSizeChange"
+        @change="onChange"/>
     </div>
     <t-dialog
-        header="确认删除当前所选？"
-        :body="confirmBody"
-        :visible.sync="confirmVisible"
-        @confirm="onConfirmDelete"
-        :onCancel="onCancel"
+      header="确认删除当前所选？"
+      :body="confirmBody"
+      :visible.sync="confirmVisible"
+      @confirm="onConfirmDelete"
+      :onCancel="onCancel"
     >
     </t-dialog>
     <t-drawer
-        :visible.sync="drawer.visible"
-        :header="drawer.header"
-        :on-overlay-click="() => (drawer.visible = false)"
-        placement="right"
-        destroyOnClose
-        showOverlay
-        :sizeDraggable="true"
-        :on-size-drag-end="handleSizeDrag"
-        size="50%"
-        @cancel="drawer.visible = false"
-        @close="drawer.visible = false"
-        @onConfirm="drawer.visible = false">
+      :visible.sync="drawer.visible"
+      :header="drawer.header"
+      :on-overlay-click="() => (drawer.visible = false)"
+      placement="right"
+      destroyOnClose
+      showOverlay
+      :sizeDraggable="true"
+      :on-size-drag-end="handleSizeDrag"
+      size="50%"
+      @cancel="drawer.visible = false"
+      @close="drawer.visible = false"
+      @onConfirm="drawer.visible = false">
       <t-descriptions title="" bordered :layout="'vertical'" :item-layout="'horizontal'" :column="3">
         <span v-for="(value,key,index) in drawer.data">
             <t-descriptions-item :label="key">{{ value }}</t-descriptions-item>
@@ -232,15 +232,12 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-          .get('/github/page', {
-            params: this.formData
-          }).then((res) => {
+        .get('/github/page', {
+          params: this.formData
+        }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.rows;
-          this.pagination = {
-            ...this.pagination,
-            total: res.data.total,
-          };
+          this.pagination.total = res.data.total;
         }
       }).catch((e: Error) => {
         console.log(e);
@@ -268,6 +265,16 @@ export default Vue.extend({
     },
     handleSizeDrag({size}) {
       console.log('size drag size: ', size);
+    },
+    handleClickOpen(row) {
+      this.$request.post("/ide/codeSpace/open", {
+        name: row.name,
+        htmlUrl: row.clone_url,
+        branch: row.default_branch,
+        description: row.description
+      }).then(res => {
+
+      })
     },
     handleClickDetail(row) {
       console.log(row)

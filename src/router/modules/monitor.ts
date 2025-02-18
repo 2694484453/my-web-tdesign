@@ -37,6 +37,12 @@ export default [
         meta: {title: '概览'},
       },
       {
+        path: 'integrations',
+        name: 'integrationsBase',
+        component: () => import('@/pages/prometheus-cloud/inner/index.vue'),
+        meta: {title: '接入中心'},
+      },
+      {
         path: 'dashboard',
         name: 'DashboardBase',
         component: () => import('@/pages/prometheus-cloud/frame/index.vue'),
