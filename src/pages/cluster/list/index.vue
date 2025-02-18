@@ -12,7 +12,7 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="handleSetupContract">添加集群</t-button>
+            <t-button @click="formData.visible=true;handleSetupContract()">添加</t-button>
             <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length">导出配置</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
@@ -63,11 +63,11 @@
           </template>
 
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickDetail()">详情</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
-        <div>
+        <div style="margin-top: 10px">
           <t-pagination
             v-model="formData.pageNum"
             :total="pagination.total"
@@ -78,6 +78,41 @@
         </div>
       </div>
     </t-card>
+    <!--表单对话框-->
+    <t-dialog
+      v-show="formData.visible"
+      header="集群添加对话框"
+      width="40%"
+      :confirm-on-enter="true"
+      @cancel="formData.visible=false"
+      @close="formData.visible=false"
+      @confirm="formData.visible=false;handleClickEditConfirm()"
+    >
+      <t-space direction="vertical" style="width: 100%">
+        <div>
+          <template>
+            <t-form :data="formData.data">
+              <t-form-item label="名称" name="name" initial-data="TDesign">
+                <t-input v-model="formData.data.name" name="name"  placeholder="请输入内容" />
+              </t-form-item>
+              <t-form-item label="配置文件" name="file">
+                <div style="width: 350px">
+                  <!-- abridgeName 省略中间文本，首尾保留的文本字符 -->
+                  <t-upload
+                    v-model="files"
+                    action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo"
+                    :abridge-name="[8, 6]"
+                    theme="file-input"
+                    placeholder="未选择文件"
+                    @fail="handleFail"
+                  ></t-upload>
+                </div>
+              </t-form-item>
+            </t-form>
+          </template>
+        </div>
+      </t-space>
+    </t-dialog>
     <t-dialog
       header="确认删除当前所选合同？"
       :body="confirmBody"
@@ -160,6 +195,8 @@ export default Vue.extend({
       formData: {
         name: "",
         type: "",
+        data: {},
+        visible: false,
         pageNum: 1,
         pageSize: 10
       },
@@ -208,14 +245,20 @@ export default Vue.extend({
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
-    rehandlePageChange(curr, pageInfo) {
-      console.log('分页变化', curr, pageInfo);
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
+      this.getList()
     },
-    rehandleSelectChange(selectedRowKeys: number[]) {
-      this.selectedRowKeys = selectedRowKeys;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
     },
-    rehandleChange(changeParams, triggerAndData) {
-      console.log('统一Change', changeParams, triggerAndData);
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
     },
     handleClickDetail(rowData) {
       //this.$router.push('/detail/base');
