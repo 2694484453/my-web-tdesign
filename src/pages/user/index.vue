@@ -3,16 +3,16 @@
     <t-col :flex="3">
       <div class="user-left-greeting">
         <div>
-          Hi，Image
+          Hi，{{nickName}}
           <span class="regular"> 下午好，今天是你加入鹅厂的第 100 天～</span>
         </div>
-        <img src="@/assets/assets-tencent-logo.png" class="logo" />
+        <img src="@/assets/assets-tencent-logo.png" class="logo"/>
       </div>
 
       <t-card class="user-info-list" title="个人信息" :bordered="false">
         <template #option>
           <t-button theme="default" shape="square" variant="text">
-            <edit-icon size="18" />
+            <edit-icon size="18"/>
           </t-button>
         </template>
         <t-row class="content" justify="space-between">
@@ -43,7 +43,7 @@
                   @change="onLineChange"
                 />
               </template>
-              <div id="lineContainer" style="width: 100%; height: 330px" />
+              <div id="lineContainer" style="width: 100%; height: 330px"/>
             </t-card>
           </t-tab-panel>
           <t-tab-panel value="third" label="内容列表">
@@ -63,12 +63,12 @@
       <t-card title="团队成员" class="user-team" :bordered="false">
         <template #option>
           <t-button theme="default" shape="square" variant="text">
-            <edit-icon size="18" />
+            <edit-icon size="18"/>
           </t-button>
         </template>
         <t-list :split="false">
           <t-list-item v-for="(item, index) in TEAM_MEMBERS" :key="index">
-            <t-list-item-meta :image="item.avatar" :title="item.title" :description="item.description" />
+            <t-list-item-meta :image="item.avatar" :title="item.title" :description="item.description"/>
           </t-list-item>
         </t-list>
       </t-card>
@@ -76,21 +76,21 @@
       <t-card title="服务产品" class="product-container" :bordered="false">
         <template #option>
           <t-button theme="default" shape="square" variant="text">
-            <edit-icon size="18" />
+            <edit-icon size="18"/>
           </t-button>
         </template>
         <t-row class="content" :getters="16">
           <t-col :span="3">
-            <product-a-icon />
+            <product-a-icon/>
           </t-col>
           <t-col :span="3">
-            <product-b-icon />
+            <product-b-icon/>
           </t-col>
           <t-col :span="3">
-            <product-c-icon />
+            <product-c-icon/>
           </t-col>
           <t-col :span="3">
-            <product-d-icon />
+            <product-d-icon/>
           </t-col>
         </t-row>
       </t-card>
@@ -98,19 +98,19 @@
   </t-row>
 </template>
 <script>
-import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
-import { LineChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
+import {GridComponent, TooltipComponent, LegendComponent} from 'echarts/components';
+import {LineChart} from 'echarts/charts';
+import {CanvasRenderer} from 'echarts/renderers';
 import * as echarts from 'echarts/core';
-import { EditIcon } from 'tdesign-icons-vue';
+import {EditIcon} from 'tdesign-icons-vue';
 
-import { mapState } from 'vuex';
+import {mapState} from 'vuex';
 
-import { getFolderLineDataSet } from './index';
-import { changeChartsTheme } from '@/utils/color';
-import { LAST_7_DAYS } from '@/utils/date';
+import {getFolderLineDataSet} from './index';
+import {changeChartsTheme} from '@/utils/color';
+import {LAST_7_DAYS} from '@/utils/date';
 
-import { USER_INFO_LIST, TEAM_MEMBERS, PRODUCT_LIST } from '@/service/service-user';
+import {USER_INFO_LIST, TEAM_MEMBERS, PRODUCT_LIST} from '@/service/service-user';
 import ProductAIcon from '@/assets/assets-product-1.svg';
 import ProductBIcon from '@/assets/assets-product-2.svg';
 import ProductCIcon from '@/assets/assets-product-3.svg';
@@ -134,9 +134,10 @@ export default {
       lineContainer: '',
       lineChart: '',
       LAST_7_DAYS,
-      USER_INFO_LIST,
+      USER_INFO_LIST: [],
       TEAM_MEMBERS,
       PRODUCT_LIST,
+      nickName: "unknown"
     };
   },
   computed: {
@@ -160,10 +161,57 @@ export default {
       this.updateContainer();
     });
   },
+  created() {
+    this.getUserInfo();
+  },
   methods: {
+    getUserInfo() {
+      this.$request.get("/getInfo").then(res => {
+        if (res.data.code === 200) {
+          this.nickName = res.data.user.nickName;
+          this.USER_INFO_LIST.push(
+            {
+              title: '手机',
+              content: res.data.user.phonenumber,
+            },
+            {
+              title: '座机',
+              content: 'xx',
+            },{
+              title: '办公室邮箱',
+              content: res.data.user.email,
+            },
+            {
+              title: '座位',
+              content: 'T32F 012',
+            },
+            {
+              title: '管理主体',
+              content: '腾讯集团',
+            },
+            {
+              title: '直属上级',
+              content: 'Michael Wang',
+            },
+            {
+              title: '职位',
+              content: '高级 UI 设计师',
+            },
+            {
+              title: '入职时间',
+              content: '2021-07-01',
+            },
+            {
+              title: '所属团队',
+              content: '腾讯/腾讯公司/某事业群/某产品部/某运营中心/商户服务组',
+              span: 6,
+            },)
+        }
+      })
+    },
     /** 图表选择 */
     onLineChange(value) {
-      this.lineChart.setOption(getFolderLineDataSet({ dateTime: value }));
+      this.lineChart.setOption(getFolderLineDataSet({dateTime: value}));
     },
     updateContainer() {
       this.lineChart.resize?.({
@@ -172,7 +220,7 @@ export default {
       });
     },
     renderCharts() {
-      const { chartColors } = this.$store.state.setting;
+      const {chartColors} = this.$store.state.setting;
       if (!this.lineContainer) {
         this.lineContainer = document.getElementById('lineContainer');
       }
@@ -184,7 +232,7 @@ export default {
           x2: 10, // 默认80px
           y2: 30, // 默认60px
         },
-        ...getFolderLineDataSet({ ...chartColors }),
+        ...getFolderLineDataSet({...chartColors}),
       });
     },
     getIcon(type) {
