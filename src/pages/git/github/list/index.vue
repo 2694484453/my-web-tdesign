@@ -273,7 +273,11 @@ export default Vue.extend({
         branch: row.default_branch,
         description: row.description
       }).then(res => {
-
+          if (res.data.code ===200){
+            this.$message.success(res.data.msg)
+          } else {
+            this.$message.error(res.data.msg)
+          }
       })
     },
     handleClickDetail(row) {
