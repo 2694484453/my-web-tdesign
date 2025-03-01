@@ -18,6 +18,12 @@ export default [
         name: 'ListBase',
         component: () => import("@/pages/ai/list/index.vue"),
         meta: {title: '模型列表'},
+      },
+      {
+        path: "use",
+        name: 'UseBase',
+        component: () => import("@/pages/ai/use/index.vue"),
+        meta: {title: '模型调用'},
       }
     ],
   }
