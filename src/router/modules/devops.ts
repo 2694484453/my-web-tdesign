@@ -19,17 +19,17 @@ export default [
         meta: {title: '概览'},
       },
       {
-        path: 'maven',
-        name: 'maven',
+        path: 'job',
+        name: 'JobBase',
         component: () => import('@/pages/devops/list/index.vue'),
-        meta: { title: 'Job任务' },
+        meta: { title: '普通任务' },
       },
-      // {
-      //   path: 'maven',
-      //   name: 'maven',
-      //   component: () => import('@/pages/devops/pod/index.vue'),
-      //   meta: { title: '自定义任务' },
-      // },
+      {
+        path: 'cronJob',
+        name: 'CronJob',
+        component: () => import('@/pages/devops/pod/index.vue'),
+        meta: { title: '定时任务' },
+      },
       // {
       //   path: 'podList',
       //   name: 'podList',
