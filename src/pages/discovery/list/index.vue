@@ -111,46 +111,46 @@ export default Vue.extend({
       value: 'first',
       columns: [
         {
-          title: '名称',
+          title: '服务名称',
           align: 'left',
-          width: 100,
+          width: 220,
           ellipsis: true,
-          colKey: 'metadata.name',
+          colKey: 'name',
           fixed: 'left',
         },
         {
           title: '命名空间',
-          width: 60,
-          ellipsis: true,
-          fixed: 'left',
-          colKey: 'metadata.namespace',
-        },
-        {
-          title: '标签',
-          width: 120,
-          ellipsis: true,
-          fixed: 'left',
-          colKey: 'metadata.labels',
-        },
-        {
-          title: 'ingress类',
-          width: 60,
-          ellipsis: true,
-          fixed: 'left',
-          colKey: 'spec.ingressClassName',
-        },
-        {
-          title: '域名',
           width: 220,
           ellipsis: true,
           fixed: 'left',
-          colKey: 'spec.rules',
+          colKey: 'namespace',
         },
         {
-          title: '创建时间',
-          width: 200,
+          title: '分组名称',
+          width: 220,
           ellipsis: true,
-          colKey: "metadata.creationTimestamp"
+          fixed: 'left',
+          colKey: 'groupName',
+        },
+        {
+          title: '集群数目',
+          width: 100,
+          ellipsis: true,
+          fixed: 'left',
+          colKey: 'clusterCount',
+        },
+        {
+          title: '健康实例数量',
+          width: 100,
+          ellipsis: true,
+          fixed: 'left',
+          colKey: 'healthyInstanceCount',
+        },
+        {
+          title: '触发保护阈值',
+          width: 160,
+          ellipsis: true,
+          colKey: "triggerFlag"
         },
         {
           align: 'left',
@@ -281,7 +281,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/traefikCloud/page', {
+        .get('/discovery/nacos/service/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {

@@ -3,7 +3,7 @@
     <t-card title="概览" class="dashboard-detail-card" :bordered="false">
       <t-row :gutter="[16, 16]">
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="应用总数">
+          <t-card :class="['dashboard-list-card']" description="服务总数">
             <div class="dashboard-list-card__number">12</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
@@ -15,7 +15,7 @@
           </t-card>
         </t-col>
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="应用总数">
+          <t-card :class="['dashboard-list-card']" description="命名空间总数">
             <div class="dashboard-list-card__number">12</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">

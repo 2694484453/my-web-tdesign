@@ -10,7 +10,7 @@ export default [
       {
         path: 'dashboard',
         name: 'DashboardBase',
-        component: () => import('@/pages/discovery/frame/index.vue'),
+        component: () => import('@/pages/discovery/index.vue'),
         meta: {title: '概览'},
       },
       {
@@ -20,8 +20,8 @@ export default [
         meta: {title: '配置列表'},
       },
       {
-        path: "use",
-        name: 'UseBase',
+        path: "frame",
+        name: 'FrameBase',
         component: () => import("@/pages/discovery/frame/index.vue"),
         meta: {title: '服务面板'},
       }
