@@ -36,14 +36,11 @@
           :hover="hover"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #urls="{ row }">
-            <a>https://{{row.urls[0]}}</a>
+            <a v-bind:href="row.urls[0]" target="_blank">{{row.urls[0]}}</a>
           </template>
           <template #created="{ row }">
             <p>{{new Date(row.created).toLocaleString()}}</p>
