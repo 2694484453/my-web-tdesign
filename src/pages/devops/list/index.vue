@@ -73,6 +73,7 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="">重试</a>
+            <a class="t-button-link" @click="">编辑</a>
             <a class="t-button-link" @click="editor.visible = true;handleClickDetail(slotProps.row)">日志流</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
@@ -97,19 +98,73 @@
         :onCancel="onCancel">
     </t-dialog>
     <t-drawer
-        :visible.sync="editor.visible"
-        :header="editor.header"
+      :visible.sync="editor.visible"
+      :header="editor.header"
+      :on-overlay-click="() => (editor.visible = false)"
+      placement="right"
+      destroyOnClose
+      showOverlay
+      :sizeDraggable="true"
+      :on-size-drag-end="handleSizeDrag"
+      size="50%"
+      @cancel="closeSSE;editor.visible = false"
+      @close="handleClose"
+      :onConfirm="handleClose">
+      <MonacoEditor :config="editor" :value="editor.value"/>
+    </t-drawer>
+    <t-drawer
+        :visible.sync="formConfig.visible"
+        :header="formConfig.header"
         :on-overlay-click="() => (editor.visible = false)"
         placement="right"
         destroyOnClose
         showOverlay
         :sizeDraggable="true"
         :on-size-drag-end="handleSizeDrag"
-        size="50%"
-        @cancel="closeSSE;editor.visible = false"
+        size="30%"
+        @cancel="formConfig.visible = false"
         @close="handleClose"
         :onConfirm="handleClose">
-      <MonacoEditor :config="editor" :value="editor.value"/>
+      <t-space direction="vertical" style="width: 80%">
+        <t-form
+          ref="formValidatorStatus"
+          :data="form"
+          :rules="rules"
+          :label-width="120"
+          :status-icon="formStatusIcon"
+          @reset="onReset"
+          @submit="onSubmit"
+        >
+          <t-form-item label="任务名称" name="name" >
+            <t-input v-model="form.name" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+          </t-form-item>
+
+          <t-form-item label="镜像名称" name="imageName">
+            <t-input v-model="form.imageName" placeholder="请输入内容"></t-input>
+          </t-form-item>
+
+          <t-form-item label="容器名称" name="containerName">
+            <t-input v-model="form.containerName" placeholder="请输入内容"></t-input>
+          </t-form-item>
+
+          <t-form-item label="环境变量" name="env">
+            <t-input v-model="form.env" placeholder="请输入内容"></t-input>
+          </t-form-item>
+
+          <t-form-item label="命令行" name="">
+            <t-textarea
+              v-model="form.cmd"
+              placeholder="['/bin/sh', '-c', 'xxx']"
+              name="description"
+              :autosize="{ minRows: 3, maxRows: 20 }"
+            />
+          </t-form-item>
+
+          <t-form-item label="重试机制" name="restartPolicy">
+            <t-input v-model="form.restartPolicy" placeholder="请输入内容"></t-input>
+          </t-form-item>
+        </t-form>
+      </t-space>
     </t-drawer>
   </div>
 </template>
@@ -217,6 +272,18 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10,
       },
+      form: {
+        name: "",
+        imageName: "",
+        containerName: "",
+        env: [],
+        cmd: "",
+        restartPolicy: "OnFailure"
+      },
+      formConfig: {
+        visible: false,
+        header: "新增"
+      },
       typeList: [],
       // monaco
       editor: {
@@ -290,8 +357,10 @@ export default Vue.extend({
         nameSpace: row.metadata.namespace
       }, "onmessage")
     },
+    // 新增
     handleSetupContract() {
-      this.$router.push('/prometheus/add');
+      // 打开drawer
+      this.formConfig.visible = true;
     },
     handleClickDelete(row: { rowIndex: any, type: any }) {
       this.deleteIdx = row.rowIndex;
