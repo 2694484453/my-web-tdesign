@@ -7,19 +7,19 @@ export default [
     name: 'repo',
     component: Layout,
     //redirect: '/repo/base',
-    meta: {title: '制品中心', icon: RelativityIcon},
+    meta: {title: '制品仓库', icon: RelativityIcon},
     children: [
       {
         path: 'image',
         name: 'ImageBase',
         component: () => import('@/pages/repo/image/list/index.vue'),
-        meta: {title: '本地镜像制品'},
+        meta: {title: 'docker制品'},
       },
       {
         path: 'helm',
         name: 'HelmBase',
         component: () => import('@/pages/repo/helm/list/index.vue'),
-        meta: {title: '本地helm制品'},
+        meta: {title: 'helm制品'},
       }
     ],
   }
