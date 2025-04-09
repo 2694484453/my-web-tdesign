@@ -27,7 +27,7 @@ export default [
       {
         path: 'cronJob',
         name: 'CronJob',
-        component: () => import('@/pages/devops/pod/index.vue'),
+        component: () => import('@/pages/devops/list/index.vue'),
         meta: { title: '定时任务' },
       },
       // {
