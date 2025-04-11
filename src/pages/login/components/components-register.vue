@@ -126,7 +126,7 @@ export default Vue.extend({
         // 判断注册方式
         switch (this.type) {
           case "email":
-            this.$request.post("/register/byMail", this.formData).then(res => {
+            this.$request.post("/register", this.formData).then(res => {
               if (res.data.code === 200) {
                 this.$message.success(res.data.msg);
               } else {
