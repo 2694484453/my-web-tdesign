@@ -38,13 +38,6 @@ instance.interceptors.request.use(config => {
 //拦截响应
 instance.interceptors.response.use(
   (response) => {
-    if (response.data.code === 200) {
-      const { data } = response;
-      if (data.code === CODE.REQUEST_SUCCESS) {
-        return data;
-      }
-      return response;
-    }
     if (response.data.code === 401) {
       message.error("无效的会话，或者会话已过期，请重新登录。").then(r => {
         setTimeout(()=>{
@@ -53,6 +46,12 @@ instance.interceptors.response.use(
           })
         },2000)
       })
+    }else {
+      const { data } = response;
+      if (data.code === CODE.REQUEST_SUCCESS) {
+        return data;
+      }
+      return response;
     }
   },
   (err) => {

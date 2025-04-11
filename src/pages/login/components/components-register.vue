@@ -58,8 +58,7 @@
 
     <t-form-item class="check-container" name="checked">
       <t-checkbox v-model="formData.checked">我已阅读并同意</t-checkbox>
-      <span>TDesign服务协议</span> 和
-      <span>TDesign 隐私声明</span>
+      <span>TDesign服务协议</span> 和 <span>TDesign 隐私声明</span>
     </t-form-item>
 
     <t-form-item>
@@ -117,7 +116,11 @@ export default Vue.extend({
     clearInterval(this.intervalTimer);
   },
   methods: {
-    onSubmit({validateResult}: { validateResult: boolean }) {
+    switchType(val: 'email' | 'phone') {
+      this.$refs.form.reset();
+      this.type = val;
+    },
+    async onSubmit({validateResult}: { validateResult: boolean }) {
       if (validateResult === true) {
         if (!this.formData.checked) {
           this.$message.error('请同意TDesign服务协议和TDesign 隐私声明');
@@ -126,24 +129,26 @@ export default Vue.extend({
         // 判断注册方式
         switch (this.type) {
           case "email":
-            this.$request.post("/register", this.formData).then(res => {
-              if (res.data.code === 200) {
-                this.$message.success(res.data.msg);
-              } else {
-                this.$message.error(res.data.msg);
-              }
-            })
+            this.formData.type = "email";
             break;
           case "phone":
+            this.formData.type = "phone";
             break;
         }
-
+        await this.$request.post("/register", this.formData).then((res) => {
+          console.log(res)
+          if (res.data.code === 200) {
+            this.$message.success(res.data.msg);
+            setTimeout(()=>{
+              this.$router.push("/login").catch(err => {
+              });
+            },2000)
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
         this.$emit('registerSuccess');
       }
-    },
-    switchType(val: 'email' | 'phone') {
-      this.$refs.form.reset();
-      this.type = val;
     },
     handleCounter() {
       this.countDown = 60;
