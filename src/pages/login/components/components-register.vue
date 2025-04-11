@@ -29,6 +29,17 @@
       </t-form-item>
     </template>
 
+    <!-- 集群域名注册 -->
+    <template v-if="type == 'cluster'">
+      <t-form-item name="cluster">
+        <t-input v-model="formData.cluster" type="text" size="large" placeholder="请输入您的集群域名/IP">
+          <template #prefix-icon>
+            <mail-icon/>
+          </template>
+        </t-input>
+      </t-form-item>
+    </template>
+
     <t-form-item name="password">
       <t-input
         v-model="formData.password"
@@ -65,11 +76,6 @@
       <t-button block size="large" type="submit"> 注册</t-button>
     </t-form-item>
 
-    <div class="switch-container">
-      <span class="tip" @click="switchType(type == 'phone' ? 'email' : 'phone')">{{
-          type == 'phone' ? '使用邮箱注册' : '使用手机号注册'
-        }}</span>
-    </div>
   </t-form>
 </template>
 <script lang="ts">
@@ -79,12 +85,15 @@ import {UserIcon, MailIcon, BrowseIcon, BrowseOffIcon, LockOnIcon} from 'tdesign
 const INITIAL_DATA = {
   phone: '',
   email: '',
-  password: '',
+  cluster: 'ark.gpg123.vip',
+  password: 'ark.gpg123.vip',
   verifyCode: '',
+  type: 'cluster',
   checked: false,
 };
 
 const FORM_RULES = {
+  cluster: [{required: true, message: '集群域名/IP必填', type: 'error'}],
   phone: [{required: true, message: '手机号必填', type: 'error'}],
   email: [{required: true, email: true, message: '邮箱必填', type: 'error'}],
   password: [{required: true, message: '密码必填', type: 'error'}],
@@ -104,7 +113,7 @@ export default Vue.extend({
   data() {
     return {
       FORM_RULES,
-      type: 'phone',
+      type: 'cluster',
       emailOptions: [],
       formData: {...INITIAL_DATA},
       showPsw: false,
@@ -116,7 +125,7 @@ export default Vue.extend({
     clearInterval(this.intervalTimer);
   },
   methods: {
-    switchType(val: 'email' | 'phone') {
+    switchType(val: string) {
       this.$refs.form.reset();
       this.type = val;
     },
@@ -133,6 +142,9 @@ export default Vue.extend({
             break;
           case "phone":
             this.formData.type = "phone";
+            break;
+          case "cluster":
+            this.formData.type = "cluster";
             break;
         }
         await this.$request.post("/register", this.formData).then((res) => {
