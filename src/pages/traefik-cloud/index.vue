@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'https://traefik.gpg123.vip/dashboard/#/',
+      frameSrc: this.$cookies.get("username") !== null ? 'http://'+this.$cookies.get("username")+':8080/dashboard/#/' : 'https://traefik.gpg123.vip/dashboard/#/',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };

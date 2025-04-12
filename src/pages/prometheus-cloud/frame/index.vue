@@ -19,7 +19,7 @@ export default {
     return {
       prefix,
       loading: true,
-      frameSrc: 'https://prometheus.gpg123.vip',
+      frameSrc: this.$cookies.get("username") !== null ? 'http://'+this.$cookies.get("username")+':9090' : 'https://prometheus.gpg123.vip',
       settingStore: { ...STYLE_CONFIG },
       getWrapStyle: `height: ${window.innerHeight}px`,
     };

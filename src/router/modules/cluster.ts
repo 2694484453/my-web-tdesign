@@ -19,11 +19,17 @@ export default [
         component: () => import('@/pages/cluster/dashboard.vue'),
         meta: {title: '监控面板'},
       },
+      // {
+      //   path: "add",
+      //   name: 'AddBase',
+      //   component: () => import("@/pages/cluster/list/index.vue"),
+      //   meta: {title: '集群列表'},
+      // },
       {
-        path: "add",
-        name: 'AddBase',
+        path: "mine",
+        name: 'MineBase',
         component: () => import("@/pages/cluster/list/index.vue"),
-        meta: {title: '集群列表'},
+        meta: {title: '我的集群'},
       }
     ],
   },
