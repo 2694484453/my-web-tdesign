@@ -10,6 +10,7 @@
     "build:test": "vite build --mode test",
     "build": "vite build --mode release",
     "build:dev": "vite build --mode development",
+    "build:k8s": "vite build --mode k8s",
     "build:prod": "vite build --mode prod",
     "build:site": "vite build --mode site",
     "site:preview": "npm run build && cp -r dist _site",
