@@ -4,6 +4,7 @@
   "scripts": {
     "dev:mock": "vite --open --mode mock",
     "dev:prod": "vite --open --mode prod",
+    "dev:k8s": "vite --open --mode k8s",
     "dev": "vite --open --mode development",
     "dev:linux": "vite --mode development",
     "build:test": "vite build --mode test",

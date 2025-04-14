@@ -3,8 +3,6 @@ export default {
     // 开发环境接口请求
     NAME: "development",
     API: 'http://localhost:9099',
-    //API: 'http://ecs.gpg123.vip:9099',
-    //API: 'https://my-server.gpg123.vip',
     PATH: "", //"/dev-api/",
     // 开发环境 cdn 路径
     CDN: '',
@@ -13,8 +11,16 @@ export default {
   prod: {
     // 生产环境接口请求
     NAME: "prod",
-    //API: 'http://ecs.gpg123.vip:9099',
     API: 'https://my-server.gpg123.vip',
+    PATH: "", //"/prod-api/",
+    // 开发环境 cdn 路径
+    CDN: '',
+    changeOrigin: true
+  },
+  k8s: {
+    // 生产环境接口请求
+    NAME: "k8s",
+    API: 'http://cloud-server-k8s.gpg123.vip',
     PATH: "", //"/prod-api/",
     // 开发环境 cdn 路径
     CDN: '',
