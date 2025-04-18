@@ -39,12 +39,12 @@
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
-          <template #urls="{ row }">
+          <template #repoUrl="{ row }">
             <a v-bind:href="row.repoUrl" target="_blank">{{row.repoUrl}}</a>
           </template>
-<!--          <template #created="{ row }">-->
-<!--            <p>{{new Date(row.created).toLocaleString()}}</p>-->
-<!--          </template>-->
+          <template #generated="{ row }">
+            <p>{{new Date(row.generated).toLocaleString()}}</p>
+          </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="drawer.visible=true;handleClickInstall()">安装</a>
             <a class="t-button-link" @click="drawer.visible=true;handleClickDetail()">详情</a>
