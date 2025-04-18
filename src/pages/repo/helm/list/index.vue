@@ -46,8 +46,8 @@
 <!--            <p>{{new Date(row.created).toLocaleString()}}</p>-->
 <!--          </template>-->
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickInstall()">安装</a>
-            <a class="t-button-link" @click="handleClickDetail()">详情</a>
+            <a class="t-button-link" @click="drawer.visible=true;handleClickInstall()">安装</a>
+            <a class="t-button-link" @click="drawer.visible=true;handleClickDetail()">详情</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps)">卸载</a>
           </template>
         </t-table>
@@ -61,6 +61,16 @@
             @change="onChange"
           />
         </div>
+        <!--抽屉-->
+        <t-drawer
+          v-model:visible="drawer.visible"
+          :header="drawer.header"
+          :on-overlay-click="() => (drawer.visible = false)"
+          :size-draggable="true"
+          @cancel="drawer.visible = false"
+        >
+          <p>抽屉的内容</p>
+        </t-drawer>
       </div>
     </t-card>
     <t-dialog
@@ -164,10 +174,16 @@ export default Vue.extend({
       deleteType: -1,
       formData: {
         name: "",
+        version: "",
         type: "",
         namespace: "",
         pageNum: 1,
         pageSize: 10
+      },
+      drawer: {
+        header: "",
+        visible: false,
+        type: "",
       },
       typeList: []
     };
@@ -208,15 +224,18 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
+    // 点击安装
     handleClickInstall() {
 
     },
+    // 点击详情
     handleClickDetail() {
       this.$router.push('/detail/base');
     },
     handleSetupContract() {
       this.$router.push('/prometheus/add');
     },
+    // 点击卸载
     handleClickDelete(row: { rowIndex: any,type: any }) {
       this.deleteIdx = row.rowIndex;
       this.deleteType = row.type;
