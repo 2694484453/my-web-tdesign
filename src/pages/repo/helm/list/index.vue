@@ -60,17 +60,17 @@
             @page-size-change="onPageSizeChange"
             @change="onChange"
           />
+          <!--抽屉-->
+          <t-drawer
+            v-model:visible="drawer.visible"
+            :header="drawer.header"
+            :on-overlay-click="() => (drawer.visible = false)"
+            :size-draggable="true"
+            @cancel="drawer.visible = false"
+          >
+            <p>抽屉的内容</p>
+          </t-drawer>
         </div>
-        <!--抽屉-->
-        <t-drawer
-          v-model:visible="drawer.visible"
-          :header="drawer.header"
-          :on-overlay-click="() => (drawer.visible = false)"
-          :size-draggable="true"
-          @cancel="drawer.visible = false"
-        >
-          <p>抽屉的内容</p>
-        </t-drawer>
       </div>
     </t-card>
     <t-dialog
