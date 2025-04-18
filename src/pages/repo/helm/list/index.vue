@@ -18,7 +18,7 @@
           </t-col>
           <t-col :span="3">
             <t-form-item label="版本" name="namespace">
-              <t-input v-model="formData.namespace" :style="{ width: '200px' }" placeholder="请输入内容"/>
+              <t-input v-model="formData.version" :style="{ width: '200px' }" placeholder="请输入内容"/>
             </t-form-item>
           </t-col>
           <t-col :span="2" class="operation-container">
@@ -40,14 +40,15 @@
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #urls="{ row }">
-            <a v-bind:href="row.urls[0]" target="_blank">{{row.urls[0]}}</a>
+            <a v-bind:href="row.repoUrl" target="_blank">{{row.repoUrl}}</a>
           </template>
-          <template #created="{ row }">
-            <p>{{new Date(row.created).toLocaleString()}}</p>
-          </template>
+<!--          <template #created="{ row }">-->
+<!--            <p>{{new Date(row.created).toLocaleString()}}</p>-->
+<!--          </template>-->
           <template #op="slotProps">
+            <a class="t-button-link" @click="handleClickInstall()">安装</a>
             <a class="t-button-link" @click="handleClickDetail()">详情</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps)">卸载</a>
           </template>
         </t-table>
         <div>
@@ -100,50 +101,43 @@ export default Vue.extend({
         {
           title: '名称',
           align: 'left',
-          width: 150,
+          width: 180,
           ellipsis: true,
           colKey: 'name',
           fixed: 'left',
         },
         {
-          title: '版本',
+          title: '版本数量',
           width: 80,
           ellipsis: true,
           fixed: 'left',
-          colKey: 'version',
-        },
-        {
-          title: '描述',
-          width: 200,
-          ellipsis: true,
-          fixed: 'left',
-          colKey: 'description',
+          colKey: 'versionCount',
         },
         {
           title: '类型',
-          width: 80,
+          width: 120,
           ellipsis: true,
           fixed: 'left',
           colKey: 'type',
         },
         {
-          title: '创建时间',
-          width: 120,
-          ellipsis: true,
-          fixed: 'left',
-          colKey: 'created',
-        },
-        {
-          title: '校验码',
+          title: '仓库名称',
           width: 100,
           ellipsis: true,
-          colKey: "digest"
+          colKey: "repoName"
         },
         {
-          title: '地址',
+          title: '仓库地址',
           width: 200,
           ellipsis: true,
-          colKey: "urls"
+          colKey: "repoUrl"
+        },
+        {
+          title: '生成时间',
+          width: 180,
+          ellipsis: true,
+          fixed: 'left',
+          colKey: 'generated',
         },
         {
           align: 'left',
@@ -214,6 +208,9 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
+    handleClickInstall() {
+
+    },
     handleClickDetail() {
       this.$router.push('/detail/base');
     },
@@ -276,7 +273,7 @@ export default Vue.extend({
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
-          //console.log(res.data.data)
+          console.log(res.data)
           this.data = res.data.rows;
           this.pagination.total = res.data.total;
         }

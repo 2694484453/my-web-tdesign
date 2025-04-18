@@ -44,7 +44,7 @@ import proxy from '@/config/host';
 // 开发模式
 const devRouterList = [...baseRouters, ...componentsRouters, ...othersRouters, ...domainRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 生产模式
-const prodRouterList = [...baseRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...buildRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
+const prodRouterList = [...baseRouters, ...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...buildRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
 // 存放动态路由
 export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
 //[...baseRouters, ...componentsRouters, ...othersRouters];
