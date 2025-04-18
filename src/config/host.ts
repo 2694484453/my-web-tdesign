@@ -20,7 +20,7 @@ export default {
   k8s: {
     // 生产环境接口请求
     NAME: "k8s",
-    API: 'http://cloud-server-k8s.gpg123.vip',
+    API: 'https://cloud-server-k8s.gpg123.vip',
     PATH: "", //"/prod-api/",
     // 开发环境 cdn 路径
     CDN: '',
