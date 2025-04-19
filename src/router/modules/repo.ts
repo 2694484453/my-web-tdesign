@@ -7,13 +7,19 @@ export default [
     name: 'repo',
     component: Layout,
     //redirect: '/repo/base',
-    meta: {title: '应用市场', icon: AppIcon},
+    meta: {title: '应用管理', icon: AppIcon},
     children: [
       {
-        path: 'helm',
-        name: 'HelmBase',
+        path: 'helmMarket',
+        name: 'HelmMarketBase',
         component: () => import('@/pages/repo/helm/list/index.vue'),
-        meta: {title: 'helm应用'},
+        meta: {title: '应用市场'},
+      },
+      {
+        path: 'helmMine',
+        name: 'HelmMineBase',
+        component: () => import('@/pages/repo/myApp/list/index.vue'),
+        meta: {title: '我的应用'},
       },
       {
         path: 'image',
