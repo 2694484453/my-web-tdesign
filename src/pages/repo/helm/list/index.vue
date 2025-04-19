@@ -44,8 +44,8 @@
             <t-tag :theme="row.isInstalled ? 'success':'default'" variant="light">{{row.isInstalled ? "已安装" : "未安装"}}</t-tag>
           </template>
           <template #op="slotProps">
-            <a v-show="!slotProps.row.isInstalled" class="t-button-link" @click="drawer.visible=true;handleClickInstall()">安装</a>
-            <a class="t-button-link" @click="drawer.visible=true;handleClickDetail()">详情</a>
+            <a v-show="!slotProps.row.isInstalled" class="t-button-link" @click="form.visible=true;handleClickInstall(slotProps.row)">安装</a>
+            <a class="t-button-link" @click="form.visible=true;handleClickDetail()">详情</a>
             <a v-show="slotProps.row.isInstalled" class="t-button-link" @click="handleClickDelete(slotProps)">卸载</a>
           </template>
         </t-table>
@@ -58,16 +58,6 @@
             @page-size-change="onPageSizeChange"
             @change="onChange"
           />
-          <!--抽屉-->
-          <t-drawer
-            v-model:visible="drawer.visible"
-            :header="drawer.header"
-            :on-overlay-click="() => (drawer.visible = false)"
-            :size-draggable="true"
-            @cancel="drawer.visible = false"
-          >
-            <p>抽屉的内容</p>
-          </t-drawer>
         </div>
       </div>
     </t-card>
@@ -78,6 +68,29 @@
       @confirm="onConfirmDelete"
       :onCancel="onCancel">
     </t-dialog>
+    <!--抽屉-->
+    <t-drawer
+      :visible.sync="form.visible"
+      :header="form.header"
+      :on-overlay-click="() => (form.visible = false)"
+      :on-size-drag-end="handleSizeDrag"
+      showOverlay
+      :sizeDraggable="true"
+      placement="right"
+      destroyOnClose
+      size="30%"
+      @close="form.visible = false"
+      :onConfirm="handleInstall"
+      @cancel="form.visible = false"
+    >
+      <span v-show="form.action==='add'">
+
+      </span>
+      <span v-show="form.action==='detail'">
+
+      </span>
+      <p>抽屉的内容</p>
+    </t-drawer>
   </div>
 </template>
 <script lang="ts">
@@ -185,10 +198,12 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10
       },
-      drawer: {
+      form: {
         header: "",
         visible: false,
         type: "",
+        action: "add",
+        row: {}
       },
       typeList: []
     };
@@ -230,11 +245,26 @@ export default Vue.extend({
       console.log('Page Info: ', pageInfo);
     },
     // 点击安装
-    handleClickInstall() {
-
+    handleClickInstall(row) {
+      this.form.action = 'add'
+      this.form.header = '安装'+ row.name;
+      this.form.row = row
+    },
+    // 执行安装
+    handleInstall() {
+      const row = this.form.row
+      this.$request.post("/helm/install?name="+row.name,{
+        params: {
+          name: row.name,
+          status: 'success'
+        }
+      }).then(res=>{
+        console.log("安装成功")
+      })
     },
     // 点击详情
     handleClickDetail() {
+      this.form.action = 'detail'
       this.$router.push('/detail/base');
     },
     handleSetupContract() {
@@ -271,6 +301,9 @@ export default Vue.extend({
     },
     onCancel() {
       this.resetIdx();
+    },
+    handleSizeDrag({size}) {
+      console.log('size drag size: ', size);
     },
     resetIdx() {
       this.deleteIdx = -1;
