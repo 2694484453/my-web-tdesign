@@ -40,10 +40,13 @@
           <template #generated="{ row }">
             <p>{{new Date(row.generated).toLocaleString()}}</p>
           </template>
+          <template #isInstalled="{ row }">
+            <t-tag :theme="row.isInstalled ? 'success':'default'" variant="light">{{row.isInstalled ? "已安装" : "未安装"}}</t-tag>
+          </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="drawer.visible=true;handleClickInstall()">安装</a>
+            <a v-show="!slotProps.row.isInstalled" class="t-button-link" @click="drawer.visible=true;handleClickInstall()">安装</a>
             <a class="t-button-link" @click="drawer.visible=true;handleClickDetail()">详情</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">卸载</a>
+            <a v-show="slotProps.row.isInstalled" class="t-button-link" @click="handleClickDelete(slotProps)">卸载</a>
           </template>
         </t-table>
         <div>
@@ -124,6 +127,13 @@ export default Vue.extend({
           ellipsis: true,
           fixed: 'left',
           colKey: 'type',
+        },
+        {
+          title: '是否安装',
+          width: 100,
+          ellipsis: true,
+          fixed: 'left',
+          colKey: 'isInstalled',
         },
         {
           title: '仓库名称',
