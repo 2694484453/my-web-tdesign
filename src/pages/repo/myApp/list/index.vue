@@ -145,7 +145,7 @@ export default Vue.extend({
         },
         {
           title: '命名空间',
-          width: 120,
+          width: 180,
           ellipsis: true,
           colKey: "namespace"
         },
