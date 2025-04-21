@@ -260,6 +260,12 @@ export default Vue.extend({
         }
       }).then(res=>{
         console.log("安装成功")
+        if (res.data.code ===200) {
+          this.$message.success(res.data.msg)
+          this.form.visible = false;
+        } else {
+          this.$message.error(res.data.msg)
+        }
       })
     },
     // 点击详情

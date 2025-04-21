@@ -68,7 +68,7 @@
             <a :href="row.html_url" target="_blank">{{ row.html_url }}</a>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickOpen(slotProps.row)">打开</a>
+            <a class="t-button-link" @click="handleClickOpen(slotProps.row)">在线预览</a>
             <a class="t-button-link" @click="drawer.visible = true;handleClickDetail(slotProps.row)">详情</a>
             <!--            <a class="t-button-link" @click="handleClickEdit(slotProps)">编辑</a>-->
             <!--            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>-->

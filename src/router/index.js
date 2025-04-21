@@ -42,7 +42,7 @@ import discoveryRouters from "@/router/modules/discovery";
 const env = import.meta.env.MODE || 'development';
 import proxy from '@/config/host';
 // 开发模式
-const devRouterList = [...baseRouters, ...domainRouters, ...devopsRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
+const devRouterList = [...baseRouters, ...domainRouters, ...gitRouters, ...devopsRouters, ...buildRouters, ...monitorRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters]
 // 生产模式
 const prodRouterList = [...baseRouters, ...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...buildRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
 // 存放动态路由
