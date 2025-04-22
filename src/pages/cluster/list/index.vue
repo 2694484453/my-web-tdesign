@@ -221,6 +221,9 @@ export default Vue.extend({
     this.getList()
   },
   methods: {
+    getContainer() {
+      return document.querySelector('.tdesign-starter-layout');
+    },
     getList() {
       this.dataLoading = true;
       this.$request
@@ -241,9 +244,6 @@ export default Vue.extend({
         .finally(() => {
           this.dataLoading = false;
         });
-    },
-    getContainer() {
-      return document.querySelector('.tdesign-starter-layout');
     },
     onPageSizeChange(size, pageInfo) {
       console.log('Page Size:', this.pageSize, size, pageInfo);
