@@ -1,6 +1,15 @@
 <template>
   <div>
     <t-card class="list-card-container" :bordered="false">
+      <t-form
+        ref="form"
+        :data="formData"
+        :label-width="80"
+        colon
+        @reset="onReset"
+        @submit="onSubmit"
+        :style="{ marginBottom: '8px' }"
+      >
       <t-row justify="space-between">
         <div class="left-operation-container">
           <t-button @click="handleSetupContract"> 创建应用 </t-button>
@@ -12,7 +21,12 @@
             <search-icon size="20px" />
           </template>
         </t-input>
+        <t-col :span="2" class="operation-container">
+          <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
+          <t-button type="reset" variant="base" theme="default"> 重置</t-button>
+        </t-col>
       </t-row>
+      </t-form>
 
       <div class="table-container">
         <t-table
@@ -21,12 +35,8 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -57,6 +67,16 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
+        <div>
+          <t-pagination
+            v-model="formData.pageNum"
+            :total="pagination.total"
+            :page-size.sync="formData.pageSize"
+            @current-change="onCurrentChange"
+            @page-size-change="onPageSizeChange"
+            @change="onChange"
+          />
+        </div>
       </div>
     </t-card>
     <t-dialog
@@ -99,35 +119,47 @@ export default Vue.extend({
         {
           title: '应用名称',
           align: 'left',
-          width: 250,
+          width: 120,
           ellipsis: true,
-          colKey: 'name',
+          colKey: 'appName',
           fixed: 'left',
         },
-        { title: '状态', colKey: 'status', width: 200, cell: { col: 'status' } },
+        { title: '状态', colKey: 'status', width: 80, cell: { col: 'status' } },
         {
-          title: '编号',
-          width: 200,
+          title: 'chart名称',
+          width: 120,
           ellipsis: true,
-          colKey: 'no',
+          colKey: 'chartName',
         },
         {
           title: '类型',
-          width: 200,
+          width: 80,
           ellipsis: true,
-          colKey: 'contractType',
+          colKey: 'source',
         },
         {
-          title: '合同收付类型',
-          width: 200,
+          title: '命名空间',
+          width: 180,
           ellipsis: true,
-          colKey: 'paymentType',
+          colKey: 'nameSpace',
         },
         {
-          title: '合同金额 (元)',
+          title: '集群',
+          width: 180,
+          ellipsis: true,
+          colKey: 'clusterName',
+        },
+        {
+          title: '描述',
+          width: 180,
+          ellipsis: true,
+          colKey: 'description',
+        },
+        {
+          title: '创建时间',
           width: 200,
           ellipsis: true,
-          colKey: 'amount',
+          colKey: 'createTime',
         },
         {
           align: 'left',
@@ -144,13 +176,21 @@ export default Vue.extend({
       rowClassName: (rowKey: string) => `${rowKey}-class`,
       // 与pagination对齐
       pagination: {
-        defaultPageSize: 20,
+        defaultPageSize: 10,
         total: 0,
         defaultCurrent: 1,
       },
       searchValue: '',
       confirmVisible: false,
       deleteIdx: -1,
+      formData: {
+        name: "",
+        version: "",
+        type: "",
+        namespace: "",
+        pageNum: 1,
+        pageSize: 10
+      },
     };
   },
   computed: {
@@ -166,28 +206,45 @@ export default Vue.extend({
     },
   },
   mounted() {
-    this.dataLoading = true;
-    this.$request
-      .get('/api/get-list')
-      .then((res) => {
-        if (res.code === 0) {
-          const { list = [] } = res.data;
-          this.data = list;
-          this.pagination = {
-            ...this.pagination,
-            total: list.length,
-          };
-        }
-      })
-      .catch((e: Error) => {
-        console.log(e);
-      })
-      .finally(() => {
-        this.dataLoading = false;
-      });
   },
-
+  created() {
+    this.getList()
+  },
   methods: {
+    getList() {
+      this.dataLoading = true;
+      this.$request
+        .get('/mineApp/page',{
+          params: this.formData
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            console.log(res.data)
+            this.data = res.data.rows;
+            this.pagination.total = res.data.total;
+          }
+        })
+        .catch((e: Error) => {
+          console.log(e);
+        })
+        .finally(() => {
+          this.dataLoading = false;
+        });
+    },
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
+    },
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
+    },
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
+    },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
@@ -227,6 +284,14 @@ export default Vue.extend({
     },
     resetIdx() {
       this.deleteIdx = -1;
+    },
+    onReset(data) {
+      console.log(data);
+      this.getList();
+    },
+    onSubmit(data) {
+      console.log(this.formData);
+      this.getList(this.formData);
     },
   },
 });
