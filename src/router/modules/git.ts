@@ -8,7 +8,7 @@ export default [
     redirect: '/git/base',
     name: 'git',
     meta: {
-      title: 'Github仓库管理',
+      title: 'Git仓库管理',
       icon: LogoGithubIcon,
     },
     children: [
@@ -25,10 +25,10 @@ export default [
         meta: {title: '仓库列表'},
       },
       {
-        path: 'other',
-        name: 'other',
-        component: () => import('@/pages/git/gitlab/index.vue'),
-        meta: {title: '其他'},
+        path: 'access',
+        name: 'access',
+        component: () => import('@/pages/git/access/list/index.vue'),
+        meta: {title: '配置列表'},
       },
     ],
   },
