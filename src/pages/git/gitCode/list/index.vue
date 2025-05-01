@@ -182,7 +182,7 @@ export default Vue.extend({
       deleteIdx: -1,
       formData: {
         name: "",
-        type: "gitee",
+        type: "",
         pageNum: 1,
         pageSize: 10
       },
@@ -208,9 +208,8 @@ export default Vue.extend({
   methods: {
     getList() {
       this.dataLoading = true;
-      this.$request.get('/gitRepo/page',{
-          params: this.formData
-        })
+      this.$request
+        .get('/gitee/page')
         .then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;
