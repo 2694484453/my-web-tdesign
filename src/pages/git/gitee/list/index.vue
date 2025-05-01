@@ -210,8 +210,7 @@ export default Vue.extend({
       this.dataLoading = true;
       this.$request.get('/gitRepo/page',{
           params: this.formData
-        })
-        .then((res) => {
+        }).then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;
             this.pagination = {
