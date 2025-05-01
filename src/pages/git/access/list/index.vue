@@ -363,11 +363,13 @@ export default Vue.extend({
       this.$message.success('删除成功');
       this.resetIdx();
     },
+    // 添加
     handleConfirm() {
       this.$request.post("/gitAccess/add",this.form).then(res=>{
         if (res.data.code ===200) {
           this.$message.success(res.data.msg)
           this.form.visible = false;
+          this.getList()
         } else {
           this.$message.error(res.data.msg)
         }
