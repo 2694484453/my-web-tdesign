@@ -15,7 +15,7 @@ export default [
       {
         path: 'overView',
         name: 'overView',
-        component: () => import('@/pages/git/github/index.vue'),
+        component: () => import('@/pages/git/index.vue'),
         meta: {title: '概览'},
       },
       {
