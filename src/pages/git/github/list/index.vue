@@ -200,7 +200,7 @@ export default Vue.extend({
       deleteIdx: -1,
       formData: {
         name: "",
-        type: "",
+        type: "github",
         pageNum: 1,
         pageSize: 10
       },
@@ -232,7 +232,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/github/page', {
+        .get('/gitRepo/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
