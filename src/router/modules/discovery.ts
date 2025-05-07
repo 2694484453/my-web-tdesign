@@ -14,9 +14,15 @@ export default [
         meta: {title: '概览'},
       },
       {
-        path: "list",
-        name: 'ListBase',
-        component: () => import("@/pages/discovery/list/index.vue"),
+        path: "configList",
+        name: 'configList',
+        component: () => import("@/pages/discovery/serviceList/index.vue"),
+        meta: {title: '服务列表'},
+      },
+      {
+        path: "serviceList",
+        name: 'serviceList',
+        component: () => import("@/pages/discovery/configList/index.vue"),
         meta: {title: '配置列表'},
       },
       {

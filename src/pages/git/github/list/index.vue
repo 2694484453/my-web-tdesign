@@ -151,7 +151,16 @@ export default Vue.extend({
           colKey: 'name',
           fixed: 'left',
         },
-        {title: '状态', colKey: 'visibility', width: 80,},
+        {
+          title: '语言',
+          colKey: 'language',
+          width: 120
+        },
+        {
+          title: '状态',
+          colKey: 'visibility',
+          width: 80,
+        },
         {
           title: '地址',
           width: 200,
