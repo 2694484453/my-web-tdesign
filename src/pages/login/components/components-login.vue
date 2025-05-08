@@ -168,7 +168,7 @@ export default Vue.extend({
               });
             },2000)
           } else {
-            this.$message.error(res.data.message);
+            this.$message.error(res.data.msg);
           }
         }).catch((err) => {
           this.$message.error(err.message);

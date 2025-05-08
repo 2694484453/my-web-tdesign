@@ -164,7 +164,7 @@ export default Vue.extend({
       columns: [
         {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: '仓库名称',
+          title: '名称',
           align: 'left',
           width: 120,
           ellipsis: true,
@@ -188,6 +188,12 @@ export default Vue.extend({
           width: 200,
           ellipsis: true,
           colKey: 'homeUrl',
+        },
+        {
+          title: '创建人',
+          width: 120,
+          ellipsis: true,
+          colKey: 'createBy',
         },
         {
           title: '描述',

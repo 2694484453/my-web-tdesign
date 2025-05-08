@@ -61,14 +61,16 @@
               <trend class="dashboard-item-trend" type="down"/>
             </p>
           </template>
+          <template #language="{ row }">
+            <p v-if="row.language === '' || row.language === null ">未知</p>
+            <p v-else>{{row.language}}</p>
+          </template>
           <template #html_url="{ row }">
             <a :href="row.html_url" target="_blank">{{row.html_url}}</a>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickSuccess()">执行</a>
+            <a class="t-button-link" @click="handleClickSuccess()">在线预览</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps)">详情</a>
-            <a class="t-button-link" @click="handleClickEdit(slotProps)">编辑</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
       </div>

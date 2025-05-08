@@ -1,5 +1,7 @@
 <template>
-  <router-view :class="[mode]" />
+  <div>
+    <router-view :class="[mode]" />
+  </div>
 </template>
 
 <script>

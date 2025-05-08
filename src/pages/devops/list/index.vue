@@ -40,20 +40,14 @@
             :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
-            <span v-if="row.status.succeeded === 1">
+            <span v-if="row.status === 1">
               <t-tag theme="success" variant="light">已完成</t-tag>
             </span>
-            <span v-if="row.status.successed === 0">
-              <span v-if="row.status.ready === 0">
-                <t-tag variant="light">未运行</t-tag>
-              </span>
-              <span v-if="row.status.ready === 1">
-                <t-tag theme="warning" variant="light">运行中</t-tag>
-              </span>
-              <span v-if="row.status.terminating === 1">
-                 <t-tag theme="warning" variant="light">等待中</t-tag>
-              </span>
-               <t-tag theme="danger" variant="light">失败</t-tag>
+            <span v-if="row.status === 2">
+              <t-tag theme="warning" variant="light">运行中</t-tag>
+            </span>
+            <span v-if="row.status === 3">
+              <t-tag theme="danger" variant="light">失败</t-tag>
             </span>
           </template>
           <template #metadata.labels="{ row }">
@@ -135,34 +129,68 @@
           @reset="onReset"
           @submit="onSubmit"
         >
-          <t-form-item label="任务名称" name="name" >
-            <t-input v-model="form.name" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
-          </t-form-item>
+          <t-space direction="vertical" size="32px">
+            <t-tabs :value="form.step" placement="left" @change="(newValue) => (value = newValue)">
+              <t-tab-panel value="git" label="仓库">
+                  <t-form-item label="仓库类型" name="type" >
+                    <t-select v-model="form.git.type" placeholder="请选择" @change="getRepoList">
+                      <t-option key="gitee" label="gitee" value="gitee" />
+                      <t-option key="github" label="github" value="github"/>
+                      <t-option key="gitlab" label="gitlab" value="gitlab" />
+                    </t-select>
+                  </t-form-item>
+                  <t-form-item label="名称/地址" name="url" >
+                    <t-select v-model="form.git.url" placeholder="请选择" >
+                      <span v-for="(item,index) in form.gitRepoList">
+                         <t-option :key="item.id" :label="item.name" :value="item" />
+                      </span>
+                    </t-select>
+                  </t-form-item>
+                  <t-form-item label="分支" name="branch" >
+                    <t-input v-model="form.git.branch" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+                  </t-form-item>
+              </t-tab-panel>
+              <t-tab-panel value="build" label="构建">
+                <p style="padding: 25px">
+                  <t-form-item label="任务名称" name="name" >
+                    <t-input v-model="form.name" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+                  </t-form-item>
 
-          <t-form-item label="镜像名称" name="imageName">
-            <t-input v-model="form.imageName" placeholder="请输入内容"></t-input>
-          </t-form-item>
+                  <t-form-item label="镜像名称" name="imageName">
+                    <t-input v-model="form.imageName" placeholder="请输入内容"></t-input>
+                  </t-form-item>
 
-          <t-form-item label="容器名称" name="containerName">
-            <t-input v-model="form.containerName" placeholder="请输入内容"></t-input>
-          </t-form-item>
+                  <t-form-item label="容器名称" name="containerName">
+                    <t-input v-model="form.containerName" placeholder="请输入内容"></t-input>
+                  </t-form-item>
 
-          <t-form-item label="环境变量" name="env">
-            <t-input v-model="form.env" placeholder="请输入内容"></t-input>
-          </t-form-item>
+                  <t-form-item label="环境变量" name="env">
+                    <t-input v-model="form.env" placeholder="请输入内容"></t-input>
+                  </t-form-item>
 
-          <t-form-item label="命令行" name="">
-            <t-textarea
-              v-model="form.cmd"
-              placeholder="['/bin/sh', '-c', 'xxx']"
-              name="description"
-              :autosize="{ minRows: 3, maxRows: 20 }"
-            />
-          </t-form-item>
+                  <t-form-item label="命令行" name="">
+                    <t-textarea
+                      v-model="form.cmd"
+                      placeholder="['/bin/sh', '-c', 'xxx']"
+                      name="description"
+                      :autosize="{ minRows: 3, maxRows: 20 }"
+                    />
+                  </t-form-item>
 
-          <t-form-item label="重试机制" name="restartPolicy">
-            <t-input v-model="form.restartPolicy" placeholder="请输入内容"></t-input>
-          </t-form-item>
+                  <t-form-item label="重试机制" name="restartPolicy">
+                    <t-input v-model="form.restartPolicy" placeholder="请输入内容"></t-input>
+                  </t-form-item>
+                </p>
+              </t-tab-panel>
+              <t-tab-panel value="push" label="推送">
+                <p style="padding: 25px">选项卡3</p>
+              </t-tab-panel>
+              <t-tab-panel value="deploy" label="部署">
+                <p style="padding: 25px">选项卡3</p>
+              </t-tab-panel>
+            </t-tabs>
+          </t-space>
+
         </t-form>
       </t-space>
     </t-drawer>
@@ -202,7 +230,7 @@ export default Vue.extend({
           align: 'left',
           width: 220,
           ellipsis: true,
-          colKey: 'metadata.name',
+          colKey: 'name',
           fixed: 'left',
         },
         {
@@ -210,24 +238,23 @@ export default Vue.extend({
           width: 80,
           ellipsis: true,
           fixed: 'left',
-          colKey: 'kind',
+          colKey: 'type',
         },
         {
           title: '标签',
           width: 200,
           ellipsis: true,
-          colKey: 'metadata.labels',
+          colKey: 'labels',
         },
         {
           title: '状态',
           colKey: 'status',
           width: 100,
           ellipsis: true,
-          cell: {col: 'status'}
         },
         {
           title: '命名空间',
-          colKey: 'metadata.namespace',
+          colKey: 'nameSpace',
           ellipsis: true,
           width: 100,
         },
@@ -235,13 +262,13 @@ export default Vue.extend({
           title: '最近一次执行',
           width: 200,
           ellipsis: true,
-          colKey: "status.startTime"
+          colKey: "updateTime"
         },
         {
           title: "创建时间",
           width: 200,
           ellipsis: true,
-          colKey: "metadata.creationTimestamp"
+          colKey: "createTime"
         },
         {
           align: 'left',
@@ -273,6 +300,13 @@ export default Vue.extend({
         pageSize: 10,
       },
       form: {
+        step: "git",
+        git: {
+          type: "",
+          url: "",
+          branch: "",
+        },
+        gitRepoList: [],
         name: "",
         imageName: "",
         containerName: "",
@@ -326,6 +360,23 @@ export default Vue.extend({
     }
   },
   methods: {
+    getRepoList() {
+      this.dataLoading = true;
+      this.$request.get('/gitRepo/list',{
+        params: {
+          type: this.form.git.type,
+          name: this.form.git.name
+        }
+      }).then((res) => {
+        if (res.data.code === 200) {
+          this.form.gitRepoList = res.data.rows;
+        }
+      }).catch((e: Error) => {
+          console.log(e);
+        }).finally(() => {
+          this.dataLoading = false;
+        });
+    },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
