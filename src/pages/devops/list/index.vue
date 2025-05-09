@@ -139,10 +139,10 @@
                       <t-option key="gitlab" label="gitlab" value="gitlab" />
                     </t-select>
                   </t-form-item>
-                  <t-form-item label="名称/地址" name="url" >
+                  <t-form-item label="地址" name="url" >
                     <t-select v-model="form.git.url" placeholder="请选择" >
                       <span v-for="(item,index) in form.gitRepoList">
-                         <t-option :key="item.id" :label="item.name" :value="item" />
+                         <t-option :key="item.id" :label="item.name" :value="item.git_url" />
                       </span>
                     </t-select>
                   </t-form-item>
@@ -230,7 +230,7 @@ export default Vue.extend({
           align: 'left',
           width: 220,
           ellipsis: true,
-          colKey: 'name',
+          colKey: 'jobName',
           fixed: 'left',
         },
         {
@@ -369,7 +369,8 @@ export default Vue.extend({
         }
       }).then((res) => {
         if (res.data.code === 200) {
-          this.form.gitRepoList = res.data.rows;
+          console.log("data",res.data.data)
+          this.form.gitRepoList = res.data.data;
         }
       }).catch((e: Error) => {
           console.log(e);

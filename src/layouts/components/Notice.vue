@@ -72,6 +72,13 @@ export default Vue.extend({
     ...mapGetters('notification', ['unreadMsg']),
   },
   methods: {
+    getNoticeList() {
+      this.$request.get('/sysActionNotice/list').then((res) => {
+        if (res.data.code === 200) {
+          this.$store.commit('notification/setMsgData', res.data.data);
+        }
+      });
+    },
     onPopupVisibleChange(visible: boolean, context) {
       if (context.trigger === 'trigger-element-click') {
         this.isNoticeVisible = true;
