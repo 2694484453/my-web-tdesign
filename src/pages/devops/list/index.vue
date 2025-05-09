@@ -134,10 +134,8 @@
               <t-tab-panel value="git" label="仓库">
                 <p style="padding: 25px">
                   <t-form-item label="仓库类型" name="type" >
-                    <t-select v-model="form.params.git.type" placeholder="请选择" @change="getRepoList">
-                      <t-option key="gitee" label="gitee" value="gitee" />
-                      <t-option key="github" label="github" value="github"/>
-                      <t-option key="gitlab" label="gitlab" value="gitlab" />
+                    <t-select v-model="form.params.git.type" placeholder="请选择" @change="getGitRepoList">
+                      <t-option v-for="(item,index) in form.gitRepoTypeList" :key="index" :label="item" :value="item" >{{item}}</t-option>
                     </t-select>
                   </t-form-item>
                   <t-form-item label="地址" name="url" >
@@ -324,11 +322,6 @@ export default Vue.extend({
         taskBuildTypeList: [],
         taskBuildImageList: [],
         name: "",
-        imageName: "",
-        containerName: "",
-        env: [],
-        cmd: "",
-        restartPolicy: "OnFailure"
       },
       formConfig: {
         visible: false,
@@ -367,9 +360,9 @@ export default Vue.extend({
   mounted() {
   },
   created() {
-    //this.getTypeList()
-    this.getList()
-    this.getTaskBuildTypeList()
+    this.getGitRepoTypeList();
+    this.getList();
+    this.getTaskBuildTypeList();
   },
   beforeDestroy() {
     if (this.eventSource) {
@@ -377,12 +370,12 @@ export default Vue.extend({
     }
   },
   methods: {
-    getRepoList() {
+    getGitRepoList() {
       this.dataLoading = true;
       this.$request.get('/git/repo/list',{
         params: {
-          type: this.form.git.type,
-          name: this.form.git.name
+          type: this.form.params.git.type,
+          name: this.form.params.git.name
         }
       }).then((res) => {
         if (res.data.code === 200) {
@@ -395,6 +388,15 @@ export default Vue.extend({
           this.dataLoading = false;
       });
     },
+    getGitRepoTypeList() {
+      this.$request.get('/git/common/types').then((res) => {
+        if (res.data.code === 200) {
+          this.form.gitRepoTypeList = res.data.data;
+        }
+      }).catch((e: Error) => {
+        console.log(e);
+      });
+    },
     getTaskBuildTypeList() {
       this.$request.get('/devops/common/types').then((res) => {
         if (res.data.code === 200) {
@@ -405,7 +407,8 @@ export default Vue.extend({
       });
     },
     getTaskBuildImageList() {
-      this.$request.get('/devops/common/images?type=' + this.form.build.type).then((res) => {
+      console.log("taskBuildType",this.form)
+      this.$request.get('/devops/common/images?type=' + this.form.build.taskBuildType).then((res) => {
         if (res.data.code === 200) {
           this.form.taskBuildImageList = res.data.data;
         }
@@ -417,6 +420,7 @@ export default Vue.extend({
       this.form.step = newValue;
       switch (newValue) {
         case "git":
+          this.getGitRepoTypeList();
           break;
         case "build":
           this.getTaskBuildTypeList();
@@ -458,6 +462,7 @@ export default Vue.extend({
     handleSetupContract() {
       // 打开drawer
       this.formConfig.visible = true;
+      this.getGitRepoTypeList();
     },
     handleClickDelete(row: { rowIndex: any, type: any }) {
       this.deleteIdx = row.rowIndex;

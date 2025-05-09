@@ -357,7 +357,7 @@ export default Vue.extend({
     },
     getRepoTypeList() {
       this.dataLoading = true;
-      this.$request.get('/git/accessRepo/types').then((res) => {
+      this.$request.get('/git/common/types').then((res) => {
         if (res.data.code === 200) {
           console.log("types", res.data.data)
           this.dialog.gitRepoTypeList = res.data.data;
@@ -369,7 +369,7 @@ export default Vue.extend({
     },
     // 导入仓库
     importRepo(row) {
-      this.$request.post('/git/repo/import?type=' + this.dialog.type, [
+      this.$request.post('/git/repo/import?type=' + this.dialog.type,
         {
           id: row.id,
           name: row.name,
@@ -383,9 +383,9 @@ export default Vue.extend({
           fullName: row.full_name,
           humanName: row.human_name,
         }
-      ]).then((res) => {
+      ).then((res) => {
         if (res.data.code === 200) {
-          this.$message.success("导入成功")
+          this.$message.success(res.data.msg)
           this.getList()
         }
       })
