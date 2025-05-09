@@ -115,7 +115,7 @@
         showOverlay
         :sizeDraggable="true"
         :on-size-drag-end="handleSizeDrag"
-        size="30%"
+        size="50%"
         @cancel="formConfig.visible = false"
         @close="handleClose"
         :onConfirm="handleClose">
@@ -130,53 +130,55 @@
           @submit="onSubmit"
         >
           <t-space direction="vertical" size="32px">
-            <t-tabs :value="form.step" placement="left" @change="(newValue) => (value = newValue)">
+            <t-tabs :value="form.step" placement="left" @change="handlerChange">
               <t-tab-panel value="git" label="仓库">
+                <p style="padding: 25px">
                   <t-form-item label="仓库类型" name="type" >
-                    <t-select v-model="form.git.type" placeholder="请选择" @change="getRepoList">
+                    <t-select v-model="form.params.git.type" placeholder="请选择" @change="getRepoList">
                       <t-option key="gitee" label="gitee" value="gitee" />
                       <t-option key="github" label="github" value="github"/>
                       <t-option key="gitlab" label="gitlab" value="gitlab" />
                     </t-select>
                   </t-form-item>
                   <t-form-item label="地址" name="url" >
-                    <t-select v-model="form.git.url" placeholder="请选择" >
-                      <span v-for="(item,index) in form.gitRepoList">
-                         <t-option :key="item.id" :label="item.name" :value="item.git_url" />
-                      </span>
+                    <t-select v-model="form.params.git.url" placeholder="请选择" style="width: 322px">
+                      <t-option v-for="item in form.gitRepoList" :key="item.id" :label="item.name" :value="item.gitUrl" >{{item.name}}</t-option>
                     </t-select>
                   </t-form-item>
                   <t-form-item label="分支" name="branch" >
-                    <t-input v-model="form.git.branch" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+                    <t-input v-model="form.params.git.branch" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
                   </t-form-item>
+                </p>
               </t-tab-panel>
               <t-tab-panel value="build" label="构建">
                 <p style="padding: 25px">
-                  <t-form-item label="任务名称" name="name" >
-                    <t-input v-model="form.name" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+                  <t-form-item label="任务名称" name="taskBuildName" >
+                    <t-input v-model="form.params.build.taskBuildName" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
                   </t-form-item>
-
-                  <t-form-item label="镜像名称" name="imageName">
-                    <t-input v-model="form.imageName" placeholder="请输入内容"></t-input>
+                  <t-form-item label="任务类型" name="taskBuildType" >
+                    <t-select v-model="form.params.build.taskBuildType" placeholder="请选择" style="width: 322px" @change="getTaskBuildImageList">
+                      <t-option v-for="(item,index) in form.taskBuildTypeList" :key="index" :label="item" :value="item" >{{item}}</t-option>
+                    </t-select>
                   </t-form-item>
-
+                  <t-form-item label="镜像名称" name="taskBuildImage">
+                    <t-select v-model="form.params.build.taskBuildImage" placeholder="请选择" style="width: 322px">
+                      <t-option v-for="(item,index) in form.taskBuildImageList" :key="index" :label="item" :value="item" >{{item}}</t-option>
+                    </t-select>
+                  </t-form-item>
                   <t-form-item label="容器名称" name="containerName">
-                    <t-input v-model="form.containerName" placeholder="请输入内容"></t-input>
+                    <t-input v-model="form.params.build.containerName" placeholder="请输入内容"></t-input>
                   </t-form-item>
-
                   <t-form-item label="环境变量" name="env">
-                    <t-input v-model="form.env" placeholder="请输入内容"></t-input>
+                    <t-input v-model="form.params.build.env" placeholder="请输入内容"></t-input>
                   </t-form-item>
-
                   <t-form-item label="命令行" name="">
                     <t-textarea
-                      v-model="form.cmd"
+                      v-model="form.params.build.cmd"
                       placeholder="['/bin/sh', '-c', 'xxx']"
                       name="description"
                       :autosize="{ minRows: 3, maxRows: 20 }"
                     />
                   </t-form-item>
-
                   <t-form-item label="重试机制" name="restartPolicy">
                     <t-input v-model="form.restartPolicy" placeholder="请输入内容"></t-input>
                   </t-form-item>
@@ -301,12 +303,26 @@ export default Vue.extend({
       },
       form: {
         step: "git",
-        git: {
-          type: "",
-          url: "",
-          branch: "",
+        params:{
+          git: {
+            type: "",
+            url: "",
+            branch: "",
+          },
+          build: {
+            taskBuildName: "",
+            taskBuildType: "",
+            taskBuildImage: "",
+            containerName: "",
+            env: [],
+            cmd: "",
+            restartPolicy: "OnFailure"
+          }
         },
         gitRepoList: [],
+        gitRepoTypeList: [],
+        taskBuildTypeList: [],
+        taskBuildImageList: [],
         name: "",
         imageName: "",
         containerName: "",
@@ -353,6 +369,7 @@ export default Vue.extend({
   created() {
     //this.getTypeList()
     this.getList()
+    this.getTaskBuildTypeList()
   },
   beforeDestroy() {
     if (this.eventSource) {
@@ -362,7 +379,7 @@ export default Vue.extend({
   methods: {
     getRepoList() {
       this.dataLoading = true;
-      this.$request.get('/gitRepo/list',{
+      this.$request.get('/git/repo/list',{
         params: {
           type: this.form.git.type,
           name: this.form.git.name
@@ -374,9 +391,37 @@ export default Vue.extend({
         }
       }).catch((e: Error) => {
           console.log(e);
-        }).finally(() => {
+      }).finally(() => {
           this.dataLoading = false;
-        });
+      });
+    },
+    getTaskBuildTypeList() {
+      this.$request.get('/devops/common/types').then((res) => {
+        if (res.data.code === 200) {
+          this.form.taskBuildTypeList = res.data.data;
+        }
+      }).catch((e: Error) => {
+        console.log(e);
+      });
+    },
+    getTaskBuildImageList() {
+      this.$request.get('/devops/common/images?type=' + this.form.build.type).then((res) => {
+        if (res.data.code === 200) {
+          this.form.taskBuildImageList = res.data.data;
+        }
+      }).catch((e: Error) => {
+        console.log(e);
+      });
+    },
+    handlerChange(newValue) {
+      this.form.step = newValue;
+      switch (newValue) {
+        case "git":
+          break;
+        case "build":
+          this.getTaskBuildTypeList();
+          break;
+      }
     },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');

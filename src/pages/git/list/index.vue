@@ -22,7 +22,7 @@
             </template>
           </t-input>
           <t-col :span="2" class="operation-container">
-            <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
+            <t-button theme="primary" :style="{ marginLeft: '8px' }" @click="getList"> 查询</t-button>
             <t-button type="reset" variant="base" theme="default"> 重置</t-button>
           </t-col>
         </t-row>
@@ -56,6 +56,7 @@
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickSuccess()">在线预览</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps)">详情</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
       </div>
@@ -77,176 +78,72 @@
       :onCancel="onCancel"
     >
     </t-dialog>
-    <t-space>
-      <t-dialog
-        v-model:visible="dialog.visible"
-        :header="dialog.header"
-        width="40%"
-        :confirm-on-enter="true"
-        :on-cancel="onCancel"
-        :on-close-btn-click="onCloseDialogBtnClick"
-        :on-confirm="onConfirmDialog"
-      >
-        <t-space direction="vertical" style="width: 100%">
-          <div>
-            <t-card :bordered="false">
-              <t-form
-                ref="form"
-                :data="formData"
-                :rules="FORM_RULES"
-                label-align="top"
-                :label-width="100"
-                @reset="onReset"
-                @submit="onSubmit"
-              >
-                <div class="form-basic-container">
-                  <div class="form-basic-item">
-                    <div class="form-basic-container-title">合同信息</div>
-                    <!-- 表单内容 -->
-                    <!-- 合同名称,合同类型 -->
-                    <t-row class="row-gap" :gutter="[16, 24]">
-                      <t-col :span="6">
-                        <t-form-item label="合同名称" name="name">
-                          <t-input v-model="formData.name" :style="{ width: '322px' }" placeholder="请输入内容"/>
-                        </t-form-item>
-                      </t-col>
-                      <t-col :span="6">
-                        <t-form-item label="合同类型" name="type">
-                          <t-select
-                            v-model="formData.type"
-                            :style="{ width: '322px' }"
-                            placeholder="请选择类型"
-                            class="demo-select-base"
-                            clearable
-                          >
-                            <t-option v-for="(item, index) in typeOptions" :key="index" :value="item.value"
-                                      :label="item.label">
-                              {{ item.label }}
-                            </t-option>
-                          </t-select>
-                        </t-form-item>
-                      </t-col>
-                      <!-- 合同收付类型 -->
-                      <t-col :span="8">
-                        <t-form-item label="合同收付类型" name="payment">
-                          <t-radio-group v-model="formData.payment">
-                            <t-radio value="1"> 收款</t-radio>
-                            <t-radio value="2"> 付款</t-radio>
-                          </t-radio-group>
-                          <span class="space-item"/>
-                          <t-input placeholder="请输入金额" :style="{ width: '160px' }"/>
-                        </t-form-item>
-                      </t-col>
-
-                      <t-col :span="6">
-                        <t-form-item label="甲方" name="partyA">
-                          <t-select
-                            v-model="formData.partyA"
-                            :style="{ width: '322px' }"
-                            class="demo-select-base"
-                            placeholder="请选择类型"
-                            clearable>
-                            <t-option v-for="(item, index) in partyAOptions" :key="index" :value="item.value"
-                                      :label="item.label">
-                              {{ item.label }}
-                            </t-option>
-                          </t-select>
-                        </t-form-item>
-                      </t-col>
-                      <t-col :span="6">
-                        <t-form-item label="乙方" name="partyB">
-                          <t-select
-                            v-model="formData.partyB"
-                            :style="{ width: '322px' }"
-                            placeholder="请选择类型"
-                            class="demo-select-base"
-                            clearable
-                          >
-                            <t-option v-for="(item, index) in partyBOptions" :key="index" :value="item.value"
-                                      :label="item.label">
-                              {{ item.label }}
-                            </t-option>
-                          </t-select>
-                        </t-form-item>
-                      </t-col>
-                      <t-col :span="6">
-                        <t-form-item label="合同签订日期" name="signDate">
-                          <t-date-picker
-                            v-model="formData.signDate"
-                            :style="{ width: '322px' }"
-                            theme="primary"
-                            mode="date"
-                            separator="/"
-                          />
-                        </t-form-item>
-                      </t-col>
-                      <t-col :span="6">
-                        <t-form-item label="合同生效日期" name="startDate">
-                          <t-date-picker
-                            v-model="formData.startDate"
-                            :style="{ width: '322px' }"
-                            theme="primary"
-                            mode="date"
-                            separator="/"
-                          />
-                        </t-form-item>
-                      </t-col>
-                      <t-col :span="6">
-                        <t-form-item label="合同结束日期" name="endDate">
-                          <t-date-picker
-                            v-model="formData.endDate"
-                            :style="{ width: '322px' }"
-                            theme="primary"
-                            mode="date"
-                            separator="/"
-                          />
-                        </t-form-item>
-                      </t-col>
-                      <t-col :span="6">
-                        <t-form-item label="" name="files">
-                          <t-upload
-                            v-model="formData.files"
-                            action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo"
-                            tips="请上传pdf文件，大小在60M以内"
-                            :size-limit="{ size: 60, unit: 'MB' }"
-                            :format-response="formatResponse"
-                            :before-upload="beforeUpload"
-                            @fail="handleFail"
-                          >
-                            <t-button class="form-submit-upload-btn" variant="outline"> 上传合同文件</t-button>
-                          </t-upload>
-                        </t-form-item>
-                      </t-col>
-                    </t-row>
-                    <div class="form-basic-container-title form-title-gap">其它信息</div>
-                    <t-form-item label="备注" name="comment">
-                      <t-textarea v-model="formData.comment" :height="124" placeholder="请输入备注"/>
-                    </t-form-item>
-                    <t-form-item label="公证人">
-                      <t-avatar-group>
-                        <t-avatar>D</t-avatar>
-                        <t-avatar>S</t-avatar>
-                        <t-avatar>+</t-avatar>
-                      </t-avatar-group>
-                    </t-form-item>
-                  </div>
-                </div>
-
-                <div class="form-submit-container">
-                  <div class="form-submit-sub">
-                    <div class="form-submit-left">
-                      <t-button theme="primary" class="form-submit-confirm" type="submit"> 提交</t-button>
-                      <t-button type="reset" class="form-submit-cancel" theme="default" variant="base"> 取消</t-button>
-                    </div>
-                  </div>
-                </div>
-              </t-form>
-            </t-card>
-          </div>
-          <t-pagination v-model="dialog.current" v-model:pageSize="dialog.pageSize" :total="30"/>
-        </t-space>
-      </t-dialog>
-    </t-space>
+    <!--git-->
+    <t-dialog
+      :visible.sync="dialog.visible"
+      :header="dialog.header"
+      width="60%"
+      :confirm-on-enter="true"
+      :on-cancel="onCancel"
+      :on-close-btn-click="onCloseDialogBtnClick"
+      :on-confirm="onConfirmDialog"
+    >
+      <t-card class="list-card-container" :bordered="false">
+        <div>
+            <t-form
+              ref="form"
+              :data="formData"
+              label-align="left"
+              @reset="onReset"
+              @submit="onSubmit"
+              layout="inline"
+            >
+              <div class="left-operation-container">
+                <t-form-item label="名称" name="name">
+                  <t-input v-model="dialog.name" style="width: 250px" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+                    <template #suffix-icon>
+                      <search-icon size="18px"/>
+                    </template>
+                  </t-input>
+                </t-form-item>
+                <t-form-item label="类型" name="type">
+                  <t-select
+                    v-model="dialog.type"
+                    :style="{ width: '120px' }"
+                    placeholder="请选择类型"
+                    class="demo-select-base"
+                    clearable>
+                    <t-option v-for="(item, index) in dialog.gitRepoTypeList" :key="index" :value="item" :label="item">
+                      {{ item }}
+                    </t-option>
+                  </t-select>
+                </t-form-item>
+              </div>
+              <div class="right-operation-container">
+                <t-button theme="primary" :style="{ marginLeft: '8px' }" @click="getRepoList"> 查询</t-button>
+                <t-button type="reset" variant="base" theme="default"> 重置</t-button>
+              </div>
+            </t-form>
+          <t-table
+            :columns="dialog.gitRepoColumns"
+            :data="dialog.gitRepoList"
+            :rowKey="rowKey"
+            :selected-row-keys="selectedRowKeys"
+            :loading="dataLoading"
+            :headerAffixedTop="true"
+            :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
+          >
+            <template #html_url="{row}">
+              <a :href="row.html_url" target="_blank">{{row.html_url}}</a>
+            </template>
+            <template #op="slotProps">
+              <a class="t-button-link" @click="importRepo(slotProps.row)">导入</a>
+            </template>
+          </t-table>
+        </div>
+        <t-pagination v-model="dialog.current" v-model:pageSize="dialog.pageSize" :total="dialog.total"/>
+      </t-card>
+    </t-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -283,6 +180,13 @@ export default Vue.extend({
           ellipsis: true,
           colKey: 'name',
           fixed: 'left',
+        },
+        {
+          title: "类型",
+          align: 'left',
+          width: 200,
+          ellipsis: true,
+          colKey: 'type',
         },
         {
           title: '语言',
@@ -343,15 +247,54 @@ export default Vue.extend({
       deleteIdx: -1,
       formData: {
         name: "",
-        type: "gitee",
+        type: "",
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
+        params: {}
       },
       dialog: {
         visible: false,
         header: "仓库导入",
         current: 1,
         pageSize: 10,
+        total: 0,
+        type: "gitee",
+        name: "",
+        gitRepoList: [],
+        gitRepoTypeList: [],
+        gitRepoColumns: [
+          {
+            title: '仓库名称',
+            align: 'left',
+            width: 150,
+            ellipsis: true,
+            colKey: 'name',
+          },
+          {
+            title: '语言',
+            colKey: 'language',
+            width: 120
+          },
+          {
+            title: '状态',
+            width: 60,
+            ellipsis: true,
+            colKey: 'status',
+          },
+          {
+            title: '地址',
+            width: 160,
+            ellipsis: true,
+            colKey: 'html_url',
+          },
+          {
+            align: 'left',
+            fixed: 'right',
+            width: 60,
+            colKey: 'op',
+            title: '操作',
+          },
+        ]
       }
     };
   },
@@ -393,8 +336,59 @@ export default Vue.extend({
           this.dataLoading = false;
         });
     },
+    getRepoList() {
+      this.dataLoading = true;
+      this.$request.get('/git/accessRepo/page', {
+        params: {
+          type: this.dialog.type,
+          name: this.dialog.name
+        }
+      }).then((res) => {
+        if (res.data.code === 200) {
+          console.log("repos", res.data.rows)
+          this.dialog.gitRepoList = res.data.rows;
+          this.dialog.total = res.data.total;
+        }
+      }).catch((e: Error) => {
+        console.log(e);
+      }).finally(() => {
+        this.dataLoading = false;
+      });
+    },
+    getRepoTypeList() {
+      this.dataLoading = true;
+      this.$request.get('/git/accessRepo/types').then((res) => {
+        if (res.data.code === 200) {
+          console.log("types", res.data.data)
+          this.dialog.gitRepoTypeList = res.data.data;
+        }
+      })
+    },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
+    },
+    // 导入仓库
+    importRepo(row) {
+      this.$request.post('/git/repo/import?type=' + this.dialog.type, [
+        {
+          id: row.id,
+          name: row.name,
+          type: this.dialog.type,
+          gitUrl: row.hasOwnProperty("git_url") ? row.git_url : row.html_url,
+          language: row.language,
+          description: row.description,
+          status: row.status,
+          htmlUrl: row.html_url,
+          sshUrl: row.ssh_url,
+          fullName: row.full_name,
+          humanName: row.human_name,
+        }
+      ]).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.success("导入成功")
+          this.getList()
+        }
+      })
     },
     onPageSizeChange(size, pageInfo) {
       console.log('Page Size:', this.pageSize, size, pageInfo);
@@ -415,10 +409,15 @@ export default Vue.extend({
       //this.$router.push('/build/helmDetail');
       this.$emit('transfer', "detail", row)
     },
+    // 点击导入
     handleSetupContract() {
       this.dialog.visible = true
+      this.getRepoList()
+      this.getRepoTypeList()
     },
+    // 点击删除
     handleClickDelete(row: { rowIndex: any }) {
+      this.formData.params = row;
       this.deleteIdx = row.rowIndex;
       this.confirmVisible = true;
     },
@@ -429,17 +428,17 @@ export default Vue.extend({
     handleClickSuccess() {
       this.$router.push('/build/success');
     },
+    // 确认删除
     onConfirmDelete() {
       // 真实业务请发起请求
-      this.data.splice(this.deleteIdx, 1);
-      this.pagination.total = this.data.length;
-      const selectedIdx = this.selectedRowKeys.indexOf(this.deleteIdx);
-      if (selectedIdx > -1) {
-        this.selectedRowKeys.splice(selectedIdx, 1);
-      }
-      this.confirmVisible = false;
-      this.$message.success('删除成功');
-      this.resetIdx();
+      this.$request.delete("/git/repo/delete?id="+ this.formData.params.id).then(res=>{
+        if (res.data.code === 200) {
+          this.$message.success(res.data.msg)
+          this.confirmVisible = false;
+          this.resetIdx();
+          this.getList();
+        }
+      })
     },
     // 确认对话框
     onConfirmDialog() {
