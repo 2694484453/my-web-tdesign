@@ -118,7 +118,7 @@
         size="50%"
         @cancel="formConfig.visible = false"
         @close="handleClose"
-        :onConfirm="handleClose">
+        :onConfirm="onSubmitCreateJob">
       <t-space direction="vertical" style="width: 80%">
         <t-form
           ref="formValidatorStatus"
@@ -127,24 +127,23 @@
           :label-width="120"
           :status-icon="formStatusIcon"
           @reset="onReset"
-          @submit="onSubmit"
         >
           <t-space direction="vertical" size="32px">
             <t-tabs :value="form.step" placement="left" @change="handlerChange">
               <t-tab-panel value="git" label="仓库">
-                <p style="padding: 25px">
+                <p style="padding: 25px;width: 100%;" >
                   <t-form-item label="仓库类型" name="type" >
-                    <t-select v-model="form.params.git.type" placeholder="请选择" @change="getGitRepoList">
+                    <t-select v-model="form.params.git.taskGitType" placeholder="请选择" @change="getGitRepoList">
                       <t-option v-for="(item,index) in form.gitRepoTypeList" :key="index" :label="item" :value="item" >{{item}}</t-option>
                     </t-select>
                   </t-form-item>
                   <t-form-item label="地址" name="url" >
-                    <t-select v-model="form.params.git.url" placeholder="请选择" style="width: 322px">
+                    <t-select v-model="form.params.git.taskGitUrl" placeholder="请选择" style="width: 322px">
                       <t-option v-for="item in form.gitRepoList" :key="item.id" :label="item.name" :value="item.gitUrl" >{{item.name}}</t-option>
                     </t-select>
                   </t-form-item>
                   <t-form-item label="分支" name="branch" >
-                    <t-input v-model="form.params.git.branch" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+                    <t-input v-model="form.params.git.taskGitBranch" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
                   </t-form-item>
                 </p>
               </t-tab-panel>
@@ -159,7 +158,7 @@
                     </t-select>
                   </t-form-item>
                   <t-form-item label="镜像名称" name="taskBuildImage">
-                    <t-select v-model="form.params.build.taskBuildImage" placeholder="请选择" style="width: 322px">
+                    <t-select v-model="form.params.build.taskBuildImage" placeholder="请选择" style="width: 322px" clearable="">
                       <t-option v-for="(item,index) in form.taskBuildImageList" :key="index" :label="item" :value="item" >{{item}}</t-option>
                     </t-select>
                   </t-form-item>
@@ -303,9 +302,9 @@ export default Vue.extend({
         step: "git",
         params:{
           git: {
-            type: "",
-            url: "",
-            branch: "",
+            taskGitType: "",
+            taskGitUrl: "",
+            taskGitBranch: "",
           },
           build: {
             taskBuildName: "",
@@ -374,7 +373,7 @@ export default Vue.extend({
       this.dataLoading = true;
       this.$request.get('/git/repo/list',{
         params: {
-          type: this.form.params.git.type,
+          type: this.form.params.git.taskGitType,
           name: this.form.params.git.name
         }
       }).then((res) => {
@@ -408,7 +407,7 @@ export default Vue.extend({
     },
     getTaskBuildImageList() {
       console.log("taskBuildType",this.form)
-      this.$request.get('/devops/common/images?type=' + this.form.build.taskBuildType).then((res) => {
+      this.$request.get('/devops/common/images?type=' + this.form.params.build.taskBuildType).then((res) => {
         if (res.data.code === 200) {
           this.form.taskBuildImageList = res.data.data;
         }
@@ -507,6 +506,25 @@ export default Vue.extend({
     onSubmit(data) {
       console.log(this.formData);
       this.getList(this.formData);
+    },
+    // 创建job
+    onSubmitCreateJob() {
+      this.$request.post("/devops/job/add", {
+        git: this.form.params.git,
+        build: this.form.params.build,
+        push: this.form.params.push,
+        deploy: this.form.params.deploy
+      }).then(res => {
+        if (res.data.code === 200) {
+          this.$message.success(res.data.msg);
+          this.formConfig.visible = false;
+          this.getList();
+        }else {
+          this.$message.error(res.data.msg);
+        }
+      }).catch((err) => {
+
+      })
     },
     getTypeList() {
       this.$request.get("/monitor/typeList").then(res => {

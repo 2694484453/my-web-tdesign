@@ -38,13 +38,15 @@ import testRouters from "@/router/modules/test";
 import userInfoRouters from "@/router/modules/userinfo";
 // discovery
 import discoveryRouters from "@/router/modules/discovery";
+// nas
+import nasRouters from "@/router/modules/nas";
 
 const env = import.meta.env.MODE || 'development';
 import proxy from '@/config/host';
 // 开发模式
-const devRouterList = [...baseRouters, ...domainRouters, ...gitRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...backupRouters, ...othersRouters]
+const devRouterList = [...baseRouters, ...domainRouters, ...gitRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...backupRouters, ...othersRouters]
 // 生产模式
-const prodRouterList = [...baseRouters, ...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
+const prodRouterList = [...baseRouters, ...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
 // 存放动态路由
 export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
 //[...baseRouters, ...componentsRouters, ...othersRouters];
