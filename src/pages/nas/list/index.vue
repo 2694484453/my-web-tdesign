@@ -121,6 +121,11 @@ export default Vue.extend({
           colKey: 'type',
         },
         {
+          title: '服务端',
+          width: 120,
+          colKey: 'frpServer',
+        },
+        {
           title: '创建时间',
           width: 180,
           ellipsis: true,
