@@ -90,7 +90,7 @@
       @cancel="formConfig.visible = false"
       @close="handleClose"
       :onConfirm="onSubmitCreate">
-      <t-space direction="vertical" style="width: 80%">
+      <t-space direction="vertical" style="width: 100%">
         <t-form
           ref="formValidatorStatus"
           :data="form"
@@ -99,21 +99,31 @@
           :status-icon="formStatusIcon"
           @reset="onReset"
         >
-          <t-space default="vertical" size="32px">
-            <t-form-item label="类型" name="type" >
-              <t-select v-model="form.type" placeholder="请选择" @change="getGitRepoList">
-                <t-option v-for="(item,index) in form.gitRepoTypeList" :key="index" :label="item" :value="item" >{{item}}</t-option>
+            <t-form-item label="id" name="id" v-show="false">
+              <t-input v-model="form.id" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+            </t-form-item>
+            <t-form-item label="服务名称" name="branch" >
+              <t-input v-model="form.name" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+            </t-form-item>
+            <t-form-item label="协议类型" name="type" >
+              <t-select v-model="form.type" placeholder="请选择">
+                <t-option v-for="(item,index) in typeList" :key="index" :label="item" :value="item" >{{item}}</t-option>
               </t-select>
             </t-form-item>
             <t-form-item label="服务端" name="frpsName" >
-              <t-select v-model="form.params.git.taskGitUrl" placeholder="请选择" style="width: 322px">
-                <t-option v-for="item in form.gitRepoList" :key="item.id" :label="item.name" :value="item.gitUrl" >{{item.name}}</t-option>
+              <t-select v-model="form.frpServer" placeholder="请选择" style="width: 322px">
+                <t-option v-for="(item,index) in serviceList" :key="index" :label="item.serverName" :value="item.serverName" >{{item.serverName}}</t-option>
               </t-select>
             </t-form-item>
-            <t-form-item label="分支" name="branch" >
-              <t-input v-model="form.params.git.taskGitBranch" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+            <t-form-item label="客户端ip地址" name="localIp" >
+              <t-input v-model="form.localIp" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
             </t-form-item>
-          </t-space>
+            <t-form-item label="客户端端口" name="localPort" >
+              <t-input v-model="form.localPort" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+            </t-form-item>
+            <t-form-item label="备注" name="remotePort" >
+              <t-textarea v-model="form.description" placeholder="请输入内容" :maxlength="120" with="200"></t-textarea>
+            </t-form-item>
         </t-form>
       </t-space>
     </t-drawer>
@@ -162,7 +172,7 @@ export default Vue.extend({
         },
         {
           title: '类型',
-          width: 100,
+          width: 80,
           ellipsis: true,
           colKey: 'type',
         },
@@ -170,6 +180,18 @@ export default Vue.extend({
           title: '服务端',
           width: 120,
           colKey: 'frpServer',
+        },
+        {
+          title: '客户端ip地址',
+          width: 140,
+          ellipsis: true,
+          colKey: 'localIp',
+        },
+        {
+          title: '客户端端口',
+          width: 60,
+          ellipsis: true,
+          colKey: 'localPort',
         },
         {
           title: '创建时间',
@@ -221,10 +243,17 @@ export default Vue.extend({
         header: '新增',
       },
       form: {
+        id: '',
         name: '',
         type: '',
+        frpServer: '',
+        localIp: "127.0.0.1",
+        localPort: 80,
+        customDomains: '',
+        description: '',
       },
       serviceList: [],
+      typeList: [],
       searchValue: '',
       confirmVisible: false,
       deleteIdx: -1,
@@ -263,10 +292,22 @@ export default Vue.extend({
           this.dataLoading = false;
         });
     },
+    // 类型列表
+    getTypeList() {
+      this.$request
+        .get('/nas/frp/common/types').then((res) => {
+          if (res.data.code === 200) {
+            this.typeList = res.data.data;
+          }
+        }).catch((e: Error) => {
+          console.log(e);
+        }).finally(() => {
+          this.dataLoading = false;
+        })
+    },
     // 服务列表
     getServiceList() {
-      this.$request
-        .get('/nas/frps/list').then((res) => {
+      this.$request.get('/nas/frps/list').then((res) => {
           if (res.data.code === 200) {
             this.serviceList = res.data.data;
           }
@@ -276,8 +317,14 @@ export default Vue.extend({
           this.dataLoading = false;
         })
     },
-    onSubmitCreate(data) {
-
+    // 创建
+    onSubmitCreate() {
+      this.$request.post("/nas/frpc/add", this.form).then(res => {
+        if (res.data.code === 200) {
+          this.$message.success(res.data.msg);
+          this.getList();
+        }
+      })
     },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
@@ -302,6 +349,7 @@ export default Vue.extend({
     handleSetupContract() {
       this.formConfig.visible = true;
       this.getServiceList();
+      this.getTypeList();
     },
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;

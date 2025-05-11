@@ -14,7 +14,7 @@ export default [
         meta: {title: '监控面板'},
       },
       {
-        path: "frpcList",
+        path: "frpc",
         name: 'frpcListBase',
         component: () => import("@/pages/nas/list/index.vue"),
         meta: {title: 'Frpc管理'},
