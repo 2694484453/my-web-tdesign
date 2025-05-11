@@ -25,12 +25,8 @@
           :rowKey="rowKey"
           :verticalAlign="verticalAlign"
           :hover="hover"
-          :pagination="pagination"
           :selected-row-keys="selectedRowKeys"
           :loading="dataLoading"
-          @page-change="rehandlePageChange"
-          @change="rehandleChange"
-          @select-change="rehandleSelectChange"
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
@@ -61,6 +57,16 @@
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
+        <div style="margin-top: 10px">
+          <t-pagination
+            v-model="searchForm.pageNum"
+            :total="pagination.total"
+            :page-size.sync="searchForm.pageSize"
+            @current-change="onCurrentChange"
+            @page-size-change="onPageSizeChange"
+            @change="onChange"
+          />
+        </div>
       </div>
     </t-card>
     <t-dialog
@@ -71,6 +77,46 @@
       :onCancel="onCancel"
     >
     </t-dialog>
+    <t-drawer
+      :visible.sync="formConfig.visible"
+      :header="formConfig.header"
+      :on-overlay-click="() => (formConfig.visible = false)"
+      placement="right"
+      destroyOnClose
+      showOverlay
+      :sizeDraggable="true"
+      :on-size-drag-end="handleSizeDrag"
+      size="40%"
+      @cancel="formConfig.visible = false"
+      @close="handleClose"
+      :onConfirm="onSubmitCreate">
+      <t-space direction="vertical" style="width: 80%">
+        <t-form
+          ref="formValidatorStatus"
+          :data="form"
+          :rules="rules"
+          :label-width="120"
+          :status-icon="formStatusIcon"
+          @reset="onReset"
+        >
+          <t-space default="vertical" size="32px">
+            <t-form-item label="类型" name="type" >
+              <t-select v-model="form.type" placeholder="请选择" @change="getGitRepoList">
+                <t-option v-for="(item,index) in form.gitRepoTypeList" :key="index" :label="item" :value="item" >{{item}}</t-option>
+              </t-select>
+            </t-form-item>
+            <t-form-item label="服务端" name="frpsName" >
+              <t-select v-model="form.params.git.taskGitUrl" placeholder="请选择" style="width: 322px">
+                <t-option v-for="item in form.gitRepoList" :key="item.id" :label="item.name" :value="item.gitUrl" >{{item.name}}</t-option>
+              </t-select>
+            </t-form-item>
+            <t-form-item label="分支" name="branch" >
+              <t-input v-model="form.params.git.taskGitBranch" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+            </t-form-item>
+          </t-space>
+        </t-form>
+      </t-space>
+    </t-drawer>
   </div>
 </template>
 <script lang="ts">
@@ -169,6 +215,16 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10,
       },
+      formConfig: {
+        title: '新增',
+        visible: false,
+        header: '新增',
+      },
+      form: {
+        name: '',
+        type: '',
+      },
+      serviceList: [],
       searchValue: '',
       confirmVisible: false,
       deleteIdx: -1,
@@ -199,7 +255,7 @@ export default Vue.extend({
         }).then((res) => {
           if (res.data.code === 200) {
             this.data = res.data.rows;
-            this.pagination = res.data.total;
+            this.pagination.total = res.data.total;
           }
         }).catch((e: Error) => {
           console.log(e);
@@ -207,26 +263,49 @@ export default Vue.extend({
           this.dataLoading = false;
         });
     },
+    // 服务列表
+    getServiceList() {
+      this.$request
+        .get('/nas/frps/list').then((res) => {
+          if (res.data.code === 200) {
+            this.serviceList = res.data.data;
+          }
+        }).catch((e: Error) => {
+          console.log(e);
+        }).finally(() => {
+          this.dataLoading = false;
+        })
+    },
+    onSubmitCreate(data) {
+
+    },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
-    rehandlePageChange(curr, pageInfo) {
-      console.log('分页变化', curr, pageInfo);
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.formData.pageSize = size
     },
-    rehandleSelectChange(selectedRowKeys: number[]) {
-      this.selectedRowKeys = selectedRowKeys;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.formData.pageNum = current
+      this.getList()
     },
-    rehandleChange(changeParams, triggerAndData) {
-      console.log('统一Change', changeParams, triggerAndData);
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
     },
     handleClickDetail() {
       this.$router.push('/detail/base');
     },
     handleSetupContract() {
-      this.$router.push('/form/base');
+      this.formConfig.visible = true;
+      this.getServiceList();
     },
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;
+      this.formConfig.title = "新增";
       this.confirmVisible = true;
     },
     onConfirmDelete() {

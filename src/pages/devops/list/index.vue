@@ -541,7 +541,7 @@ export default Vue.extend({
           }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.rows;
-          this.pagination = res.data.total
+          this.pagination.total = res.data.total
         }
       }).catch((e: Error) => {
         console.log(e);
