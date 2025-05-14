@@ -19,12 +19,12 @@ export default [
         component: () => import("@/pages/nas/frp/list/index.vue"),
         meta: {title: 'Frpc管理'},
       },
-      {
-        path: "use",
-        name: 'UseBase',
-        component: () => import("@/pages/ai/use/index.vue"),
-        meta: {title: '模型调用'},
-      }
+      // {
+      //   path: "use",
+      //   name: 'UseBase',
+      //   component: () => import("@/pages/ai/use/index.vue"),
+      //   meta: {title: '模型调用'},
+      // }
     ],
   }
 ]
