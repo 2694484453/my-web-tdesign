@@ -8,15 +8,15 @@ export default [
     meta: {title: 'Nas服务管理', icon: ServerIcon},
     children: [
       {
-        path: 'dashboard',
-        name: 'DashboardBase',
-        component: () => import('@/pages/ai/index.vue'),
-        meta: {title: '监控面板'},
+        path: 'overview',
+        name: 'overview',
+        component: () => import('@/pages/nas/index.vue'),
+        meta: {title: '概览'},
       },
       {
         path: "frpc",
         name: 'frpcListBase',
-        component: () => import("@/pages/nas/list/index.vue"),
+        component: () => import("@/pages/nas/frp/list/index.vue"),
         meta: {title: 'Frpc管理'},
       },
       {
