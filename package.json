@@ -7,6 +7,7 @@
     "dev:k8s": "vite --open --mode k8s",
     "dev": "vite --open --mode development",
     "dev:linux": "vite --mode development",
+    "dev:nas": "vite --mode nas",
     "build:test": "vite build --mode test",
     "build": "vite build --mode release",
     "build:dev": "vite build --mode development",
