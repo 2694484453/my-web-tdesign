@@ -31,11 +31,12 @@
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
-            <t-tag v-if="row.status === CONTRACT_STATUS.FAIL" theme="danger" variant="light">审核失败</t-tag>
+            <t-tag v-if="row.status === 'offline'" theme="danger" variant="light">{{row.status}}</t-tag>
             <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>
             <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
             <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>
+            <t-tag v-if="row.status === 'online'" theme="success" variant="light">{{row.status}}}</t-tag>
+            <t-tag v-if="row.status === null" theme="warning" variant="light">未知</t-tag>
           </template>
           <template #contractType="{ row }">
             <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
@@ -167,7 +168,7 @@ export default Vue.extend({
         {
           title: '状态',
           colKey: 'status',
-          width: 60,
+          width: 80,
           cell: { col: 'status' }
         },
         {

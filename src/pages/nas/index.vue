@@ -3,44 +3,68 @@
     <t-card title="概览" class="dashboard-detail-card" :bordered="false">
       <t-row :gutter="[16, 16]">
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="总配置数">
-            <div class="dashboard-list-card__number">{{data.totalAccessCount}}</div>
+          <t-card :class="['dashboard-list-card']" description="服务端总数">
+            <div class="dashboard-list-card__number">{{ data.frpServerTotalCount }}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
-<!--   <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
+                <!--   <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
               </div>
-              <chevron-right-icon />
+              <chevron-right-icon/>
             </div>
           </t-card>
         </t-col>
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="Gitee配置总数">
-            <div class="dashboard-list-card__number">{{data.giteeAccessCount}}</div>
+          <t-card :class="['dashboard-list-card']" description="客户端配置总数">
+            <div class="dashboard-list-card__number">{{ data.frpClientTotalCount }}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
                 <!--  <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
               </div>
-              <chevron-right-icon />
+              <chevron-right-icon/>
             </div>
           </t-card>
         </t-col>
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="GitHub配置总数">
-            <div class="dashboard-list-card__number">{{data.githubAccessCount}}</div>
+          <t-card :class="['dashboard-list-card']" description="在线服务数">
+            <div class="dashboard-list-card__number">{{ data.frpClientOnlineCount }}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
                 <!-- <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
               </div>
-              <chevron-right-icon />
+              <chevron-right-icon/>
             </div>
           </t-card>
         </t-col>
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="GitCode配置总数">
-            <div class="dashboard-list-card__number">{{data.gitCodeAccessCount}}</div>
+          <t-card :class="['dashboard-list-card']" description="离线服务数">
+            <div class="dashboard-list-card__number">{{ data.frpClientOfflineCount }}</div>
+            <div class="dashboard-list-card__text">
+              <div class="dashboard-list-card__text-left">
+                环比
+                <!-- <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
+              </div>
+              <chevron-right-icon/>
+            </div>
+          </t-card>
+        </t-col>
+        <t-col :xs="6" :xl="3">
+          <t-card :class="['dashboard-list-card']" description="http配置数">
+            <div class="dashboard-list-card__number">{{ data.frpClientHttpCount }}</div>
+            <div class="dashboard-list-card__text">
+              <div class="dashboard-list-card__text-left">
+                环比
+                <!-- <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
+              </div>
+              <chevron-right-icon/>
+            </div>
+          </t-card>
+        </t-col>
+        <t-col :xs="6" :xl="3">
+          <t-card :class="['dashboard-list-card']" description="https配置数">
+            <div class="dashboard-list-card__number">{{data.frpClientHttpsCount}}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
@@ -93,27 +117,27 @@
   </div>
 </template>
 <script lang="ts">
-import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
-import { LineChart, ScatterChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
+import {GridComponent, TooltipComponent, LegendComponent} from 'echarts/components';
+import {LineChart, ScatterChart} from 'echarts/charts';
+import {CanvasRenderer} from 'echarts/renderers';
 import * as echarts from 'echarts/core';
-import { mapState } from 'vuex';
-import { ChevronRightIcon } from 'tdesign-icons-vue';
+import {mapState} from 'vuex';
+import {ChevronRightIcon} from 'tdesign-icons-vue';
 
 import Trend from '@/components/trend/index.vue';
 import ProductCard from '@/components/product-card/index.vue';
 
-import { LAST_7_DAYS } from '@/utils/date';
-import { changeChartsTheme } from '@/utils/color';
+import {LAST_7_DAYS} from '@/utils/date';
+import {changeChartsTheme} from '@/utils/color';
 
-import { PANE_LIST_DATA, PRODUCT_LIST } from '@/service/service-detail';
-import { getFolderLineDataSet, getScatterDataSet } from './index';
+import {PANE_LIST_DATA, PRODUCT_LIST} from '@/service/service-detail';
+import {getFolderLineDataSet, getScatterDataSet} from './index';
 
 echarts.use([GridComponent, LegendComponent, TooltipComponent, LineChart, ScatterChart, CanvasRenderer]);
 
 export default {
   name: 'DashboardDetail',
-  components: { Trend, ProductCard, ChevronRightIcon },
+  components: {Trend, ProductCard, ChevronRightIcon},
   data() {
     return {
       PANE_LIST_DATA,
@@ -134,10 +158,14 @@ export default {
       ],
       LAST_7_DAYS,
       data: {
-        totalAccessCount: 0,
-        giteeAccessCount: 0,
-        githubAccessCount: 0,
-        gitCodeAccessCount: 0,
+        frpServerTotalCount: 0,
+        frpClientTotalCount: 0,
+        frpClientOkCount: 0,
+        frpClientErrorCount: 0,
+        frpClientOnlineCount: 0,
+        frpClientOfflineCount: 0,
+        frpClientHttpCount: 0,
+        frpClientHttpsCount: 0
       }
     };
   },
@@ -163,15 +191,15 @@ export default {
   methods: {
     /** 采购商品满意度选择 */
     onSatisfyChange(value: string) {
-      const { chartColors } = this.$store.state.setting;
+      const {chartColors} = this.$store.state.setting;
 
-      this.scatterChart.setOption(getScatterDataSet({ dateTime: value, ...chartColors }));
+      this.scatterChart.setOption(getScatterDataSet({dateTime: value, ...chartColors}));
     },
     /** 采购商品申请趋势选择 */
     onMaterialChange(value: string) {
-      const { chartColors } = this.$store.state.setting;
+      const {chartColors} = this.$store.state.setting;
 
-      this.lineChart.setOption(getFolderLineDataSet({ dateTime: value, ...chartColors }));
+      this.lineChart.setOption(getFolderLineDataSet({dateTime: value, ...chartColors}));
     },
     updateContainer() {
       this.lineChart.resize?.({
@@ -184,13 +212,13 @@ export default {
       });
     },
     renderCharts() {
-      const { chartColors } = this.$store.state.setting;
+      const {chartColors} = this.$store.state.setting;
 
       if (!this.lineContainer) {
         this.lineContainer = document.getElementById('lineContainer');
       }
       this.lineChart = echarts.init(this.lineContainer);
-      this.lineChart.setOption(getFolderLineDataSet({ ...chartColors }));
+      this.lineChart.setOption(getFolderLineDataSet({...chartColors}));
 
       window.addEventListener('resize', this.updateContainer, false);
 
@@ -198,14 +226,14 @@ export default {
         this.scatterContainer = document.getElementById('scatterContainer');
       }
       this.scatterChart = echarts.init(this.scatterContainer);
-      this.scatterChart.setOption(getScatterDataSet({ ...chartColors }));
+      this.scatterChart.setOption(getScatterDataSet({...chartColors}));
     },
     getList() {
       this.dataLoading = true;
       this.$request
-          .get('/git/overView', {
-            params: this.formData
-          }).then((res) => {
+        .get('/nas/overView', {
+          params: this.formData
+        }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.data;
         }
