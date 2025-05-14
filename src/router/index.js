@@ -47,8 +47,27 @@ import proxy from '@/config/host';
 const devRouterList = [...baseRouters, ...domainRouters, ...gitRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...backupRouters, ...othersRouters]
 // 生产模式
 const prodRouterList = [...baseRouters, ...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
+// nas内测模式
+const nasRouterList = [...nasRouters]
+export const asyncRouterList = []
 // 存放动态路由
-export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
+switch (proxy[env].NAME) {
+  case "development":
+    asyncRouterList.push(...devRouterList)
+    break;
+  case "k8s":
+    asyncRouterList.push(...devRouterList)
+    break;
+  case "prod":
+    asyncRouterList.push(...prodRouterList)
+    break;
+  case "nas":
+    asyncRouterList.push(...nasRouterList)
+    break;
+  default:
+    break;
+}
+//export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
 //[...baseRouters, ...componentsRouters, ...othersRouters];
 
 // 存放固定的路由
