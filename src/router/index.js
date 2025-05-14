@@ -49,9 +49,10 @@ const devRouterList = [...baseRouters, ...domainRouters, ...gitRouters, ...devop
 const prodRouterList = [...baseRouters, ...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
 // nas内测模式
 const nasRouterList = [...nasRouters]
-export const asyncRouterList = []
+export const asyncRouterList = [...baseRouters]
+const envName = proxy[env].NAME
 // 存放动态路由
-switch (proxy[env].NAME) {
+switch (envName) {
   case "development":
     asyncRouterList.push(...devRouterList)
     break;
