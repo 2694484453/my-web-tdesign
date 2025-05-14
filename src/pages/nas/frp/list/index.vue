@@ -391,7 +391,7 @@ export default Vue.extend({
 </script>
 
 <style lang="less" scoped>
-@import 'variables';
+@import '@/style/variables';
 
 .payment-col {
   display: flex;
