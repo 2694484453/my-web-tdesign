@@ -26,6 +26,15 @@ export default {
     CDN: '',
     changeOrigin: true
   },
+  nas: {
+    // nas生产环境接口请求
+    NAME: "nas",
+    API: 'https://cloud-server-k8s.gpg123.vip',
+    PATH: "", //"/prod-api/",
+    // 开发环境 cdn 路径
+    CDN: '',
+    changeOrigin: true
+  },
   test: {
     // 测试环境接口地址
     API: 'http://ecs.gpg123.vip:9099',
