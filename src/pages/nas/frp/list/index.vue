@@ -104,7 +104,7 @@
               <t-input v-model="form.id" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
             </t-form-item>
             <t-form-item label="服务名称" name="branch" >
-              <t-input v-model="form.name" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+              <t-input v-model="form.name" placeholder="请输入英文字母和数字的组合名称" :maxlength="32" with="200"></t-input>
             </t-form-item>
             <t-form-item label="协议类型" name="type" >
               <t-select v-model="form.type" placeholder="请选择">
@@ -117,13 +117,13 @@
               </t-select>
             </t-form-item>
             <t-form-item label="客户端ip地址" name="localIp" >
-              <t-input v-model="form.localIp" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+              <t-input v-model="form.localIp" placeholder="请输入合法的ip地址" :maxlength="32" with="200"></t-input>
             </t-form-item>
             <t-form-item label="客户端端口" name="localPort" >
-              <t-input v-model="form.localPort" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+              <t-input v-model="form.localPort" placeholder="请输入合法的端口号" :maxlength="32" with="200"></t-input>
             </t-form-item>
             <t-form-item label="备注" name="remotePort" >
-              <t-textarea v-model="form.description" placeholder="请输入内容" :maxlength="120" with="200"></t-textarea>
+              <t-textarea v-model="form.description" placeholder="请输入备注内容" :maxlength="120" with="200"></t-textarea>
             </t-form-item>
         </t-form>
       </t-space>
