@@ -157,7 +157,12 @@ export default Vue.extend({
       selectedRowKeys: [1, 2],
       value: 'first',
       columns: [
-        { colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left' },
+        {
+          colKey: 'row-select',
+          type: 'multiple',
+          width: 64,
+          fixed: 'left'
+        },
         {
           title: '名称',
           align: 'left',
@@ -170,7 +175,9 @@ export default Vue.extend({
           title: '状态',
           colKey: 'status',
           width: 80,
-          cell: { col: 'status' }
+          cell: {
+            col: 'status'
+          }
         },
         {
           title: '类型',

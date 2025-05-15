@@ -1,101 +1,142 @@
 <template>
-  <t-row :gutter="[16, 16]">
-    <t-col :flex="3">
-      <div class="user-left-greeting">
-        <div>
-          Hi，{{nickName}}
-          <span class="regular"> 下午好，今天是你加入鹅厂的第 100 天～</span>
+  <div>
+    <t-row :gutter="[16, 16]">
+      <t-col :flex="3">
+        <div class="user-left-greeting">
+          <div>
+            Hi，{{nickName}}
+            <span class="regular"> 下午好，今天是你加入鹅厂的第 100 天～</span>
+          </div>
+          <img src="@/assets/assets-tencent-logo.png" class="logo"/>
         </div>
-        <img src="@/assets/assets-tencent-logo.png" class="logo"/>
-      </div>
 
-      <t-card class="user-info-list" title="个人信息" :bordered="false">
-        <template #option>
-          <t-button theme="default" shape="square" variant="text">
-            <edit-icon size="18"/>
-          </t-button>
-        </template>
-        <t-row class="content" justify="space-between">
-          <t-col v-for="(item, index) in USER_INFO_LIST" :key="index" class="contract" :span="item.span || 3">
-            <div class="contract-title">
-              {{ item.title }}
-            </div>
-            <div class="contract-detail">
-              {{ item.content }}
-            </div>
-          </t-col>
-        </t-row>
-      </t-card>
+        <t-card class="user-info-list" title="个人信息" :bordered="false">
+          <div style="float: right;position: relative">
+            <t-button theme="default" shape="square" variant="text" style="width: 120px;float: right" @click="handleClickEdit">
+              <edit-icon size="18"/>编辑信息
+            </t-button>
+          </div>
+          <t-row class="content" justify="space-between">
+            <t-col v-for="(item, index) in USER_INFO_LIST" :key="index" class="contract" :span="item.span || 3">
+              <div class="contract-title">
+                {{ item.title }}
+              </div>
+              <div class="contract-detail">
+                {{ item.content }}
+              </div>
+            </t-col>
+          </t-row>
+        </t-card>
 
-      <t-card class="content-container" :bordered="false">
-        <t-tabs value="second">
-          <t-tab-panel value="first" label="内容列表">
-            <p>内容列表</p>
-          </t-tab-panel>
-          <t-tab-panel value="second" label="内容列表">
-            <t-card :bordered="false" title="主页访问数据" subtitle="（次）">
-              <template #options>
-                <t-date-rang-picker
-                  class="card-date-picker-container"
-                  :default-value="LAST_7_DAYS"
-                  theme="primary"
-                  mode="date"
-                  @change="onLineChange"
-                />
-              </template>
-              <div id="lineContainer" style="width: 100%; height: 330px"/>
-            </t-card>
-          </t-tab-panel>
-          <t-tab-panel value="third" label="内容列表">
-            <p>内容列表</p>
-          </t-tab-panel>
-        </t-tabs>
-      </t-card>
-    </t-col>
+        <t-card class="content-container" :bordered="false">
+          <t-tabs value="second">
+            <t-tab-panel value="first" label="内容列表">
+              <p>内容列表</p>
+            </t-tab-panel>
+            <t-tab-panel value="second" label="内容列表">
+              <t-card :bordered="false" title="主页访问数据" subtitle="（次）">
+                <template #options>
+                  <t-date-rang-picker
+                    class="card-date-picker-container"
+                    :default-value="LAST_7_DAYS"
+                    theme="primary"
+                    mode="date"
+                    @change="onLineChange"
+                  />
+                </template>
+                <div id="lineContainer" style="width: 100%; height: 330px"/>
+              </t-card>
+            </t-tab-panel>
+            <t-tab-panel value="third" label="内容列表">
+              <p>内容列表</p>
+            </t-tab-panel>
+          </t-tabs>
+        </t-card>
+      </t-col>
+      <t-col :flex="1">
+        <t-card class="user-intro" :bordered="false">
+          <t-avatar size="90px">T</t-avatar>
+          <div class="name">My Account</div>
+          <div class="position">XXG 港澳业务拓展组员工 直客销售</div>
+        </t-card>
 
-    <t-col :flex="1">
-      <t-card class="user-intro" :bordered="false">
-        <t-avatar size="90px">T</t-avatar>
-        <div class="name">My Account</div>
-        <div class="position">XXG 港澳业务拓展组员工 直客销售</div>
-      </t-card>
+        <t-card title="团队成员" class="user-team" :bordered="false">
+          <template #option>
+            <t-button theme="default" shape="square" variant="text">
+              <edit-icon size="18"/>
+            </t-button>
+          </template>
+          <t-list :split="false">
+            <t-list-item v-for="(item, index) in TEAM_MEMBERS" :key="index">
+              <t-list-item-meta :image="item.avatar" :title="item.title" :description="item.description"/>
+            </t-list-item>
+          </t-list>
+        </t-card>
 
-      <t-card title="团队成员" class="user-team" :bordered="false">
-        <template #option>
-          <t-button theme="default" shape="square" variant="text">
-            <edit-icon size="18"/>
-          </t-button>
-        </template>
-        <t-list :split="false">
-          <t-list-item v-for="(item, index) in TEAM_MEMBERS" :key="index">
-            <t-list-item-meta :image="item.avatar" :title="item.title" :description="item.description"/>
-          </t-list-item>
-        </t-list>
-      </t-card>
-
-      <t-card title="服务产品" class="product-container" :bordered="false">
-        <template #option>
-          <t-button theme="default" shape="square" variant="text">
-            <edit-icon size="18"/>
-          </t-button>
-        </template>
-        <t-row class="content" :getters="16">
-          <t-col :span="3">
-            <product-a-icon/>
-          </t-col>
-          <t-col :span="3">
-            <product-b-icon/>
-          </t-col>
-          <t-col :span="3">
-            <product-c-icon/>
-          </t-col>
-          <t-col :span="3">
-            <product-d-icon/>
-          </t-col>
-        </t-row>
-      </t-card>
-    </t-col>
-  </t-row>
+        <t-card title="服务产品" class="product-container" :bordered="false">
+          <template #option>
+            <t-button theme="default" shape="square" variant="text">
+              <edit-icon size="18"/>
+            </t-button>
+          </template>
+          <t-row class="content" :getters="16">
+            <t-col :span="3">
+              <product-a-icon/>
+            </t-col>
+            <t-col :span="3">
+              <product-b-icon/>
+            </t-col>
+            <t-col :span="3">
+              <product-c-icon/>
+            </t-col>
+            <t-col :span="3">
+              <product-d-icon/>
+            </t-col>
+          </t-row>
+        </t-card>
+      </t-col>
+    </t-row>
+    <t-drawer
+      :visible.sync="formConfig.visible"
+      :header="formConfig.header"
+      :on-overlay-click="() => (formConfig.visible = false)"
+      placement="right"
+      destroyOnClose
+      showOverlay
+      :sizeDraggable="true"
+      :on-size-drag-end="handleSizeDrag"
+      size="40%"
+      @cancel="formConfig.visible = false"
+      @close="handleClose"
+      :onConfirm="onSubmitCreate">
+      <t-space direction="vertical" style="width: 100%">
+        <t-form
+          ref="formValidatorStatus"
+          :data="form"
+          :rules="rules"
+          :label-width="120"
+          :status-icon="formStatusIcon"
+          @reset="onReset"
+        >
+          <t-form-item label="id" name="id" v-show="false">
+            <t-input v-model="form.id" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+          </t-form-item>
+          <t-form-item label="名称" name="name" >
+            <t-input v-model="form.name" placeholder="请输入英文字母和数字的组合名称" :maxlength="32" with="200"></t-input>
+          </t-form-item>
+          <t-form-item label="电话" name="phone" >
+            <t-input v-model="form.phonenumber" placeholder="请选择"></t-input>
+          </t-form-item>
+          <t-form-item label="邮箱" name="email" >
+            <t-input v-model="form.email" placeholder="请选择" style="width: 322px"></t-input>
+          </t-form-item>
+          <t-form-item label="备注" name="remotePort" >
+            <t-textarea v-model="form.description" placeholder="请输入备注内容" :maxlength="120" with="200"></t-textarea>
+          </t-form-item>
+        </t-form>
+      </t-space>
+    </t-drawer>
+  </div>
 </template>
 <script>
 import {GridComponent, TooltipComponent, LegendComponent} from 'echarts/components';
@@ -137,7 +178,18 @@ export default {
       USER_INFO_LIST: [],
       TEAM_MEMBERS,
       PRODUCT_LIST,
-      nickName: "unknown"
+      nickName: "unknown",
+      formConfig: {
+        visible: false,
+        header: '新增',
+      },
+      form: {
+        id: '',
+        name: '',
+        phonenumber: '',
+        email: '',
+        description: '',
+      },
     };
   },
   computed: {
@@ -168,6 +220,7 @@ export default {
     getUserInfo() {
       this.$request.get("/getInfo").then(res => {
         if (res.data.code === 200) {
+          this.form = res.data.user;
           this.nickName = res.data.user.nickName;
           this.USER_INFO_LIST.push(
             {
@@ -175,39 +228,22 @@ export default {
               content: res.data.user.phonenumber,
             },
             {
-              title: '座机',
-              content: 'xx',
-            },{
-              title: '办公室邮箱',
+              title: '邮箱',
               content: res.data.user.email,
             },
             {
-              title: '座位',
-              content: 'T32F 012',
-            },
-            {
               title: '管理主体',
-              content: '腾讯集团',
+              content: res.data.user.userName,
             },
-            {
-              title: '直属上级',
-              content: 'Michael Wang',
-            },
-            {
-              title: '职位',
-              content: '高级 UI 设计师',
-            },
-            {
-              title: '入职时间',
-              content: '2021-07-01',
-            },
-            {
-              title: '所属团队',
-              content: '腾讯/腾讯公司/某事业群/某产品部/某运营中心/商户服务组',
-              span: 6,
-            },)
+          )
         }
       })
+    },
+    // 点击编辑
+    handleClickEdit() {
+      this.formConfig.header = "编辑";
+      this.formConfig.visible = true;
+
     },
     /** 图表选择 */
     onLineChange(value) {
