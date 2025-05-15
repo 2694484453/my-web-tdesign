@@ -356,12 +356,14 @@ export default Vue.extend({
     // 导出
     handleExport() {
       this.$request.post('/nas/frp/common/export', {
-        params: {
-          name: this.searchForm.name,
-          type: this.searchForm.type,
-        }
-      }).then(res => {
-
+        serverName: 'hcs.gpg123.vip',
+      },{responseType: 'blob'}).then(res => {
+        const blob = new Blob([res.data]);
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'frpc.toml';
+        link.click();
+        URL.revokeObjectURL(link.href); // 释放内存
       })
     },
     handleClickDelete(row: { rowIndex: any }) {

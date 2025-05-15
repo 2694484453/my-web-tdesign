@@ -105,8 +105,8 @@ import {UserIcon, LockOnIcon, BrowseOffIcon, BrowseIcon, RefreshIcon} from 'tdes
 const INITIAL_DATA = {
   phone: '',
   email: '',
-  account: 'test.gpg123.vip',
-  password: 'test.gpg123.vip',
+  account: '',
+  password: '',
   verifyCode: '',
   checked: false,
 };
