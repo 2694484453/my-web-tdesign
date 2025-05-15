@@ -36,7 +36,7 @@
             <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
             <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
             <t-tag v-if="row.status === 'online'" theme="success" variant="light">{{row.status}}</t-tag>
-            <t-tag v-if="row.status === null" theme="warning" variant="light">未知</t-tag>
+            <t-tag v-if="row.status === null" theme="warning" variant="light">unknown</t-tag>
           </template>
           <template #contractType="{ row }">
             <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
