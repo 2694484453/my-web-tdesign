@@ -54,8 +54,9 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickDetail()">详情</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
+            <a class="t-button-link" @click="handleClickEdit(slotProps.row)">编辑</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
         <div style="margin-top: 10px">
@@ -71,7 +72,7 @@
       </div>
     </t-card>
     <t-dialog
-      header="确认删除当前所选合同？"
+      header="确认删除当前所选项目？"
       :body="confirmBody"
       :visible.sync="confirmVisible"
       @confirm="onConfirmDelete"
@@ -320,12 +321,24 @@ export default Vue.extend({
     },
     // 创建
     onSubmitCreate() {
-      this.$request.post("/nas/frpc/add", this.form).then(res => {
-        if (res.data.code === 200) {
-          this.$message.success(res.data.msg);
-          this.getList();
-        }
-      })
+      console.log(this.form);
+      if (this.form.id === '') {
+        this.$request.post("/nas/frpc/add", this.form).then(res => {
+          if (res.data.code === 200) {
+            this.$message.success(res.data.msg);
+            this.getList();
+            this.formConfig.visible = false;
+          }
+        })
+      } else {
+        this.$request.put("/nas/frpc/edit", this.form).then(res => {
+          if (res.data.code === 200) {
+            this.$message.success(res.data.msg);
+            this.getList();
+            this.formConfig.visible = false;
+          }
+        })
+      }
     },
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
@@ -344,14 +357,41 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
-    handleClickDetail() {
+    handleClickDetail(row) {
       this.$router.push('/detail/base');
+    },
+    // 编辑
+    handleClickEdit(row) {
+      this.formConfig.visible = true;
+      this.formConfig.header = "编辑";
+      this.getTypeList();
+      this.form = {
+        id: row.id,
+        name: row.name,
+        type: row.type,
+        frpServer: row.frpServer,
+        localIp: row.localIp,
+        localPort: row.localPort,
+        customDomains: row.customDomains,
+        description: row.description,
+      }
     },
     // 新建
     handleSetupContract() {
+      this.form = {
+        id: "",
+        name: "",
+        type: "",
+        frpServer: "",
+        localIp: "127.0.0.1",
+        localPort: 80,
+        customDomains: "",
+        description: "",
+      }
       this.formConfig.visible = true;
       this.getServiceList();
       this.getTypeList();
+
     },
     // 导出
     handleExport() {
@@ -366,22 +406,22 @@ export default Vue.extend({
         URL.revokeObjectURL(link.href); // 释放内存
       })
     },
+    // 点击删除
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;
-      this.formConfig.title = "新增";
       this.confirmVisible = true;
+      this.form.id = row.id;
     },
-    onConfirmDelete() {
+    // 确认删除
+    onConfirmDelete(row) {
       // 真实业务请发起请求
-      this.data.splice(this.deleteIdx, 1);
-      this.pagination.total = this.data.length;
-      const selectedIdx = this.selectedRowKeys.indexOf(this.deleteIdx);
-      if (selectedIdx > -1) {
-        this.selectedRowKeys.splice(selectedIdx, 1);
-      }
-      this.confirmVisible = false;
-      this.$message.success('删除成功');
-      this.resetIdx();
+      this.$request.delete('/nas/frpc/delete?id=' + this.form.id).then(res => {
+        if (res.data.code === 200) {
+          this.$message.success(res.data.msg);
+          this.getList();
+          this.confirmVisible = false;
+        }
+      })
     },
     onCancel() {
       this.resetIdx();
