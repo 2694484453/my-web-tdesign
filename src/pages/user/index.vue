@@ -4,8 +4,8 @@
       <t-col :flex="3">
         <div class="user-left-greeting">
           <div>
-            Hi，{{nickName}}
-            <span class="regular"> 下午好，今天是你加入鹅厂的第 100 天～</span>
+            Hi，{{form.nickName}}
+            <span class="regular"> 下午好，今天是你加入云服务平台的第 {{Math.round((new Date().getTime() -new Date(form.createTime).getTime())/ (1000 * 3600 * 24))}} 天～</span>
           </div>
           <img src="@/assets/assets-tencent-logo.png" class="logo"/>
         </div>
@@ -108,7 +108,7 @@
       size="40%"
       @cancel="formConfig.visible = false"
       @close="handleClose"
-      :onConfirm="onSubmitCreate">
+      :onConfirm="onSubmit">
       <t-space direction="vertical" style="width: 100%">
         <t-form
           ref="formValidatorStatus"
@@ -121,11 +121,14 @@
           <t-form-item label="id" name="id" v-show="false">
             <t-input v-model="form.id" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
           </t-form-item>
-          <t-form-item label="名称" name="name" >
-            <t-input v-model="form.name" placeholder="请输入英文字母和数字的组合名称" :maxlength="32" with="200"></t-input>
+          <t-form-item label="名称" name="nickName" >
+            <t-input v-model="form.nickName" placeholder="请输入名称" :maxlength="32" with="200"></t-input>
           </t-form-item>
-          <t-form-item label="电话" name="phone" >
-            <t-input v-model="form.phonenumber" placeholder="请选择"></t-input>
+          <t-form-item label="性别" name="username" >
+            <t-input v-model="form.sex" placeholder="请输入性别" :maxlength="32" with="200"></t-input>
+          </t-form-item>
+          <t-form-item label="电话" name="phoneNumber" >
+            <t-input v-model="form.phoneNumber" placeholder="请选择"></t-input>
           </t-form-item>
           <t-form-item label="邮箱" name="email" >
             <t-input v-model="form.email" placeholder="请选择" style="width: 322px"></t-input>
@@ -161,7 +164,6 @@ echarts.use([GridComponent, TooltipComponent, LineChart, CanvasRenderer, LegendC
 
 export default {
   name: 'UserIndex',
-
   components: {
     ProductAIcon,
     ProductBIcon,
@@ -178,17 +180,19 @@ export default {
       USER_INFO_LIST: [],
       TEAM_MEMBERS,
       PRODUCT_LIST,
-      nickName: "unknown",
       formConfig: {
         visible: false,
         header: '新增',
       },
       form: {
         id: '',
-        name: '',
-        phonenumber: '',
+        nickName: '',
+        phoneNumber: '',
         email: '',
-        description: '',
+        sex: '男',
+        createTime: '',
+        updateTime: '',
+        remark: '',
       },
     };
   },
@@ -217,23 +221,27 @@ export default {
     this.getUserInfo();
   },
   methods: {
+    // 获取信息
     getUserInfo() {
       this.$request.get("/getInfo").then(res => {
         if (res.data.code === 200) {
           this.form = res.data.user;
-          this.nickName = res.data.user.nickName;
           this.USER_INFO_LIST.push(
             {
+              title: '昵称',
+              content: this.form.nickName,
+            },
+            {
               title: '手机',
-              content: res.data.user.phonenumber,
+              content: this.form.phoneNumber,
             },
             {
               title: '邮箱',
-              content: res.data.user.email,
+              content: this.form.email,
             },
             {
               title: '管理主体',
-              content: res.data.user.userName,
+              content: this.form.nickName,
             },
           )
         }
@@ -243,7 +251,12 @@ export default {
     handleClickEdit() {
       this.formConfig.header = "编辑";
       this.formConfig.visible = true;
+    },
+    // 提交信息
+    onSubmit() {
+      this.$request.put("/system/user/profile/updateProfile",this.form).then(res => {
 
+      })
     },
     /** 图表选择 */
     onLineChange(value) {
