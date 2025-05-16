@@ -40,6 +40,8 @@ import userInfoRouters from "@/router/modules/userinfo";
 import discoveryRouters from "@/router/modules/discovery";
 // nas
 import nasRouters from "@/router/modules/nas";
+// 消息
+import noticeRouters from "@/router/modules/notice";
 
 const env = import.meta.env.MODE || 'development';
 import proxy from '@/config/host';
@@ -68,6 +70,7 @@ switch (envName) {
   default:
     break;
 }
+asyncRouterList.push(...noticeRouters)
 //export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
 //[...baseRouters, ...componentsRouters, ...othersRouters];
 

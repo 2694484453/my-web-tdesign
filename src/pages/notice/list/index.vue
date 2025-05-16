@@ -12,9 +12,6 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="handleSetupContract">导入</t-button>
-            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
-            <!--            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>-->
           </div>
           <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
             <template #suffix-icon>
@@ -39,12 +36,9 @@
           :headerAffixedTop="true"
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
-          <template #status="{ row }">
-            <!--            <t-tag v-if="row.status === CONTRACT_STATUS.FAIL" theme="danger" variant="light">校验失败</t-tag>-->
-            <!--            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">打包失败</t-tag>-->
-            <!--            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">未知</t-tag>-->
-            <!--            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">打包中</t-tag>-->
-            <!--            <t-tag v-if="row.status === CONTRACT_STATUS.FINISH" theme="success" variant="light">已完成</t-tag>-->
+          <template #isConfirm="{ row }">
+            <t-tag v-if="row.isConfirm === 0" theme="warning" variant="light">未读</t-tag>
+            <t-tag v-if="row.isConfirm === 1" theme="success" variant="light">已读</t-tag>
           </template>
           <template #language="{ row }">
             <p v-if="row.language === '' || row.language === null">未知</p>
@@ -54,8 +48,6 @@
             <a :href="row.html_url" target="_blank">{{ row.html_url }}</a>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickSuccess()">在线预览</a>
-            <a class="t-button-link" @click="handleClickDetail(slotProps)">详情</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
@@ -90,40 +82,41 @@
     >
       <t-card class="list-card-container" :bordered="false">
         <div>
-            <t-form
-              ref="form"
-              :data="formData"
-              label-align="left"
-              @reset="onReset"
-              @submit="onSubmit"
-              layout="inline"
-            >
-              <div class="left-operation-container">
-                <t-form-item label="名称" name="name">
-                  <t-input v-model="dialog.name" style="width: 250px" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-                    <template #suffix-icon>
-                      <search-icon size="18px"/>
-                    </template>
-                  </t-input>
-                </t-form-item>
-                <t-form-item label="类型" name="type">
-                  <t-select
-                    v-model="dialog.type"
-                    :style="{ width: '120px' }"
-                    placeholder="请选择类型"
-                    class="demo-select-base"
-                    clearable>
-                    <t-option v-for="(item, index) in dialog.gitRepoTypeList" :key="index" :value="item" :label="item">
-                      {{ item }}
-                    </t-option>
-                  </t-select>
-                </t-form-item>
-              </div>
-              <div class="right-operation-container">
-                <t-button theme="primary" :style="{ marginLeft: '8px' }" @click="getRepoList"> 查询</t-button>
-                <t-button type="reset" variant="base" theme="default"> 重置</t-button>
-              </div>
-            </t-form>
+          <t-form
+            ref="form"
+            :data="formData"
+            label-align="left"
+            @reset="onReset"
+            @submit="onSubmit"
+            layout="inline"
+          >
+            <div class="left-operation-container">
+              <t-form-item label="名称" name="name">
+                <t-input v-model="dialog.name" style="width: 250px" class="search-input"
+                         placeholder="请输入你需要搜索的内容" clearable>
+                  <template #suffix-icon>
+                    <search-icon size="18px"/>
+                  </template>
+                </t-input>
+              </t-form-item>
+              <t-form-item label="类型" name="type">
+                <t-select
+                  v-model="dialog.type"
+                  :style="{ width: '120px' }"
+                  placeholder="请选择类型"
+                  class="demo-select-base"
+                  clearable>
+                  <t-option v-for="(item, index) in dialog.gitRepoTypeList" :key="index" :value="item" :label="item">
+                    {{ item }}
+                  </t-option>
+                </t-select>
+              </t-form-item>
+            </div>
+            <div class="right-operation-container">
+              <t-button theme="primary" :style="{ marginLeft: '8px' }" @click="getRepoList"> 查询</t-button>
+              <t-button type="reset" variant="base" theme="default"> 重置</t-button>
+            </div>
+          </t-form>
           <t-table
             :columns="dialog.gitRepoColumns"
             :data="dialog.gitRepoList"
@@ -134,7 +127,7 @@
             :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
           >
             <template #html_url="{row}">
-              <a :href="row.html_url" target="_blank">{{row.html_url}}</a>
+              <a :href="row.html_url" target="_blank">{{ row.html_url }}</a>
             </template>
             <template #op="slotProps">
               <a class="t-button-link" @click="importRepo(slotProps.row)">导入</a>
@@ -174,40 +167,34 @@ export default Vue.extend({
       columns: [
         {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
-          title: '仓库名称',
+          title: '标题',
           align: 'left',
-          width: 200,
+          width: 180,
           ellipsis: true,
-          colKey: 'name',
+          colKey: 'title',
           fixed: 'left',
         },
         {
           title: "类型",
           align: 'left',
-          width: 200,
+          width: 120,
           ellipsis: true,
           colKey: 'type',
         },
         {
-          title: '语言',
-          colKey: 'language',
-          width: 120
+          title: '是否已读',
+          colKey: 'isConfirm',
+          width: 100
         },
         {
-          title: '状态',
-          width: 80,
+          title: '内容',
+          width: 230,
           ellipsis: true,
-          colKey: 'status',
-        },
-        {
-          title: '地址',
-          width: 200,
-          ellipsis: true,
-          colKey: 'gitUrl',
+          colKey: 'content',
         },
         {
           title: '创建时间',
-          width: 200,
+          width: 180,
           ellipsis: true,
           colKey: 'createTime',
         },
@@ -218,15 +205,9 @@ export default Vue.extend({
           colKey: 'updateTime',
         },
         {
-          title: '描述',
-          width: 200,
-          ellipsis: true,
-          colKey: 'description',
-        },
-        {
           align: 'left',
           fixed: 'right',
-          width: 200,
+          width: 120,
           colKey: 'op',
           title: '操作',
         },
@@ -318,7 +299,7 @@ export default Vue.extend({
   methods: {
     getList() {
       this.dataLoading = true;
-      this.$request.get('/git/repo/page', {
+      this.$request.get('/sysActionNotice/page', {
         params: this.formData
       }).then((res) => {
         if (res.data.code === 200) {
@@ -431,7 +412,7 @@ export default Vue.extend({
     // 确认删除
     onConfirmDelete() {
       // 真实业务请发起请求
-      this.$request.delete("/git/repo/delete?id="+ this.formData.params.id).then(res=>{
+      this.$request.delete("/git/repo/delete?id=" + this.formData.params.id).then(res => {
         if (res.data.code === 200) {
           this.$message.success(res.data.msg)
           this.confirmVisible = false;
