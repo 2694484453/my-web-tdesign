@@ -124,17 +124,17 @@
           <t-form-item label="名称" name="nickName" >
             <t-input v-model="form.nickName" placeholder="请输入名称" :maxlength="32" with="200"></t-input>
           </t-form-item>
-          <t-form-item label="性别" name="username" >
+          <t-form-item label="性别" name="sex" >
             <t-input v-model="form.sex" placeholder="请输入性别" :maxlength="32" with="200"></t-input>
           </t-form-item>
-          <t-form-item label="电话" name="phoneNumber" >
-            <t-input v-model="form.phoneNumber" placeholder="请选择"></t-input>
+          <t-form-item label="电话" name="phonenumber" >
+            <t-input v-model="form.phonenumber" placeholder="请选择"></t-input>
           </t-form-item>
           <t-form-item label="邮箱" name="email" >
             <t-input v-model="form.email" placeholder="请选择" style="width: 322px"></t-input>
           </t-form-item>
-          <t-form-item label="备注" name="remotePort" >
-            <t-textarea v-model="form.description" placeholder="请输入备注内容" :maxlength="120" with="200"></t-textarea>
+          <t-form-item label="备注" name="remark" >
+            <t-textarea v-model="form.remark" placeholder="请输入备注内容" :maxlength="120" with="200"></t-textarea>
           </t-form-item>
         </t-form>
       </t-space>
@@ -187,9 +187,9 @@ export default {
       form: {
         id: '',
         nickName: '',
-        phoneNumber: '',
+        phonenumber: '',
         email: '',
-        sex: '男',
+        sex: '',
         createTime: '',
         updateTime: '',
         remark: '',
@@ -223,6 +223,7 @@ export default {
   methods: {
     // 获取信息
     getUserInfo() {
+      this.USER_INFO_LIST = [];
       this.$request.get("/getInfo").then(res => {
         if (res.data.code === 200) {
           this.form = res.data.user;
@@ -233,7 +234,7 @@ export default {
             },
             {
               title: '手机',
-              content: this.form.phoneNumber,
+              content: this.form.phonenumber,
             },
             {
               title: '邮箱',
@@ -243,6 +244,10 @@ export default {
               title: '管理主体',
               content: this.form.nickName,
             },
+            {
+              title: '备注',
+              content: this.form.remark,
+            }
           )
         }
       })
@@ -255,7 +260,11 @@ export default {
     // 提交信息
     onSubmit() {
       this.$request.put("/system/user/profile/updateProfile",this.form).then(res => {
-
+        if (res.data.code === 200) {
+          this.$message.success(res.data.msg);
+          this.formConfig.visible = false;
+          this.getUserInfo();
+        }
       })
     },
     /** 图表选择 */
