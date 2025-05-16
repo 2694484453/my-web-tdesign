@@ -10,9 +10,7 @@
       <div class="header-msg">
         <div class="header-msg-top">
           <p>通知</p>
-          <t-button v-if="unreadMsg.length > 0" class="clear-btn" variant="text" theme="primary" @click="setRead('all')"
-            >清空</t-button
-          >
+          <t-button v-if="unreadMsg.length > 0" class="clear-btn" variant="text" theme="primary" @click="setRead('all')">一键已读</t-button>
         </div>
         <t-list v-if="unreadMsg.length > 0" class="narrow-scrollbar" :split="true">
           <t-list-item v-for="(item, index) in unreadMsg" :key="index">
@@ -20,9 +18,9 @@
               <p class="msg-content">{{ item.content }}</p>
               <p class="msg-type">{{ item.type }}</p>
             </div>
-            <p class="msg-time">{{ item.date }}</p>
+            <p class="msg-time">{{ item.createTime }}</p>
             <template #action>
-              <t-button size="small" variant="outline" @click="setRead('radio', item)"> 设为已读 </t-button>
+              <t-button size="small" variant="outline" @click="setRead('one', item)"> 设为已读 </t-button>
             </template>
           </t-list-item>
         </t-list>
@@ -65,17 +63,20 @@ export default Vue.extend({
   data() {
     return {
       isNoticeVisible: false,
+      unreadMsg: [],
     };
   },
   computed: {
-    ...mapState('notification', ['msgData']),
-    ...mapGetters('notification', ['unreadMsg']),
+  },
+  created() {
+    this.getNoticeList();
   },
   methods: {
+    // 获取通知列表
     getNoticeList() {
       this.$request.get('/sysActionNotice/list').then((res) => {
         if (res.data.code === 200) {
-          this.$store.commit('notification/setMsgData', res.data.data);
+          this.unreadMsg = res.data.data;
         }
       });
     },
@@ -90,20 +91,21 @@ export default Vue.extend({
       this.$router.push('/detail/secondary');
       this.isNoticeVisible = false;
     },
+    // 设置为已读
     setRead(type: string, item?: NotificationItem) {
-      const changeMsg = this.msgData;
+      let id = "";
       if (type === 'all') {
-        changeMsg.forEach((e) => {
-          e.status = false;
-        });
-      } else {
-        changeMsg.forEach((e) => {
-          if (e.id === item.id) {
-            e.status = false;
-          }
-        });
+         id = "";
       }
-      this.$store.commit('notification/setMsgData', changeMsg);
+      if (type === 'one') {
+         id = item.id;
+      }
+      this.$request.put('/sysActionNotice/setRead?id=' + id).then((res) => {
+        if (res.data.code === 200) {
+          this.$message.success(res.data.msg);
+          this.getNoticeList();
+        }
+      });
     },
   },
 });
