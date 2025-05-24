@@ -14,6 +14,12 @@ export default [
         meta: {title: '概览'},
       },
       {
+        path: "nameSpaceList",
+        name: 'nameSpaceList',
+        component: () => import("@/pages/discovery/nameSpaceList/index.vue"),
+        meta: {title: '命名空间'},
+      },
+      {
         path: "configList",
         name: 'configList',
         component: () => import("@/pages/discovery/serviceList/index.vue"),
