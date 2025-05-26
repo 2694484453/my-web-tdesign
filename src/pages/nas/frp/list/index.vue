@@ -398,7 +398,6 @@ export default Vue.extend({
       this.formConfig.visible = true;
       this.getServiceList();
       this.getTypeList();
-
     },
     // 导出
     handleExport() {
@@ -429,6 +428,9 @@ export default Vue.extend({
           this.confirmVisible = false;
         }
       })
+    },
+    onReset(data) {
+      console.log(data);
     },
     onCancel() {
       this.resetIdx();
