@@ -62,11 +62,12 @@
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickDetail()">详情</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
+            <a class="t-button-link" @click="handleClickEdit(slotProps.row)">修改</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
-        <div>
+        <div style="margin-top: 10px">
           <t-pagination
             v-model="formData.pageNum"
             :total="pagination.total"
@@ -117,20 +118,20 @@ export default Vue.extend({
         {
           title: '主机名称',
           align: 'left',
-          width: 160,
+          width: 120,
           ellipsis: true,
-          colKey: 'hostname',
+          colKey: 'hostName',
           fixed: 'left',
         },
         {
           title: 'ip地址/域名',
-          width: 160,
+          width: 120,
           ellipsis: true,
-          colKey: 'ipAddress',
+          colKey: 'hostIp',
         },
         {
           title: '端口',
-          colKey: 'portNumber',
+          colKey: 'port',
           width: 60,
           cell: {col: 'status'}
         },
@@ -142,20 +143,26 @@ export default Vue.extend({
         },
         {
           title: '用户',
-          colKey: 'username',
+          colKey: 'userName',
           width: 80,
           cell: {col: 'status'}
         },
         {
+          title: "添加时间",
+          colKey: 'createTime',
+          width: 120,
+          cell: {col: 'status'}
+        },
+        {
           title: '备注',
-          colKey: 'comments',
+          colKey: 'description',
           width: 160,
           cell: {col: 'status'}
         },
         {
           align: 'left',
           fixed: 'right',
-          width: 200,
+          width: 150,
           colKey: 'op',
           title: '操作',
         },
@@ -221,8 +228,7 @@ export default Vue.extend({
   methods: {
     getList() {
       this.dataLoading = true;
-      this.$request
-        .get('/vps/page', {
+      this.$request.get('/cloud-host/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
@@ -234,11 +240,9 @@ export default Vue.extend({
             total: res.data.total
           };
         }
-      })
-        .catch((e: Error) => {
+      }).catch((e: Error) => {
           console.log(e);
-        })
-        .finally(() => {
+        }).finally(() => {
           this.dataLoading = false;
         });
     },
@@ -260,6 +264,10 @@ export default Vue.extend({
     handleClickDetail(rowData) {
       //this.$router.push('/detail/base');
       this.$emit('transfer', "detail", rowData)
+    },
+    handleClickEdit(rowData) {
+      //this.$router.push('/form/base');
+      this.$emit('transfer', "form", rowData)
     },
     handleSetupContract() {
       //this.$router.push('/form/base');
