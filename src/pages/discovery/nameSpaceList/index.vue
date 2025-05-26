@@ -12,7 +12,7 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="handleSetupContract"> 新建</t-button>
+<!--            <t-button @click="handleSetupContract"> 新建</t-button>-->
             <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
@@ -60,7 +60,7 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickDetail()">详情</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+<!--            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>-->
           </template>
         </t-table>
       </div>

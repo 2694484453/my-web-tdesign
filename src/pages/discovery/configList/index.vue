@@ -281,7 +281,7 @@ export default Vue.extend({
     getList() {
       this.dataLoading = true;
       this.$request
-        .get('/discovery/nacos/service/page', {
+        .get('/discovery/nacos/config/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {

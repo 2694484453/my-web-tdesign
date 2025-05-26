@@ -20,23 +20,23 @@ export default [
         meta: {title: '命名空间'},
       },
       {
-        path: "configList",
-        name: 'configList',
+        path: "serviceList",
+        name: 'serviceList',
         component: () => import("@/pages/discovery/serviceList/index.vue"),
         meta: {title: '服务列表'},
       },
       {
-        path: "serviceList",
-        name: 'serviceList',
+        path: "configList",
+        name: 'configList',
         component: () => import("@/pages/discovery/configList/index.vue"),
         meta: {title: '配置列表'},
       },
-      {
-        path: "frame",
-        name: 'FrameBase',
-        component: () => import("@/pages/discovery/frame/index.vue"),
-        meta: {title: '服务面板'},
-      }
+      // {
+      //   path: "frame",
+      //   name: 'FrameBase',
+      //   component: () => import("@/pages/discovery/frame/index.vue"),
+      //   meta: {title: '服务面板'},
+      // }
     ],
   }
 ]

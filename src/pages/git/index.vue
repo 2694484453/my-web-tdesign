@@ -202,8 +202,7 @@ export default {
     },
     getList() {
       this.dataLoading = true;
-      this.$request
-          .get('/git/overView', {
+      this.$request.get('/git/overView', {
             params: this.formData
           }).then((res) => {
         if (res.data.code === 200) {
