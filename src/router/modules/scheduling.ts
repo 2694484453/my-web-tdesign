@@ -9,22 +9,22 @@ export default [
     children: [
       {
         path: 'dashboard',
-        name: 'DashboardBase',
+        name: 'dashboard',
         component: () => import('@/pages/scheduling/index.vue'),
         meta: {title: '监控面板'},
       },
       {
         path: "list",
-        name: 'ListBase',
+        name: 'list',
         component: () => import("@/pages/scheduling/list/index.vue"),
         meta: {title: '任务列表'},
       },
-      // {
-      //   path: "use",
-      //   name: 'UseBase',
-      //   component: () => import("@/pages/ai/use/index.vue"),
-      //   meta: {title: '模型调用'},
-      // }
+      {
+        path: "log",
+        name: 'logList',
+        component: () => import("@/pages/scheduling/log/index.vue"),
+        meta: {title: '执行日志'},
+      }
     ],
   }
 ]
