@@ -42,11 +42,12 @@ import discoveryRouters from "@/router/modules/discovery";
 import nasRouters from "@/router/modules/nas";
 // 消息
 import noticeRouters from "@/router/modules/notice";
-
+// 调度
+import scheduleRouters from "@/router/modules/scheduling";
 const env = import.meta.env.MODE || 'development';
 import proxy from '@/config/host';
 // 开发模式
-const devRouterList = [...domainRouters, ...gitRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...backupRouters, ...othersRouters]
+const devRouterList = [...domainRouters, ...gitRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...backupRouters, ...scheduleRouters, ...othersRouters]
 // 生产模式
 const prodRouterList = [...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
 // nas内测模式

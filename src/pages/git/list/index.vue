@@ -176,7 +176,7 @@ export default Vue.extend({
         {
           title: '仓库名称',
           align: 'left',
-          width: 200,
+          width: 160,
           ellipsis: true,
           colKey: 'name',
           fixed: 'left',
@@ -184,7 +184,7 @@ export default Vue.extend({
         {
           title: "类型",
           align: 'left',
-          width: 200,
+          width: 120,
           ellipsis: true,
           colKey: 'type',
         },
@@ -201,19 +201,19 @@ export default Vue.extend({
         },
         {
           title: '地址',
-          width: 200,
+          width: 180,
           ellipsis: true,
           colKey: 'gitUrl',
         },
         {
           title: '创建时间',
-          width: 200,
+          width: 180,
           ellipsis: true,
           colKey: 'createTime',
         },
         {
           title: '更新时间',
-          width: 200,
+          width: 180,
           ellipsis: true,
           colKey: 'updateTime',
         },
