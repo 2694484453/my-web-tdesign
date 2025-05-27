@@ -31,11 +31,8 @@
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
-            <t-tag v-if="row.status === 'offline'" theme="danger" variant="light">{{row.status}}</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
-            <t-tag v-if="row.status === 'online'" theme="success" variant="light">{{row.status}}</t-tag>
+            <t-tag v-if="row.status === '1'|| row.status === 'fail'" theme="danger" variant="light">失败</t-tag>
+            <t-tag v-if="row.status === '0'|| row.status ==='success'" theme="success" variant="light">成功</t-tag>
             <t-tag v-if="row.status === null" theme="warning" variant="light">unknown</t-tag>
           </template>
           <template #contractType="{ row }">
@@ -55,8 +52,6 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
-            <a class="t-button-link" @click="handleClickRun(slotProps.row)">执行</a>
-            <a class="t-button-link" @click="handleClickEdit(slotProps.row)">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
@@ -183,14 +178,9 @@ export default Vue.extend({
         },
         {
           title: '组',
-          width: 150,
+          width: 80,
           ellipsis: true,
           colKey: 'jobGroup',
-        },
-        {
-          title: '表达式',
-          width: 160,
-          colKey: 'cronExpression',
         },
         {
           title: '创建时间',
@@ -199,21 +189,21 @@ export default Vue.extend({
           colKey: 'createTime',
         },
         {
-          title: '更新时间',
+          title: '消息',
           width: 160,
           ellipsis: true,
-          colKey: 'updateTime',
+          colKey: 'jobMessage',
         },
         {
-          title: '描述',
+          title: '执行结果',
           width: 180,
           ellipsis: true,
-          colKey: 'remark',
+          colKey: 'resultInfo',
         },
         {
           align: 'left',
           fixed: 'right',
-          width: 180,
+          width: 120,
           colKey: 'op',
           title: '操作',
         },
@@ -283,7 +273,7 @@ export default Vue.extend({
   methods: {
     getList() {
       this.dataLoading = true;
-      this.$request.get('/scheduling/job/page', {
+      this.$request.get('/scheduling/jobLog/page', {
           params: this.searchForm,
         }).then((res) => {
           if (res.data.code === 200) {
