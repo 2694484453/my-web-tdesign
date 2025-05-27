@@ -8,10 +8,10 @@ export default [
     meta: {title: '调度中心', icon: CaretUpIcon},
     children: [
       {
-        path: 'dashboard',
-        name: 'dashboard',
+        path: 'overView',
+        name: 'overView',
         component: () => import('@/pages/scheduling/index.vue'),
-        meta: {title: '监控面板'},
+        meta: {title: '概览'},
       },
       {
         path: "list",
