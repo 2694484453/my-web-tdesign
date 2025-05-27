@@ -55,6 +55,7 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">执行</a>
             <a class="t-button-link" @click="handleClickEdit(slotProps.row)">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
@@ -211,7 +212,7 @@ export default Vue.extend({
         {
           align: 'left',
           fixed: 'right',
-          width: 160,
+          width: 180,
           colKey: 'op',
           title: '操作',
         },
