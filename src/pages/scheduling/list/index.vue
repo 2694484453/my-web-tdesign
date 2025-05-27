@@ -157,18 +157,18 @@ export default Vue.extend({
       selectedRowKeys: [1, 2],
       value: 'first',
       columns: [
-        {
-          colKey: 'row-select',
-          type: 'multiple',
-          width: 64,
-          fixed: 'left'
-        },
+        // {
+        //   colKey: 'row-select',
+        //   type: 'multiple',
+        //   width: 64,
+        //   fixed: 'left'
+        // },
         {
           title: '名称',
           align: 'left',
           width: 120,
           ellipsis: true,
-          colKey: 'name',
+          colKey: 'jobName',
           fixed: 'left',
         },
         {
@@ -180,37 +180,25 @@ export default Vue.extend({
           }
         },
         {
-          title: '类型',
-          width: 80,
+          title: '组',
+          width: 150,
           ellipsis: true,
-          colKey: 'type',
+          colKey: 'jobGroup',
         },
         {
-          title: '服务端',
-          width: 120,
-          colKey: 'frpServer',
-        },
-        {
-          title: '客户端ip地址',
-          width: 140,
-          ellipsis: true,
-          colKey: 'localIp',
-        },
-        {
-          title: '客户端端口',
-          width: 60,
-          ellipsis: true,
-          colKey: 'localPort',
+          title: '表达式',
+          width: 160,
+          colKey: 'cronExpression',
         },
         {
           title: '创建时间',
-          width: 180,
+          width: 160,
           ellipsis: true,
           colKey: 'createTime',
         },
         {
           title: '更新时间',
-          width: 180,
+          width: 160,
           ellipsis: true,
           colKey: 'updateTime',
         },
@@ -218,12 +206,12 @@ export default Vue.extend({
           title: '描述',
           width: 180,
           ellipsis: true,
-          colKey: 'description',
+          colKey: 'remark',
         },
         {
           align: 'left',
           fixed: 'right',
-          width: 120,
+          width: 160,
           colKey: 'op',
           title: '操作',
         },
@@ -302,8 +290,7 @@ export default Vue.extend({
     },
     // 类型列表
     getTypeList() {
-      this.$request
-        .get('/nas/frp/common/types').then((res) => {
+      this.$request.get('/nas/frp/common/types').then((res) => {
           if (res.data.code === 200) {
             this.typeList = res.data.data;
           }
