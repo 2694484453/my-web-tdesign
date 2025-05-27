@@ -55,7 +55,7 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
-            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">执行</a>
+            <a class="t-button-link" @click="handleClickRun(slotProps.row)">执行</a>
             <a class="t-button-link" @click="handleClickEdit(slotProps.row)">编辑</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
@@ -73,10 +73,11 @@
       </div>
     </t-card>
     <t-dialog
-      header="确认删除当前所选项目？"
-      :body="confirmBody"
-      :visible.sync="confirmVisible"
-      @confirm="onConfirmDelete"
+      :header="confirm.header"
+      :body="confirm.confirmBody"
+      :visible.sync="confirm.visible"
+      :operate="confirm.operate"
+      @confirm="onConfirm"
       :onCancel="onCancel"
     >
     </t-dialog>
@@ -255,6 +256,12 @@ export default Vue.extend({
       searchValue: '',
       confirmVisible: false,
       deleteIdx: -1,
+      confirm: {
+        visible: false,
+        header: '确认删除当前所选项目？',
+        operate: 'delete',
+        confirmBody: "删除后，所有信息将被清空，且无法恢复",
+      }
     };
   },
   computed: {
@@ -352,7 +359,14 @@ export default Vue.extend({
       console.log('Page Info: ', pageInfo);
     },
     handleClickDetail(row) {
-      this.$router.push('/detail/base');
+
+    },
+    // 执行一次任务
+    handleClickRun(row) {
+      this.confirm.visible = true;
+      this.confirm.operate = "run";
+      this.confirm.header = "确认执行一次当前项目？";
+      this.confirm.confirmBody = "";
     },
     // 编辑
     handleClickEdit(row) {
@@ -402,19 +416,33 @@ export default Vue.extend({
     // 点击删除
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;
-      this.confirmVisible = true;
+      this.confirm.visible = true;
       this.form.id = row.id;
     },
-    // 确认删除
-    onConfirmDelete(row) {
-      // 真实业务请发起请求
-      this.$request.delete('/nas/frpc/delete?id=' + this.form.id).then(res => {
-        if (res.data.code === 200) {
-          this.$message.success(res.data.msg);
-          this.getList();
-          this.confirmVisible = false;
-        }
-      })
+    // 确认操作
+    onConfirm(row) {
+      switch (this.confirm.operater) {
+        // 执行删除
+        case 'delete':
+          this.$request.delete('/nas/frpc/delete?id=' + this.form.id).then(res => {
+            if (res.data.code === 200) {
+              this.$message.success(res.data.msg);
+              this.getList();
+              this.confirm.visible = false;
+            }
+          })
+          break;
+        // 运行一次
+        case 'run':
+          this.$request.post('/scheduling/run?id=' + this.form.id).then(res => {
+            if (res.data.code === 200) {
+              this.$message.success(res.data.msg);
+              this.getList();
+              this.confirm.visible = false;
+            }
+          })
+          break;
+      }
     },
     onReset(data) {
       console.log(data);
