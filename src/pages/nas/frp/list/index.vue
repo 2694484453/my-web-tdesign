@@ -123,7 +123,10 @@
             <t-form-item label="客户端端口" name="localPort" >
               <t-input v-model="form.localPort" placeholder="请输入合法的端口号" :maxlength="32" with="200"></t-input>
             </t-form-item>
-            <t-form-item label="备注" name="remotePort" >
+            <t-form-item label="映射域名" name="customDomains" >
+              <t-input v-model="form.customDomains" placeholder="请输入合法的端口号" :maxlength="32" with="200"></t-input>
+            </t-form-item>
+            <t-form-item label="备注" name="description" >
               <t-textarea v-model="form.description" placeholder="请输入备注内容" :maxlength="120" with="200"></t-textarea>
             </t-form-item>
         </t-form>
