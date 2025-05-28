@@ -118,13 +118,13 @@
               </t-select>
             </t-form-item>
             <t-form-item label="客户端ip地址" name="localIp" >
-              <t-input v-model="form.localIp" placeholder="请输入合法的ip地址" :maxlength="32" with="200"></t-input>
+              <t-input v-model="form.localIp" placeholder="请输入ip地址" :maxlength="32" with="200"></t-input>
             </t-form-item>
             <t-form-item label="客户端端口" name="localPort" >
-              <t-input v-model="form.localPort" placeholder="请输入合法的端口号" :maxlength="32" with="200"></t-input>
+              <t-input v-model="form.localPort" placeholder="请输入端口号" :maxlength="32" with="200"></t-input>
             </t-form-item>
             <t-form-item label="映射域名" name="customDomains" >
-              <t-input v-model="form.customDomains" placeholder="请输入合法的端口号" :maxlength="32" with="200"></t-input>
+              <t-input v-model="form.customDomains" placeholder="请输入域名地址" :maxlength="32" with="200"></t-input>
             </t-form-item>
             <t-form-item label="备注" name="description" >
               <t-textarea v-model="form.description" placeholder="请输入备注内容" :maxlength="120" with="200"></t-textarea>
