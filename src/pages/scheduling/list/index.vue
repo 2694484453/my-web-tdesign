@@ -31,11 +31,10 @@
           :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
         >
           <template #status="{ row }">
-            <t-tag v-if="row.status === 'offline'" theme="danger" variant="light">{{row.status}}</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light">待审核</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light">待履行</t-tag>
-            <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light">履行中</t-tag>
-            <t-tag v-if="row.status === 'online'" theme="success" variant="light">{{row.status}}</t-tag>
+            <t-tag v-if="row.status === '0'" theme="default" variant="light">未运行</t-tag>
+            <t-tag v-if="row.status === '1'" theme="warning" variant="light">待履行</t-tag>
+            <t-tag v-if="row.status === 'running'" theme="primary" variant="light">执行中</t-tag>
+            <t-tag v-if="row.status === 'success'" theme="success" variant="light">执行成功</t-tag>
             <t-tag v-if="row.status === null" theme="warning" variant="light">unknown</t-tag>
           </template>
           <template #contractType="{ row }">
@@ -106,24 +105,13 @@
             <t-form-item label="id" name="id" v-show="false">
               <t-input v-model="form.id" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
             </t-form-item>
-            <t-form-item label="服务名称" name="branch" >
+            <t-form-item label="任务名称" name="branch" >
               <t-input v-model="form.name" placeholder="请输入英文字母和数字的组合名称" :maxlength="32" with="200"></t-input>
             </t-form-item>
-            <t-form-item label="协议类型" name="type" >
+            <t-form-item label="类型" name="type" >
               <t-select v-model="form.type" placeholder="请选择">
-                <t-option v-for="(item,index) in typeList" :key="index" :label="item" :value="item" >{{item}}</t-option>
+                <t-option v-for="(item,index) in typeList" :key="index" :label="item.label" :value="item.value" >{{item.value}}({{item.label}})</t-option>
               </t-select>
-            </t-form-item>
-            <t-form-item label="服务端" name="frpsName" >
-              <t-select v-model="form.frpServer" placeholder="请选择" style="width: 322px">
-                <t-option v-for="(item,index) in serviceList" :key="index" :label="item.serverName" :value="item.serverName" >{{item.serverName}}</t-option>
-              </t-select>
-            </t-form-item>
-            <t-form-item label="客户端ip地址" name="localIp" >
-              <t-input v-model="form.localIp" placeholder="请输入合法的ip地址" :maxlength="32" with="200"></t-input>
-            </t-form-item>
-            <t-form-item label="客户端端口" name="localPort" >
-              <t-input v-model="form.localPort" placeholder="请输入合法的端口号" :maxlength="32" with="200"></t-input>
             </t-form-item>
             <t-form-item label="备注" name="remotePort" >
               <t-textarea v-model="form.description" placeholder="请输入备注内容" :maxlength="120" with="200"></t-textarea>
@@ -183,37 +171,43 @@ export default Vue.extend({
         },
         {
           title: '组',
-          width: 150,
+          width: 120,
           ellipsis: true,
           colKey: 'jobGroup',
         },
         {
           title: '表达式',
-          width: 160,
+          width: 150,
           colKey: 'cronExpression',
         },
         {
           title: '创建时间',
-          width: 160,
+          width: 150,
           ellipsis: true,
           colKey: 'createTime',
         },
         {
-          title: '更新时间',
-          width: 160,
+          title: '最近一次执行',
+          width: 150,
           ellipsis: true,
-          colKey: 'updateTime',
+          colKey: 'runTime',
         },
         {
           title: '描述',
-          width: 180,
+          width: 120,
           ellipsis: true,
           colKey: 'remark',
         },
         {
+          title: '执行结果',
+          width: 180,
+          ellipsis: true,
+          colKey: 'runResult',
+        },
+        {
           align: 'left',
           fixed: 'right',
-          width: 180,
+          width: 200,
           colKey: 'op',
           title: '操作',
         },
@@ -298,7 +292,7 @@ export default Vue.extend({
     },
     // 类型列表
     getTypeList() {
-      this.$request.get('/nas/frp/common/types').then((res) => {
+      this.$request.get('/scheduling/common/types').then((res) => {
           if (res.data.code === 200) {
             this.typeList = res.data.data;
           }
