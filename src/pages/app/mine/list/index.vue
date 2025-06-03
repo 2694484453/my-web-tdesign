@@ -10,22 +10,22 @@
         @submit="onSubmit"
         :style="{ marginBottom: '8px' }"
       >
-      <t-row justify="space-between">
-        <div class="left-operation-container">
-          <t-button @click="handleSetupContract"> 创建应用 </t-button>
-          <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出应用 </t-button>
-          <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
-        </div>
-        <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-          <template #suffix-icon>
-            <search-icon size="20px" />
-          </template>
-        </t-input>
-        <t-col :span="2" class="operation-container">
-          <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
-          <t-button type="reset" variant="base" theme="default"> 重置</t-button>
-        </t-col>
-      </t-row>
+        <t-row justify="space-between">
+          <div class="left-operation-container">
+            <t-button @click="handleSetupContract"> 创建应用</t-button>
+            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出应用</t-button>
+            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
+          </div>
+          <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
+            <template #suffix-icon>
+              <search-icon size="20px"/>
+            </template>
+          </t-input>
+          <t-col :span="2" class="operation-container">
+            <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
+            <t-button type="reset" variant="base" theme="default"> 重置</t-button>
+          </t-col>
+        </t-row>
       </t-form>
 
       <div class="table-container">
@@ -55,16 +55,17 @@
           <template #paymentType="{ row }">
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
               付款
-              <trend class="dashboard-item-trend" type="up" />
+              <trend class="dashboard-item-trend" type="up"/>
             </p>
             <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.RECEIPT" class="payment-col">
               收款
-              <trend class="dashboard-item-trend" type="down" />
+              <trend class="dashboard-item-trend" type="down"/>
             </p>
           </template>
           <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickDetail()">详情</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
+            <a class="t-button-link" @click="handleClickEdit(slotProps.row)">更新</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps.row)">卸载</a>
           </template>
         </t-table>
         <div>
@@ -87,15 +88,70 @@
       :onCancel="onCancel"
     >
     </t-dialog>
+    <t-drawer
+      :visible.sync="formConfig.visible"
+      :header="formConfig.header"
+      :on-overlay-click="() => (formConfig.visible = false)"
+      placement="right"
+      destroyOnClose
+      showOverlay
+      :sizeDraggable="true"
+      :on-size-drag-end="handleSizeDrag"
+      size="40%"
+      @cancel="formConfig.visible = false"
+      @close="handleClose"
+      :onConfirm="onSubmitCreate">
+      <t-space direction="vertical" style="width: 100%" v-show="formConfig.operate !== 'info'">
+
+        <t-form
+          ref="formValidatorStatus"
+          :data="form"
+          :rules="rules"
+          :label-width="120"
+          :status-icon="formStatusIcon"
+          @reset="onReset"
+        >
+          <t-form-item label="id" name="id" v-show="false">
+            <t-input v-model="form.id" placeholder="请输入内容" :maxlength="32" with="200" :readonly="formConfig.operate === 'info'"></t-input>
+          </t-form-item>
+          <t-form-item label="服务名称" name="branch">
+            <t-input v-model="form.name" placeholder="请输入英文字母和数字的组合名称" :maxlength="64" with="200" :readonly="formConfig.operate === 'info'"></t-input>
+          </t-form-item>
+          <t-form-item label="命名空间" name="localIp">
+            <t-input v-model="form.namespace" :maxlength="64" with="200" :readonly="formConfig.operate === 'info'"></t-input>
+          </t-form-item>
+          <t-form-item label="版本" name="localPort">
+            <t-input v-model="form.version" :maxlength="32" with="200" :readonly="formConfig.operate === 'info'"></t-input>
+          </t-form-item>
+          <t-form-item label="状态" name="customDomains">
+            <t-input v-model="form.info.status" placeholder="请输入域名地址" :maxlength="32" with="200" :readonly="formConfig.operate === 'info'"></t-input>
+          </t-form-item>
+          <t-form-item label="描述" name="description">
+            <t-textarea v-model="form.info.description" placeholder="请输入备注内容" :maxlength="120" with="200" :readonly="formConfig.operate === 'info'"></t-textarea>
+          </t-form-item>
+        </t-form>
+      </t-space>
+      <t-space direction="vertical" style="width: 100%" v-show="formConfig.operate === 'info'">
+        <t-descriptions :title="form.name+'应用详情'" bordered :layout="'vertical'" :item-layout="'horizontal'" :column="3">
+          <t-descriptions-item label="名称" >{{form.name}}</t-descriptions-item>
+          <t-descriptions-item label="命名空间">{{form.namespace}}</t-descriptions-item>
+          <t-descriptions-item label="版本">{{form.version}}</t-descriptions-item>
+          <t-descriptions-item label="状态">{{form.info.status}}</t-descriptions-item>
+          <t-descriptions-item label="第一次部署">{{form.info.first_deployed}}</t-descriptions-item>
+          <t-descriptions-item label="最近一次部署">{{form.info.last_deployed}}</t-descriptions-item>
+          <t-descriptions-item label="描述">{{form.info.description}}</t-descriptions-item>
+        </t-descriptions>
+      </t-space>
+    </t-drawer>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { SearchIcon } from 'tdesign-icons-vue';
+import {SearchIcon} from 'tdesign-icons-vue';
 import Trend from '@/components/trend/index.vue';
-import { prefix } from '@/config/global';
+import {prefix} from '@/config/global';
 
-import { CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES } from '@/constants';
+import {CONTRACT_STATUS, CONTRACT_STATUS_OPTIONS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES} from '@/constants';
 
 export default Vue.extend({
   name: 'ListBase',
@@ -115,7 +171,7 @@ export default Vue.extend({
       selectedRowKeys: [1, 2],
       value: 'first',
       columns: [
-        { colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left' },
+        {colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left'},
         {
           title: '应用名称',
           align: 'left',
@@ -124,7 +180,7 @@ export default Vue.extend({
           colKey: 'appName',
           fixed: 'left',
         },
-        { title: '状态', colKey: 'status', width: 80, cell: { col: 'status' } },
+        {title: '状态', colKey: 'status', width: 80, cell: {col: 'status'}},
         {
           title: 'chart名称',
           width: 120,
@@ -191,12 +247,32 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10
       },
+      form: {
+        id: '',
+        name: '',
+        namespace: '',
+        version: '',
+        info: {
+          deleted: "",
+          description: "Upgrade complete",
+          first_deployed: "2025-04-14T00:57:14.687691+08:00",
+          last_deployed: "2025-04-19T01:00:12.115801+08:00",
+          status: "deployed"
+        },
+        manifest: 80,
+      },
+      formConfig: {
+        title: '新增',
+        visible: false,
+        header: '新增',
+        operate: "add"
+      },
     };
   },
   computed: {
     confirmBody() {
       if (this.deleteIdx > -1) {
-        const { name } = this.data?.[this.deleteIdx];
+        const {name} = this.data?.[this.deleteIdx];
         return `删除后，${name}的所有合同信息将被清空，且无法恢复`;
       }
       return '';
@@ -213,21 +289,17 @@ export default Vue.extend({
   methods: {
     getList() {
       this.dataLoading = true;
-      this.$request
-        .get('/mineApp/page',{
-          params: this.formData
-        })
-        .then((res) => {
+      this.$request.get('/mineApp/page', {
+        params: this.formData
+      }).then((res) => {
           if (res.data.code === 200) {
             console.log(res.data)
             this.data = res.data.rows;
             this.pagination.total = res.data.total;
           }
-        })
-        .catch((e: Error) => {
+        }).catch((e: Error) => {
           console.log(e);
-        })
-        .finally(() => {
+        }).finally(() => {
           this.dataLoading = false;
         });
     },
@@ -257,11 +329,26 @@ export default Vue.extend({
     rehandleChange(changeParams, triggerAndData) {
       console.log('统一Change', changeParams, triggerAndData);
     },
-    handleClickDetail() {
-      this.$router.push('/detail/base');
+    // 详情
+    handleClickDetail(row) {
+      this.formConfig.header = '详情';
+      this.formConfig.visible = true;
+      this.formConfig.operate = "info"
+      this.$request.get('/helm/info', {
+        params: {
+          name: row.appName
+        }
+      }).then((res) => {
+        this.form = res.data.data;
+      });
     },
+    //
     handleSetupContract() {
       this.$router.push('/form/base');
+    },
+    // 编辑
+    handleClickEdit(row) {
+
     },
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;

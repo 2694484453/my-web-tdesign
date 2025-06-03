@@ -294,8 +294,7 @@ export default Vue.extend({
     },
     getList() {
       this.dataLoading = true;
-      this.$request
-        .get('/helm/page',{
+      this.$request.get('/helm/page',{
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
