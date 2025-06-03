@@ -10,6 +10,8 @@ import buildRouters from './modules/build';
 import domainRouters from './modules/domain';
 // 监控
 import monitorRouters from "@/router/modules/monitor";
+// 应用
+import appRouters from "@/router/modules/app";
 // 仓库
 import repoRouters from "@/router/modules/repo";
 // traefik
@@ -47,9 +49,9 @@ import scheduleRouters from "@/router/modules/scheduling";
 const env = import.meta.env.MODE || 'development';
 import proxy from '@/config/host';
 // 开发模式
-const devRouterList = [...domainRouters, ...gitRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...backupRouters, ...scheduleRouters, ...othersRouters]
+const devRouterList = [...domainRouters, ...gitRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...appRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...backupRouters, ...scheduleRouters, ...othersRouters]
 // 生产模式
-const prodRouterList = [...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
+const prodRouterList = [...appRouters, ...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
 // nas内测模式
 const nasRouterList = [...nasRouters]
 export const asyncRouterList = [...baseRouters]

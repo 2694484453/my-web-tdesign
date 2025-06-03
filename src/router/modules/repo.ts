@@ -7,26 +7,26 @@ export default [
     name: 'repo',
     component: Layout,
     //redirect: '/repo/base',
-    meta: {title: '应用中心', icon: AppIcon},
+    meta: {title: '仓库中心', icon: AppIcon},
     children: [
-      {
-        path: 'helmMarket',
-        name: 'HelmMarketBase',
-        component: () => import('@/pages/repo/helm/list/index.vue'),
-        meta: {title: '应用市场'},
-      },
-      {
-        path: 'helmMine',
-        name: 'HelmMineBase',
-        component: () => import('@/pages/repo/mine/list/index.vue'),
-        meta: {title: '我的应用'},
-      },
-      {
-        path: 'helmManager',
-        name: 'HelmManagerBase',
-        component: () => import('@/pages/repo/manager/list/index.vue'),
-        meta: {title: '应用管理'},
-      },
+      // {
+      //   path: 'helmMarket',
+      //   name: 'HelmMarketBase',
+      //   component: () => import('@/pages/repo/helm/list/index.vue'),
+      //   meta: {title: '应用市场'},
+      // },
+      // {
+      //   path: 'helmMine',
+      //   name: 'HelmMineBase',
+      //   component: () => import('@/pages/app/mine/list/index.vue'),
+      //   meta: {title: '我的应用'},
+      // },
+      // {
+      //   path: 'helmManager',
+      //   name: 'HelmManagerBase',
+      //   component: () => import('@/pages/repo/manager/list/index.vue'),
+      //   meta: {title: '应用管理'},
+      // },
       // {
       //   path: 'image',
       //   name: 'ImageBase',
