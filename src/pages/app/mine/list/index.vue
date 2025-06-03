@@ -97,12 +97,11 @@
       showOverlay
       :sizeDraggable="true"
       :on-size-drag-end="handleSizeDrag"
-      size="40%"
+      :size="formConfig.size"
       @cancel="formConfig.visible = false"
       @close="handleClose"
       :onConfirm="onSubmitCreate">
       <t-space direction="vertical" style="width: 100%" v-show="formConfig.operate !== 'info'">
-
         <t-form
           ref="formValidatorStatus"
           :data="form"
@@ -265,7 +264,8 @@ export default Vue.extend({
         title: '新增',
         visible: false,
         header: '新增',
-        operate: "add"
+        operate: "add",
+        size: '40%',
       },
     };
   },
@@ -348,9 +348,12 @@ export default Vue.extend({
     },
     // 编辑
     handleClickEdit(row) {
-      this.formConfig.header = '管理';
-      this.formConfig.visible = true;
-      this.formConfig.operate = "edit"
+      this.formConfig = {
+        header: '管理',
+        visible: true,
+        operate: "edit",
+        size: '80%',
+      };
     },
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;
