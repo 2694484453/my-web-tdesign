@@ -3,8 +3,8 @@
     <t-card title="概览" class="dashboard-detail-card" :bordered="false">
       <t-row :gutter="[16, 16]">
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="服务端总数">
-            <div class="dashboard-list-card__number">{{ data.frpServerTotalCount }}</div>
+          <t-card :class="['dashboard-list-card']" description="任务总数">
+            <div class="dashboard-list-card__number">{{ data.jobTotalCount }}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
@@ -15,8 +15,8 @@
           </t-card>
         </t-col>
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="客户端配置总数">
-            <div class="dashboard-list-card__number">{{ data.frpClientTotalCount }}</div>
+          <t-card :class="['dashboard-list-card']" description="成功数量">
+            <div class="dashboard-list-card__number">{{ data.jobSuccessCount }}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
@@ -27,8 +27,8 @@
           </t-card>
         </t-col>
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="在线服务数">
-            <div class="dashboard-list-card__number">{{ data.frpClientOnlineCount }}</div>
+          <t-card :class="['dashboard-list-card']" description="执行中">
+            <div class="dashboard-list-card__number">{{ data.jobRunningCount }}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
@@ -39,8 +39,8 @@
           </t-card>
         </t-col>
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="离线服务数">
-            <div class="dashboard-list-card__number">{{ data.frpClientOfflineCount }}</div>
+          <t-card :class="['dashboard-list-card']" description="失败数">
+            <div class="dashboard-list-card__number">{{ data.jobFailCount }}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
@@ -51,26 +51,14 @@
           </t-card>
         </t-col>
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="http配置数">
-            <div class="dashboard-list-card__number">{{ data.frpClientHttpCount }}</div>
+          <t-card :class="['dashboard-list-card']" description="日志总数">
+            <div class="dashboard-list-card__number">{{ data.jobLogTotalCount }}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
                 <!-- <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
               </div>
               <chevron-right-icon/>
-            </div>
-          </t-card>
-        </t-col>
-        <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="https配置数">
-            <div class="dashboard-list-card__number">{{data.frpClientHttpsCount}}</div>
-            <div class="dashboard-list-card__text">
-              <div class="dashboard-list-card__text-left">
-                环比
-                <!-- <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
-              </div>
-              <chevron-right-icon />
             </div>
           </t-card>
         </t-col>
@@ -158,14 +146,11 @@ export default {
       ],
       LAST_7_DAYS,
       data: {
-        frpServerTotalCount: 0,
-        frpClientTotalCount: 0,
-        frpClientOkCount: 0,
-        frpClientErrorCount: 0,
-        frpClientOnlineCount: 0,
-        frpClientOfflineCount: 0,
-        frpClientHttpCount: 0,
-        frpClientHttpsCount: 0
+        jobTotalCount: 0,
+        jobSuccessCount: 0,
+        jobRunningCount: 0,
+        jobFailCount: 0,
+        jobLogTotalCount: 0,
       }
     };
   },
@@ -230,8 +215,7 @@ export default {
     },
     getList() {
       this.dataLoading = true;
-      this.$request
-        .get('/nas/overView', {
+      this.$request.get('/scheduling/overView', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
