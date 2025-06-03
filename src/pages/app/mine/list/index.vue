@@ -12,8 +12,8 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="handleSetupContract"> 创建应用</t-button>
-            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出应用</t-button>
+            <t-button @click="handleSetupContract">创建应用</t-button>
+            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length">导出应用</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
           <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
@@ -253,10 +253,10 @@ export default Vue.extend({
         version: '',
         info: {
           deleted: "",
-          description: "Upgrade complete",
-          first_deployed: "2025-04-14T00:57:14.687691+08:00",
-          last_deployed: "2025-04-19T01:00:12.115801+08:00",
-          status: "deployed"
+          description: "",
+          first_deployed: "",
+          last_deployed: "",
+          status: ""
         },
         manifest: 80,
       },
@@ -265,7 +265,7 @@ export default Vue.extend({
         visible: false,
         header: '新增',
         operate: "add",
-        size: '40%',
+        size: '50%',
       },
     };
   },
@@ -344,9 +344,14 @@ export default Vue.extend({
         this.form = res.data.data;
       });
     },
-    //
+    // 创建应用
     handleSetupContract() {
-      this.$router.push('/form/base');
+      this.formConfig = {
+        header: '新增',
+        visible: true,
+        operate: "add",
+        size: '50%',
+      };
     },
     // 编辑
     handleClickEdit(row) {
