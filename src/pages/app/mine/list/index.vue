@@ -64,7 +64,7 @@
           </template>
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
-            <a class="t-button-link" @click="handleClickEdit(slotProps.row)">更新</a>
+            <a class="t-button-link" @click="handleClickEdit(slotProps.row)">管理</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">卸载</a>
           </template>
         </t-table>
@@ -348,7 +348,9 @@ export default Vue.extend({
     },
     // 编辑
     handleClickEdit(row) {
-
+      this.formConfig.header = '管理';
+      this.formConfig.visible = true;
+      this.formConfig.operate = "edit"
     },
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;
