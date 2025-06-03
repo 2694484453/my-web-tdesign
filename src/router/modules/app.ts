@@ -12,7 +12,7 @@ export default [
       {
         path: 'market',
         name: 'HelmMarketBase',
-        component: () => import('@/pages/repo/helm/list/index.vue'),
+        component: () => import('@/pages/app/market/list/index.vue'),
         meta: {title: '应用市场'},
       },
       {
@@ -25,7 +25,7 @@ export default [
         path: 'manager',
         name: 'HelmManagerBase',
         component: () => import('@/pages/repo/manager/list/index.vue'),
-        meta: {title: '应用管理'},
+        meta: {title: '全部应用'},
       },
       // {
       //   path: 'image',
