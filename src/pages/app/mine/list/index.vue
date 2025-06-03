@@ -331,9 +331,11 @@ export default Vue.extend({
     },
     // 详情
     handleClickDetail(row) {
-      this.formConfig.header = '详情';
-      this.formConfig.visible = true;
-      this.formConfig.operate = "info"
+      this.formConfig = {
+        header: '详情',
+        visible: true,
+        operate: "info",
+      };
       this.$request.get('/helm/info', {
         params: {
           name: row.appName
