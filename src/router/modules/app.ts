@@ -24,7 +24,7 @@ export default [
       {
         path: 'manager',
         name: 'HelmManagerBase',
-        component: () => import('@/pages/repo/manager/list/index.vue'),
+        component: () => import('@/pages/app/manager/list/index.vue'),
         meta: {title: '全部应用'},
       },
       // {
