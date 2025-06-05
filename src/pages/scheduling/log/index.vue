@@ -38,14 +38,12 @@
             <p v-if="row.contractType === CONTRACT_TYPES.SUB">待审核</p>
             <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">待履行</p>
           </template>
-          <template #paymentType="{ row }">
-            <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
-              付款
-              <trend class="dashboard-item-trend" type="up" />
+          <template #resultInfo="{ row }">
+            <p v-if="row.status === '1' || row.status === 'fail'" class="payment-col">
+              {{row.exceptionInfo}}
             </p>
-            <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.RECEIPT" class="payment-col">
-              收款
-              <trend class="dashboard-item-trend" type="down" />
+            <p v-if="row.status === '0'|| row.status ==='success'" class="payment-col">
+              {{row.resultInfo}}
             </p>
           </template>
           <template #op="slotProps">
