@@ -335,6 +335,7 @@ export default Vue.extend({
         header: '详情',
         visible: true,
         operate: "info",
+        size: '40%',
       };
       this.$request.get('/helm/info', {
         params: {
