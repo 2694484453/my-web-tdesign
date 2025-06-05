@@ -228,7 +228,7 @@ export default Vue.extend({
       rowClassName: (rowKey: string) => `${rowKey}-class`,
       // 与pagination对齐
       pagination: {
-        defaultPageSize: 20,
+        defaultPageSize: 10,
         total: 0,
         defaultCurrent: 1,
       },

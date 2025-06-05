@@ -83,15 +83,13 @@
       :on-size-drag-end="handleSizeDrag"
       size="40%"
       @cancel="formConfig.visible = false"
-      @close="handleClose"
+      @close="formConfig.visible = false"
       :onConfirm="onSubmitCreate">
       <t-space direction="vertical" style="width: 100%">
         <t-form
           ref="formValidatorStatus"
           :data="form"
-          :rules="rules"
           :label-width="120"
-          :status-icon="formStatusIcon"
           @reset="onReset"
         >
             <t-form-item label="id" name="id" v-show="false">
@@ -333,12 +331,12 @@ export default Vue.extend({
     onPageSizeChange(size, pageInfo) {
       console.log('Page Size:', this.pageSize, size, pageInfo);
       // 刷新
-      this.formData.pageSize = size
+      this.searchForm.pageSize = size
     },
     onCurrentChange(current, pageInfo) {
       console.log('Current Page', this.current, current, pageInfo);
       // 刷新
-      this.formData.pageNum = current
+      this.searchForm.pageNum = current
       this.getList()
     },
     onChange(pageInfo) {
@@ -439,6 +437,9 @@ export default Vue.extend({
     },
     resetIdx() {
       this.deleteIdx = -1;
+    },
+    handleSizeDrag({size}) {
+      console.log('size drag size: ', size);
     },
   },
 });

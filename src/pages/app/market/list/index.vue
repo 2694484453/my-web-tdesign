@@ -13,7 +13,7 @@
         <t-row justify="space-between">
           <t-col :span="3">
             <t-form-item label="名称" name="name">
-              <t-input v-model="formData.name" :style="{ width: '200px' }" placeholder="请输入内容"/>
+              <t-input v-model="searchForm.name" :style="{ width: '200px' }" placeholder="请输入内容"/>
             </t-form-item>
           </t-col>
           <t-col :span="2" class="operation-container">
@@ -49,11 +49,11 @@
             <a v-show="slotProps.row.isInstalled" class="t-button-link" @click="handleClickDelete(slotProps)">卸载</a>
           </template>
         </t-table>
-        <div>
+        <div style="margin-top: 10px">
           <t-pagination
-            v-model="formData.pageNum"
+            v-model="searchForm.pageNum"
             :total="pagination.total"
-            :page-size.sync="formData.pageSize"
+            :page-size.sync="searchForm.pageSize"
             @current-change="onCurrentChange"
             @page-size-change="onPageSizeChange"
             @change="onChange"
@@ -190,7 +190,7 @@ export default Vue.extend({
       confirmVisible: false,
       deleteIdx: -1,
       deleteType: -1,
-      formData: {
+      searchForm: {
         name: "",
         version: "",
         type: "",
@@ -198,6 +198,7 @@ export default Vue.extend({
         pageNum: 1,
         pageSize: 10
       },
+      formData: [],
       form: {
         header: "",
         visible: false,
@@ -233,12 +234,12 @@ export default Vue.extend({
     onPageSizeChange(size, pageInfo) {
       console.log('Page Size:', this.pageSize, size, pageInfo);
       // 刷新
-      this.formData.pageSize = size
+      this.searchForm.pageSize = size
     },
     onCurrentChange(current, pageInfo) {
       console.log('Current Page', this.current, current, pageInfo);
       // 刷新
-      this.formData.pageNum = current
+      this.searchForm.pageNum = current
       this.getList()
     },
     onChange(pageInfo) {
@@ -331,20 +332,17 @@ export default Vue.extend({
     },
     getList() {
       this.dataLoading = true;
-      this.$request
-        .get('/helmRepo/page',{
-          params: this.formData
+      this.$request.get('/helmRepo/page',{
+          params: this.searchForm
         }).then((res) => {
         if (res.data.code === 200) {
           console.log(res.data)
           this.data = res.data.rows;
           this.pagination.total = res.data.total;
         }
-      })
-        .catch((e: Error) => {
+      }).catch((e: Error) => {
           console.log(e);
-        })
-        .finally(() => {
+        }).finally(() => {
           this.dataLoading = false;
         });
     }
