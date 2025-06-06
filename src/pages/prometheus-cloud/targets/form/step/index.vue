@@ -255,5 +255,5 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import './index';
+@import 'index';
 </style>
