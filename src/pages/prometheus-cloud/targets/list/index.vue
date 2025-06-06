@@ -26,9 +26,8 @@
         </t-row>
       </t-form>
       <div class="table-container">
-        <t-empty :description="'没有数据或者没有Prometheus配置实例，请检查！'" :title="'没有内容'" v-show="data.length == 0"></t-empty>
+        <t-empty :description="'没有数据或者没有Prometheus配置实例，请检查！'" :title="'没有内容'" :loading="dataLoading" v-show="dataLoading == false && data.length == 0"></t-empty>
         <t-table
-          v-show="data.length>0"
           :columns="columns"
           :data="data"
           :rowKey="rowKey"
