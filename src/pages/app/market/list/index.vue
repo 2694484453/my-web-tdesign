@@ -11,6 +11,11 @@
         :style="{ marginBottom: '8px' }"
       >
         <t-row justify="space-between">
+          <div class="left-operation-container">
+            <t-button @click="handleSetupContract">添加仓库</t-button>
+            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length">导出仓库</t-button>
+            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
+          </div>
           <t-col :span="3">
             <t-form-item label="名称" name="name">
               <t-input v-model="searchForm.name" :style="{ width: '200px' }" placeholder="请输入内容"/>
@@ -46,8 +51,8 @@
           </template>
           <template #op="slotProps">
             <a v-show="!slotProps.row.isInstalled" class="t-button-link" @click="handleClickUpdate(slotProps.row)">更新</a>
-            <a class="t-button-link" @click="form.visible=true;handleClickDetail()">详情</a>
-            <a class="t-button-link" @click="form.visible=true;handleClickDetail()">修改</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
+            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">编辑</a>
             <a v-show="slotProps.row.isInstalled" class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
@@ -72,26 +77,36 @@
     </t-dialog>
     <!--抽屉-->
     <t-drawer
-      :visible.sync="form.visible"
-      :header="form.header"
-      :on-overlay-click="() => (form.visible = false)"
+      :visible.sync="drawer.visible"
+      :header="drawer.header"
+      :on-overlay-click="() => (drawer.visible = false)"
       :on-size-drag-end="handleSizeDrag"
       showOverlay
       :sizeDraggable="true"
       placement="right"
       destroyOnClose
       size="30%"
-      @close="form.visible = false"
+      @close="drawer.visible = false"
       :onConfirm="handleInstall"
-      @cancel="form.visible = false"
+      @cancel="drawer.visible = false"
     >
-      <span v-show="form.action==='add'">
-
-      </span>
-      <span v-show="form.action==='detail'">
-
-      </span>
-      <p>抽屉的内容</p>
+      <t-space v-show="drawer.operation === 'add'" direction="vertical" style="width: 100%">
+        <t-form-item label="id" name="id" v-show="false">
+          <t-input v-model="form.id" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+        </t-form-item>
+        <t-form-item label="仓库名称" name="branch">
+          <t-input v-model="form.repoName" placeholder="请输入名称" :maxlength="64" with="200"></t-input>
+        </t-form-item>
+        <t-form-item label="仓库地址" name="localIp">
+          <t-input v-model="form.repoUrl" :maxlength="64" with="200"></t-input>
+        </t-form-item>
+      </t-space>
+      <t-space v-show="drawer.operation === 'info'" direction="vertical" style="width: 100%" >
+        <t-descriptions :title="form.repoName+'详情'" bordered :layout="'vertical'" :item-layout="'horizontal'" :column="3">
+          <t-descriptions-item label="仓库名称" >{{form.repoName}}</t-descriptions-item>
+          <t-descriptions-item label="仓库地址">{{form.repoUrl}}</t-descriptions-item>
+        </t-descriptions>
+      </t-space>
     </t-drawer>
   </div>
 </template>
@@ -194,11 +209,11 @@ export default Vue.extend({
         pageSize: 10
       },
       formData: [],
-      form: {
+      drawer: {
         header: "",
         visible: false,
         type: "",
-        action: "add",
+        operation: "add",
         row: {}
       },
       confirm: {
@@ -206,6 +221,11 @@ export default Vue.extend({
         body: "",
         operation: "update",
         visible: false
+      },
+      form: {
+        id: "",
+        repoName: "",
+        repoUrl: ""
       },
       typeList: []
     };
@@ -293,12 +313,24 @@ export default Vue.extend({
       this.getList();
     },
     // 点击详情
-    handleClickDetail() {
-      this.form.action = 'detail'
-      this.$router.push('/detail/base');
+    handleClickDetail(row) {
+      this.drawer.visible = true;
+      this.drawer.header = "详情";
+      this.drawer.operation = 'info'
+      this.form = row;
     },
-    handleSetupContract() {
-      this.$router.push('/prometheus/add');
+    // 添加仓库
+    handleSetupContract(row) {
+      this.drawer.visible = true;
+      this.drawer.header = "新增";
+      this.drawer.operation = 'add';
+      this.form = row;
+    },
+    // 删除
+    handleClickDelete(row) {
+      this.confirm.visible = true;
+      this.confirm.body = "一旦删除成功后，无法恢复！";
+      this.confirm.visible = "确定要删除吗？";
     },
     onCancel() {
       this.resetIdx();
