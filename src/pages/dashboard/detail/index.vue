@@ -97,6 +97,16 @@ export default {
         },
       ],
       LAST_7_DAYS,
+      data: {
+        frpServerTotalCount: 0,
+        frpClientTotalCount: 0,
+        frpClientOkCount: 0,
+        frpClientErrorCount: 0,
+        frpClientOnlineCount: 0,
+        frpClientOfflineCount: 0,
+        frpClientHttpCount: 0,
+        frpClientHttpsCount: 0
+      }
     };
   },
   computed: {
@@ -115,6 +125,7 @@ export default {
       this.updateContainer();
     });
     this.renderCharts();
+    this.getList();
   },
   methods: {
     /** 采购商品满意度选择 */
@@ -155,6 +166,21 @@ export default {
       }
       this.scatterChart = echarts.init(this.scatterContainer);
       this.scatterChart.setOption(getScatterDataSet({ ...chartColors }));
+    },
+    getList() {
+      this.dataLoading = true;
+      this.$request
+        .get('/dashboard/overView', {
+          params: this.formData
+        }).then((res) => {
+        if (res.data.code === 200) {
+          this.data = res.data.data;
+        }
+      }).catch((e: Error) => {
+        console.log(e);
+      }).finally(() => {
+        this.dataLoading = false;
+      });
     },
   },
 };
