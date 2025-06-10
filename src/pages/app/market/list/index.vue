@@ -7,7 +7,7 @@
         :label-width="80"
         colon
         @reset="onReset"
-        @submit="onSubmit"
+        @submit="drawer.operation='search';handleSubmit()"
         :style="{ marginBottom: '8px' }"
       >
         <t-row justify="space-between">
@@ -18,7 +18,7 @@
           </div>
           <t-col :span="3">
             <t-form-item label="名称" name="name">
-              <t-input v-model="searchForm.name" :style="{ width: '200px' }" placeholder="请输入内容"/>
+              <t-input v-model="searchForm.repoName" :style="{ width: '200px' }" placeholder="请输入内容"/>
             </t-form-item>
           </t-col>
           <t-col :span="2" class="operation-container">
@@ -212,9 +212,7 @@ export default Vue.extend({
       deleteIdx: -1,
       deleteType: -1,
       searchForm: {
-        name: "",
-        version: "",
-        type: "",
+        repoName: "",
         pageNum: 1,
         pageSize: 10
       },
@@ -294,7 +292,6 @@ export default Vue.extend({
     },
     // 点击详情
     handleClickDetail(row) {
-      console.log(row)
       this.drawer.visible = true;
       this.drawer.header = "详情";
       this.drawer.operation = 'info';
@@ -367,13 +364,12 @@ export default Vue.extend({
             }
           })
           break;
+        case "search":
+          this.getList(this.formData);
+          break;
         case "default":
           break;
       }
-    },
-    onSubmit(data) {
-      console.log(this.formData);
-      this.getList(this.formData);
     },
     getTypeList() {
       this.$request.get("/imageRepo/typeList").then(res => {
