@@ -14,7 +14,6 @@
           <div class="left-operation-container">
             <t-button @click="handleSetupContract()">添加</t-button>
             <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length">导出配置</t-button>
-            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
           <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
             <template #suffix-icon>
@@ -133,10 +132,11 @@
       </t-space>
       <t-space v-show="drawer.operation === 'info'" direction="vertical" style="width: 100%">
         <t-descriptions  bordered :layout="'vertical'" :item-layout="'horizontal'" :column="3">
-          <t-descriptions-item label="名称">{{form.clusterName}}</t-descriptions-item>
-          <t-descriptions-item label="仓库主页"><a :href="form.repoUrl">{{form.repoUrl}}</a></t-descriptions-item>
-          <t-descriptions-item label="制品地址"><a :href="form.repoUrl+'/index.yaml'">{{form.repoUrl+"/index.yaml"}}</a></t-descriptions-item>
+          <t-descriptions-item label="集群名称">{{form.clusterName}}</t-descriptions-item>
+          <t-descriptions-item label="创建时间">{{form.createTime}}</t-descriptions-item>
           <t-descriptions-item label="更新时间">{{form.updateTime}}</t-descriptions-item>
+          <t-descriptions-item label="描述">{{form.description}}</t-descriptions-item>
+          <t-descriptions-item label="配置内容">{{form.config}}</t-descriptions-item>
         </t-descriptions>
       </t-space>
     </t-drawer>
@@ -252,6 +252,7 @@ export default Vue.extend({
         updateTime: "",
         description: "",
         fileUrl: "",
+        config: "",
         files: {}
       }
     };
@@ -309,9 +310,12 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
-    handleClickDetail(rowData) {
-      //this.$router.push('/detail/base');
-      this.$emit('transfer', "detail", rowData)
+    // 查看详情
+    handleClickDetail(row) {
+      this.drawer.visible = true;
+      this.drawer.header = "详情";
+      this.drawer.operation = 'info';
+      this.form = row;
     },
     // 添加
     handleSetupContract() {
