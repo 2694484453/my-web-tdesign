@@ -13,7 +13,7 @@
         <t-row justify="space-between">
           <div class="left-operation-container">
             <t-button @click="handleSetupContract">添加仓库</t-button>
-            <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length">导出仓库</t-button>
+            <t-button @click="handleExport" variant="base" theme="default" :disabled="!selectedRowKeys.length">导出仓库</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
           <t-col :span="3">
@@ -55,7 +55,7 @@
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickUpdate(slotProps.row)">更新</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
-            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">编辑</a>
+<!--            <a class="t-button-link" @click="handleClickEdit(slotProps.row)">编辑</a>-->
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
@@ -93,7 +93,7 @@
       :onConfirm="handleSubmit"
       @cancel="drawer.visible = false"
     >
-      <t-space v-show="drawer.operation === 'add'||'edit'" direction="vertical" style="width: 100%">
+      <t-space v-show="drawer.operation === 'add'|| drawer.operation ==='edit'" direction="vertical" style="width: 100%">
         <t-form
           ref="formValidatorStatus"
           :data="form"
@@ -111,10 +111,12 @@
         </t-form-item>
         </t-form>
       </t-space>
-      <t-space v-show="drawer.operation === 'info'" direction="vertical" style="width: 100%" >
-        <t-descriptions :title="form.repoName+'详情'" bordered :layout="'vertical'" :item-layout="'horizontal'" :column="3">
-          <t-descriptions-item label="仓库名称" >{{form.repoName}}</t-descriptions-item>
-          <t-descriptions-item label="仓库地址">{{form.repoUrl}}</t-descriptions-item>
+      <t-space v-show="drawer.operation === 'info'" direction="vertical" style="width: 100%">
+        <t-descriptions  bordered :layout="'vertical'" :item-layout="'horizontal'" :column="3">
+          <t-descriptions-item label="仓库名称">{{form.repoName}}</t-descriptions-item>
+          <t-descriptions-item label="仓库主页"><a :href="form.repoUrl">{{form.repoUrl}}</a></t-descriptions-item>
+          <t-descriptions-item label="制品地址"><a :href="form.repoUrl+'/index.yaml'">{{form.repoUrl+"/index.yaml"}}</a></t-descriptions-item>
+          <t-descriptions-item label="更新时间">{{form.repoUpdateTime}}</t-descriptions-item>
         </t-descriptions>
       </t-space>
     </t-drawer>
@@ -233,7 +235,8 @@ export default Vue.extend({
       form: {
         id: "",
         repoName: "",
-        repoUrl: ""
+        repoUrl: "",
+        repoUpdateTime: ""
       },
       typeList: []
     };
@@ -295,6 +298,13 @@ export default Vue.extend({
       this.drawer.visible = true;
       this.drawer.header = "详情";
       this.drawer.operation = 'info';
+      this.form = row;
+    },
+    // 点击编辑
+    handleClickEdit(row) {
+      this.drawer.visible = true;
+      this.drawer.header = "编辑";
+      this.drawer.operation = 'edit';
       this.form = row;
     },
     // 添加仓库
@@ -370,6 +380,19 @@ export default Vue.extend({
         case "default":
           break;
       }
+    },
+    // 导出
+    handleExport() {
+      this.$request.post('/helmRepo/export', {
+        serverName: 'hcs.gpg123.vip',
+      },{responseType: 'blob'}).then(res => {
+        const blob = new Blob([res.data]);
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'repositories.yaml';
+        link.click();
+        URL.revokeObjectURL(link.href); // 释放内存
+      })
     },
     getTypeList() {
       this.$request.get("/imageRepo/typeList").then(res => {
