@@ -53,10 +53,10 @@
             <t-tag v-show="row.status === 'deleting'" theme="warning" variant="light">删除中</t-tag>
           </template>
           <template #op="slotProps">
-            <a v-show="!slotProps.row.isInstalled" class="t-button-link" @click="handleClickUpdate(slotProps.row)">更新</a>
+            <a class="t-button-link" @click="handleClickUpdate(slotProps.row)">更新</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">编辑</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
           </template>
         </t-table>
         <div style="margin-top: 10px">
@@ -258,6 +258,14 @@ export default Vue.extend({
     this.getTypeList()
     this.getList()
   },
+  watch: {
+    // form(newVal, oldVal) {
+    //   console.log(newVal, oldVal)
+    // },
+    drawer(newVal, oldVal) {
+      console.log(oldVal.operation, newVal.operation)
+    }
+  },
   methods: {
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
@@ -284,19 +292,17 @@ export default Vue.extend({
       this.drawer.operation = 'update'
       this.form = row;
     },
-    // 对话框确定
-    handleClickConfirm() {
-
-    },
     // 点击详情
     handleClickDetail(row) {
+      console.log(row)
       this.drawer.visible = true;
       this.drawer.header = "详情";
-      this.drawer.operation = 'info'
+      this.drawer.operation = 'info';
       this.form = row;
     },
     // 添加仓库
     handleSetupContract() {
+      this.form = {};
       this.drawer.visible = true;
       this.drawer.header = "新增";
       this.drawer.operation = 'add';
@@ -307,6 +313,7 @@ export default Vue.extend({
       this.confirm.header = "确定要删除吗？";
       this.confirm.body = "一旦删除成功后，无法恢复！";
       this.drawer.operation = 'delete';
+      this.form = row;
     },
     onCancel() {
       this.resetIdx();
