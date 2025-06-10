@@ -47,13 +47,16 @@
           </template>
           <template #status="{ row }">
             <t-tag v-show="row.status === 'success'" theme="success" variant="light">更新成功</t-tag>
+            <t-tag v-show="row.status === 'updating'" theme="warning" variant="light">更新中</t-tag>
+            <t-tag v-show="row.status === 'init'" theme="default" variant="light">未更新</t-tag>
             <t-tag v-show="row.status === 'fail'" theme="danger" variant="light">更新失败</t-tag>
+            <t-tag v-show="row.status === 'deleting'" theme="warning" variant="light">删除中</t-tag>
           </template>
           <template #op="slotProps">
             <a v-show="!slotProps.row.isInstalled" class="t-button-link" @click="handleClickUpdate(slotProps.row)">更新</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">编辑</a>
-            <a v-show="slotProps.row.isInstalled" class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
           </template>
         </t-table>
         <div style="margin-top: 10px">
@@ -72,7 +75,7 @@
       :header="confirm.header"
       :body="confirm.body"
       :visible.sync="confirm.visible"
-      @confirm="handleClickConfirm"
+      @confirm="handleSubmit"
       :onCancel="onCancel">
     </t-dialog>
     <!--抽屉-->
@@ -87,19 +90,26 @@
       destroyOnClose
       size="30%"
       @close="drawer.visible = false"
-      :onConfirm="handleInstall"
+      :onConfirm="handleSubmit"
       @cancel="drawer.visible = false"
     >
-      <t-space v-show="drawer.operation === 'add'" direction="vertical" style="width: 100%">
+      <t-space v-show="drawer.operation === 'add'||'edit'" direction="vertical" style="width: 100%">
+        <t-form
+          ref="formValidatorStatus"
+          :data="form"
+          :label-width="100"
+          @reset="onReset"
+        >
         <t-form-item label="id" name="id" v-show="false">
-          <t-input v-model="form.id" placeholder="请输入内容" :maxlength="32" with="200"></t-input>
+          <t-input v-model="form.id" :maxlength="32" with="120"></t-input>
         </t-form-item>
-        <t-form-item label="仓库名称" name="branch">
-          <t-input v-model="form.repoName" placeholder="请输入名称" :maxlength="64" with="200"></t-input>
+        <t-form-item label="仓库名称" name="repoName">
+          <t-input v-model="form.repoName" placeholder="请输入仓库名称" :maxlength="64" with="120"></t-input>
         </t-form-item>
-        <t-form-item label="仓库地址" name="localIp">
-          <t-input v-model="form.repoUrl" :maxlength="64" with="200"></t-input>
+        <t-form-item label="仓库地址" name="repoUrl">
+          <t-input v-model="form.repoUrl" placeholder="请输入仓库地址" :maxlength="64" with="120"></t-input>
         </t-form-item>
+        </t-form>
       </t-space>
       <t-space v-show="drawer.operation === 'info'" direction="vertical" style="width: 100%" >
         <t-descriptions :title="form.repoName+'详情'" bordered :layout="'vertical'" :item-layout="'horizontal'" :column="3">
@@ -181,7 +191,7 @@ export default Vue.extend({
         {
           align: 'left',
           fixed: 'right',
-          width: 180,
+          width: 160,
           colKey: 'op',
           title: '操作',
         },
@@ -266,51 +276,17 @@ export default Vue.extend({
     onChange(pageInfo) {
       console.log('Page Info: ', pageInfo);
     },
-    // 点击安装
-    handleClickInstall(row) {
-      this.form.action = 'add'
-      this.form.header = '安装' + row.name;
-      this.form.row = row
-    },
-    // 执行安装
-    handleInstall() {
-      const row = this.form.row
-      this.$request.post("/helm/install?name=" + row.name, {
-        params: {
-          name: row.name,
-          status: 'success'
-        }
-      }).then(res => {
-        console.log("安装成功")
-        if (res.data.code === 200) {
-          this.$message.success(res.data.msg)
-          this.form.visible = false;
-        } else {
-          this.$message.error(res.data.msg)
-        }
-      })
-    },
     // 更新
     handleClickUpdate(row) {
       this.confirm.visible = true;
       this.confirm.header = "确定要更新吗？";
       this.confirm.body = `可能需要几十秒到几分钟时间`;
-      this.confirm.operation = 'update'
+      this.drawer.operation = 'update'
       this.form = row;
     },
     // 对话框确定
     handleClickConfirm() {
-      switch (this.confirm.operation) {
-        case "update":
-          this.$request.post("/helmRepo/update?repoName=" + this.form.repoName).then(res => {
 
-          })
-          break;
-        case "default":
-          break;
-      }
-      this.confirm.visible = false;
-      this.getList();
     },
     // 点击详情
     handleClickDetail(row) {
@@ -320,11 +296,10 @@ export default Vue.extend({
       this.form = row;
     },
     // 添加仓库
-    handleSetupContract(row) {
+    handleSetupContract() {
       this.drawer.visible = true;
       this.drawer.header = "新增";
       this.drawer.operation = 'add';
-      this.form = row;
     },
     // 删除
     handleClickDelete(row) {
@@ -344,6 +319,38 @@ export default Vue.extend({
     onReset(data) {
       console.log(data);
       this.getList();
+    },
+    // 提交执行创建
+    handleSubmit() {
+      switch (this.drawer.operation) {
+        // 添加
+        case "add":
+          this.$request.post("/helmRepo/add", this.form).then(res=>{
+            if (res.data.code === 200) {
+              this.$message.success(res.data.msg);
+              this.drawer.visible = false;
+              this.getList();
+            }else {
+              this.$message.error(res.data.msg);
+            }
+          })
+          break;
+        case "edit":
+          break;
+        case "update":
+          this.$request.put("/helmRepo/update?repoName=" + this.form.repoName).then(res => {
+            if(res.data.code === 200) {
+              this.$message.success(res.data.msg);
+              this.confirm.visible = false;
+              this.getList();
+            }else {
+              this.$message.error(res.data.msg);
+            }
+          })
+          break;
+        case "default":
+          break;
+      }
     },
     onSubmit(data) {
       console.log(this.formData);
