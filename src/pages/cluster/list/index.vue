@@ -12,7 +12,7 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="formData.visible=true;handleSetupContract()">添加</t-button>
+            <t-button @click="handleSetupContract()">添加</t-button>
             <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length">导出配置</t-button>
             <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
           </div>
@@ -61,7 +61,6 @@
               <trend class="dashboard-item-trend" type="down"/>
             </p>
           </template>
-
           <template #op="slotProps">
             <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
             <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
@@ -69,50 +68,15 @@
         </t-table>
         <div style="margin-top: 10px">
           <t-pagination
-            v-model="formData.pageNum"
+            v-model="searchForm.pageNum"
             :total="pagination.total"
-            :page-size.sync="formData.pageSize"
+            :page-size.sync="searchForm.pageSize"
             @current-change="onCurrentChange"
             @page-size-change="onPageSizeChange"
             @change="onChange"/>
         </div>
       </div>
     </t-card>
-    <!--表单对话框-->
-    <t-dialog
-      v-show="formData.visible"
-      header="集群添加对话框"
-      width="40%"
-      :confirm-on-enter="true"
-      @cancel="formData.visible=false"
-      @close="formData.visible=false"
-      @confirm="formData.visible=false;handleClickEditConfirm()"
-    >
-      <t-space direction="vertical" style="width: 100%">
-        <div>
-          <template>
-            <t-form :data="formData.data">
-              <t-form-item label="名称" name="name" initial-data="TDesign">
-                <t-input v-model="formData.data.name" name="name"  placeholder="请输入内容" />
-              </t-form-item>
-              <t-form-item label="配置文件" name="file">
-                <div style="width: 350px">
-                  <!-- abridgeName 省略中间文本，首尾保留的文本字符 -->
-                  <t-upload
-                    v-model="files"
-                    action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo"
-                    :abridge-name="[8, 6]"
-                    theme="file-input"
-                    placeholder="未选择文件"
-                    @fail="handleFail"
-                  ></t-upload>
-                </div>
-              </t-form-item>
-            </t-form>
-          </template>
-        </div>
-      </t-space>
-    </t-dialog>
     <t-dialog
       header="确认删除当前所选合同？"
       :body="confirmBody"
@@ -121,6 +85,61 @@
       :onCancel="onCancel"
     >
     </t-dialog>
+    <!--抽屉-->
+    <t-drawer
+      :visible.sync="drawer.visible"
+      :header="drawer.header"
+      :on-overlay-click="() => (drawer.visible = false)"
+      :on-size-drag-end="handleSizeDrag"
+      showOverlay
+      :sizeDraggable="true"
+      placement="right"
+      destroyOnClose
+      size="30%"
+      @close="drawer.visible = false"
+      :onConfirm="handleSubmit"
+      @cancel="drawer.visible = false"
+    >
+      <t-space v-show="drawer.operation === 'add'|| drawer.operation ==='edit'" direction="vertical" style="width: 100%">
+        <t-form
+          ref="formValidatorStatus"
+          :data="form"
+          :label-width="100"
+          @reset="onReset"
+        >
+          <t-form-item label="id" name="id" v-show="false">
+            <t-input v-model="form.id" :maxlength="32" with="120"></t-input>
+          </t-form-item>
+          <t-form-item label="集群名称" name="repoName">
+            <t-input v-model="form.clusterName" placeholder="请输入集群名称" :maxlength="64" with="120"></t-input>
+          </t-form-item>
+          <t-form-item label="配置文件" name="file">
+            <div style="width: 350px">
+              <!-- abridgeName 省略中间文本，首尾保留的文本字符 -->
+              <t-upload
+                v-model="form.files"
+                action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo"
+                :abridge-name="[8, 6]"
+                theme="file-input"
+                placeholder="未选择文件"
+                @fail="handleFail"
+              ></t-upload>
+            </div>
+          </t-form-item>
+          <t-form-item label="备注" name="description">
+            <t-textarea v-model="form.description" name="name"  placeholder="请输入内容" />
+          </t-form-item>
+        </t-form>
+      </t-space>
+      <t-space v-show="drawer.operation === 'info'" direction="vertical" style="width: 100%">
+        <t-descriptions  bordered :layout="'vertical'" :item-layout="'horizontal'" :column="3">
+          <t-descriptions-item label="名称">{{form.clusterName}}</t-descriptions-item>
+          <t-descriptions-item label="仓库主页"><a :href="form.repoUrl">{{form.repoUrl}}</a></t-descriptions-item>
+          <t-descriptions-item label="制品地址"><a :href="form.repoUrl+'/index.yaml'">{{form.repoUrl+"/index.yaml"}}</a></t-descriptions-item>
+          <t-descriptions-item label="更新时间">{{form.updateTime}}</t-descriptions-item>
+        </t-descriptions>
+      </t-space>
+    </t-drawer>
   </div>
 </template>
 <script lang="ts">
@@ -153,27 +172,45 @@ export default Vue.extend({
         {
           title: '集群名称',
           align: 'left',
-          width: 120,
+          width: 150,
           ellipsis: true,
-          colKey: 'name',
+          colKey: 'clusterName',
           fixed: 'left',
         },
         {
           title: 'context名称',
-          colKey: 'name',
-          width: 120,
+          colKey: 'contextName',
+          width: 150,
           cell: {col: 'status'}
         },
         {
           title: '地址',
-          width: 250,
+          width: 180,
           ellipsis: true,
           colKey: 'cluster.server',
         },
         {
+          title: "描述",
+          colKey: "description",
+          width: 200,
+          cell: {col: "status"}
+        },
+        {
+          title: "创建时间",
+          colKey: "createTime",
+          width: 180,
+          cell: {col: "status"}
+        },
+        {
+          title: "更新时间",
+          colKey: "updateTime",
+          width: 180,
+          cell: {col: "status"}
+        },
+        {
           align: 'left',
           fixed: 'right',
-          width: 200,
+          width: 180,
           colKey: 'op',
           title: '操作',
         },
@@ -192,14 +229,31 @@ export default Vue.extend({
       searchValue: '',
       confirmVisible: false,
       deleteIdx: -1,
-      formData: {
+      formData: [],
+      drawer: {
+        header: "",
+        visible: false,
+        type: "",
+        operation: "add",
+        row: {}
+      },
+      searchForm: {
         name: "",
         type: "",
-        data: {},
-        visible: false,
         pageNum: 1,
         pageSize: 10
       },
+      form: {
+        id: "",
+        clusterName: "",
+        createBy: "",
+        createTime: "",
+        updateBy: "",
+        updateTime: "",
+        description: "",
+        fileUrl: "",
+        files: {}
+      }
     };
   },
   computed: {
@@ -224,26 +278,21 @@ export default Vue.extend({
     getContainer() {
       return document.querySelector('.tdesign-starter-layout');
     },
+    // 分页查询
     getList() {
       this.dataLoading = true;
-      this.$request
-        .get('/cluster/page', {
+      this.$request.get('/kubernetesCluster/page', {
           params: this.formData
         }).then((res) => {
         if (res.data.code === 200) {
           this.data = res.data.rows;
-          this.pagination = {
-            ...this.pagination,
-            total: res.data.total
-          };
+          this.pagination.total = res.data.total;
         }
-      })
-        .catch((e: Error) => {
+      }).catch((e: Error) => {
           console.log(e);
-        })
-        .finally(() => {
+      }).finally(() => {
           this.dataLoading = false;
-        });
+      });
     },
     onPageSizeChange(size, pageInfo) {
       console.log('Page Size:', this.pageSize, size, pageInfo);
@@ -264,9 +313,12 @@ export default Vue.extend({
       //this.$router.push('/detail/base');
       this.$emit('transfer', "detail", rowData)
     },
+    // 添加
     handleSetupContract() {
-      //this.$router.push('/form/base');
-      this.$emit('transfer', "form")
+      this.form = {};
+      this.drawer.visible = true;
+      this.drawer.header = "新增";
+      this.drawer.operation = 'add';
     },
     handleClickDelete(row: { rowIndex: any }) {
       this.deleteIdx = row.rowIndex;
