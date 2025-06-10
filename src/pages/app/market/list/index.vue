@@ -304,8 +304,9 @@ export default Vue.extend({
     // 删除
     handleClickDelete(row) {
       this.confirm.visible = true;
+      this.confirm.header = "确定要删除吗？";
       this.confirm.body = "一旦删除成功后，无法恢复！";
-      this.confirm.visible = "确定要删除吗？";
+      this.drawer.operation = 'delete';
     },
     onCancel() {
       this.resetIdx();
@@ -341,6 +342,17 @@ export default Vue.extend({
           this.$request.put("/helmRepo/update?repoName=" + this.form.repoName).then(res => {
             if(res.data.code === 200) {
               this.$message.success(res.data.msg);
+              this.confirm.visible = false;
+              this.getList();
+            }else {
+              this.$message.error(res.data.msg);
+            }
+          })
+          break;
+        case "delete":
+          this.$request.delete("helmRepo/delete?repoName=" + this.form.repoName).then(res => {
+            if (res.data.code === 200) {
+              this.$message.success(res.data.msg)
               this.confirm.visible = false;
               this.getList();
             }else {
