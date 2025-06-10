@@ -10,7 +10,7 @@ export default [
       {
         path: 'overView',
         name: 'overViewBase',
-        component: () => import('@/pages/vps/frame/index.vue'),
+        component: () => import('@/pages/cluster/index.vue'),
         meta: {title: '概览'},
       },
       {
