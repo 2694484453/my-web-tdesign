@@ -3,8 +3,8 @@
     <t-card title="概览" class="dashboard-detail-card" :bordered="false">
       <t-row :gutter="[16, 16]">
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="应用总数">
-            <div class="dashboard-list-card__number">12</div>
+          <t-card :class="['dashboard-list-card']" description="集群总数">
+            <div class="dashboard-list-card__number">{{data.clusterTotalCount}}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
@@ -15,8 +15,20 @@
           </t-card>
         </t-col>
         <t-col :xs="6" :xl="3">
-          <t-card :class="['dashboard-list-card']" description="应用总数">
-            <div class="dashboard-list-card__number">12</div>
+          <t-card :class="['dashboard-list-card']" description="正常数">
+            <div class="dashboard-list-card__number">{{data.clusterOkCount}}</div>
+            <div class="dashboard-list-card__text">
+              <div class="dashboard-list-card__text-left">
+                环比
+                <!--                <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />-->
+              </div>
+              <chevron-right-icon />
+            </div>
+          </t-card>
+        </t-col>
+        <t-col :xs="6" :xl="3">
+          <t-card :class="['dashboard-list-card']" description="异常数">
+            <div class="dashboard-list-card__number">{{data.clusterErrorCount}}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
@@ -109,6 +121,11 @@ export default {
         },
       ],
       LAST_7_DAYS,
+      data: {
+        clusterTotalCount: 0,
+        clusterOkCount: 0,
+        clusterErrorCount: 0,
+      }
     };
   },
   computed: {
@@ -172,13 +189,11 @@ export default {
     },
     getList() {
       this.dataLoading = true;
-      this.$request
-          .get('/tracing/traces/overView', {
+      this.$request.get('/kubernetes/overView', {
             params: this.formData
           }).then((res) => {
         if (res.data.code === 200) {
-          this.data = res.data.rows;
-          this.pagination.total = res.data.total
+          this.data = res.data.data;
         }
       }).catch((e: Error) => {
         console.log(e);

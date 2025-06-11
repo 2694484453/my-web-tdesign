@@ -10,6 +10,12 @@ export default [
     meta: {title: '应用中心', icon: AppIcon},
     children: [
       {
+        path: 'repo',
+        name: 'HelmRepoBase',
+        component: () => import('@/pages/app/repo/list/index.vue'),
+        meta: {title: '应用仓库'},
+      },
+      {
         path: 'market',
         name: 'HelmMarketBase',
         component: () => import('@/pages/app/market/list/index.vue'),
@@ -27,12 +33,6 @@ export default [
         component: () => import('@/pages/app/manager/list/index.vue'),
         meta: {title: '全部应用'},
       },
-      // {
-      //   path: 'image',
-      //   name: 'ImageBase',
-      //   component: () => import('@/pages/repo/image/list/index.vue'),
-      //   meta: {title: 'docker镜像'},
-      // },
     ],
   }
 ]
