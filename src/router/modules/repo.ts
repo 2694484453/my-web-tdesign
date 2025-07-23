@@ -27,12 +27,12 @@ export default [
         component: () => import('@/pages/repo/access/list/index.vue'),
         meta: {title: '认证管理'},
       },
-      // {
-      //   path: 'image',
-      //   name: 'ImageBase',
-      //   component: () => import('@/pages/repo/image/list/index.vue'),
-      //   meta: {title: 'docker镜像'},
-      // },
+      {
+        path: 'image',
+        name: 'ImageBase',
+        component: () => import('@/pages/repo/image/list/index.vue'),
+        meta: {title: '标签管理'},
+      },
     ],
   }
 ]
