@@ -2,12 +2,12 @@
   <div class="list-card">
     <!-- 搜索区域 -->
     <div class="list-card-operation">
-      <t-button @click="formVisible = true">新建产品</t-button>
-      <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>
-        <template #suffix-icon>
-          <search-icon v-if="searchValue === ''" size="20px" />
-        </template>
-      </t-input>
+<!--      <t-button @click="formVisible = true">新建产品</t-button>-->
+<!--      <t-input v-model="searchValue" class="search-input" placeholder="请输入你需要搜索的内容" clearable>-->
+<!--        <template #suffix-icon>-->
+<!--          <search-icon v-if="searchValue === ''" size="20px" />-->
+<!--        </template>-->
+<!--      </t-input>-->
     </div>
     <!-- 卡片列表 -->
     <template v-if="pagination.total > 0 && !dataLoading">
@@ -33,8 +33,9 @@
           :total="pagination.total"
           :pageSizeOptions="[12, 24, 36]"
           :page-size.sync="pagination.pageSize"
-          @page-size-change="onPageSizeChange"
           @current-change="onCurrentChange"
+          @page-size-change="onPageSizeChange"
+          @change="onChange"
         />
       </div>
     </template>
@@ -144,14 +145,10 @@ export default {
   },
   mounted() {
     this.dataLoading = true;
-    this.$request.get('https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/get-card-list').then((res) => {
-        if (res.code === 0) {
-          const { list = [] } = res.data;
-          this.productList = list;
-          this.pagination = {
-            ...this.pagination,
-            total: list.length,
-          };
+    this.$request.get('/tools/page').then((res) => {
+        if (res.data.code === 200) {
+          this.productList = res.data.rows;
+          this.pagination.total= res.data.total;
         }
       }).catch((e: Error) => {
         console.log(e);
@@ -160,12 +157,19 @@ export default {
       });
   },
   methods: {
-    onPageSizeChange(size: number): void {
-      this.pagination.pageSize = size;
-      this.pagination.current = 1;
+    onPageSizeChange(size, pageInfo) {
+      console.log('Page Size:', this.pageSize, size, pageInfo);
+      // 刷新
+      this.searchForm.pageSize = size
     },
-    onCurrentChange(current: number): void {
-      this.pagination.current = current;
+    onCurrentChange(current, pageInfo) {
+      console.log('Current Page', this.current, current, pageInfo);
+      // 刷新
+      this.searchForm.pageNum = current
+      this.getList()
+    },
+    onChange(pageInfo) {
+      console.log('Page Info: ', pageInfo);
     },
     onSubmit({ result, firstError }): void {
       if (!firstError) {
