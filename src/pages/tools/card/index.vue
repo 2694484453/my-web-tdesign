@@ -14,9 +14,9 @@
       <div class="list-card-items">
         <t-row :gutter="[16, 16]">
           <t-col
-            :lg="4"
-            :xs="6"
-            :xl="3"
+            :lg="2"
+            :xs="2"
+            :xl="2"
             v-for="product in productList.slice(
               pagination.pageSize * (pagination.current - 1),
               pagination.pageSize * pagination.current,
@@ -144,7 +144,7 @@ export default {
   },
   mounted() {
     this.dataLoading = true;
-    this.$request.get('/api/get-card-list').then((res) => {
+    this.$request.get('https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/get-card-list').then((res) => {
         if (res.code === 0) {
           const { list = [] } = res.data;
           this.productList = list;
