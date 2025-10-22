@@ -111,41 +111,7 @@ export default {
     return {
       pagination: { current: 1, pageSize: 12, total: 0 },
       prefix,
-      productList: [
-        {
-          index: 1,
-          status: 4,
-          no: "BH0038",
-          name: "沧州市办公用品采购项目",
-          paymentType: 1,
-          contractType: 2,
-          updateTime: "2020-05-30 14:05:44",
-          amount: "170,000,000",
-          adminName: "顾娟"
-        },
-        {
-          index: 1,
-          status: 4,
-          no: "BH0038",
-          name: "沧州市办公用品采购项目",
-          paymentType: 1,
-          contractType: 2,
-          updateTime: "2020-05-30 14:05:44",
-          amount: "170,000,000",
-          adminName: "顾娟"
-        },
-        {
-          index: 1,
-          status: 4,
-          no: "BH0038",
-          name: "沧州市办公用品采购项目",
-          paymentType: 1,
-          contractType: 2,
-          updateTime: "2020-05-30 14:05:44",
-          amount: "170,000,000",
-          adminName: "顾娟"
-        }
-      ],
+      productList: [],
       value: 'first',
       rowKey: 'index',
       tableLayout: 'auto',
@@ -178,9 +144,7 @@ export default {
   },
   mounted() {
     this.dataLoading = true;
-    this.$request
-      .get('/api/get-card-list')
-      .then((res) => {
+    this.$request.get('/api/get-card-list').then((res) => {
         if (res.code === 0) {
           const { list = [] } = res.data;
           this.productList = list;
@@ -189,11 +153,9 @@ export default {
             total: list.length,
           };
         }
-      })
-      .catch((e: Error) => {
+      }).catch((e: Error) => {
         console.log(e);
-      })
-      .finally(() => {
+      }).finally(() => {
         this.dataLoading = false;
       });
   },

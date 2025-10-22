@@ -35,6 +35,7 @@
             <t-tag v-if="row.status === '1'" theme="warning" variant="light">待履行</t-tag>
             <t-tag v-if="row.status === 'running'" theme="primary" variant="light">执行中</t-tag>
             <t-tag v-if="row.status === 'success'" theme="success" variant="light">执行成功</t-tag>
+            <t-tag v-if="row.status === 'fail'" theme="danger" variant="light">执行失败</t-tag>
             <t-tag v-if="row.status === null" theme="warning" variant="light">unknown</t-tag>
           </template>
           <template #contractType="{ row }">
