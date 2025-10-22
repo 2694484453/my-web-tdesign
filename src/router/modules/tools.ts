@@ -18,7 +18,6 @@ export default [
         component: () => import('@/pages/git/index.vue'),
         meta: {title: '概览'},
       },
-
       {
         path: 'pages',
         name: 'pages',

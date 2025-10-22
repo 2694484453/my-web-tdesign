@@ -81,6 +81,7 @@ asyncRouterList.push(...noticeRouters)
 
 // 存放固定的路由
 const defaultRouterList = [
+  // 登陆
   {
     path: '/login',
     name: 'login',
@@ -89,6 +90,12 @@ const defaultRouterList = [
   {
     path: '*',
     redirect: '/dashboard/base',
+  },
+  // 工具
+  {
+    path: '/tools',
+    name: 'tools',
+    component: () => import('@/pages/tools/card/index.vue'),
   },
   ...asyncRouterList,
 ];
