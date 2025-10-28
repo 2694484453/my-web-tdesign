@@ -67,6 +67,7 @@ const envName = proxy[env].NAME
 switch (envName) {
   case "development":
     asyncRouterList.push(...devRouterList)
+    asyncRouterList.push(...noticeRouters)
     break;
   case "k8s":
     asyncRouterList.push(...devRouterList)
@@ -83,7 +84,7 @@ switch (envName) {
   default:
     break;
 }
-asyncRouterList.push(...noticeRouters)
+
 //export const asyncRouterList = (proxy[env].NAME === "development" ? devRouterList : prodRouterList)
 //[...baseRouters, ...componentsRouters, ...othersRouters];
 
