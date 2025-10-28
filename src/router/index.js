@@ -48,14 +48,19 @@ import noticeRouters from "@/router/modules/notice";
 import scheduleRouters from "@/router/modules/scheduling";
 // 工具
 import toolsRouters from "@/router/modules/tools";
+// 壁纸
+import wallpaperRouters from "@/router/modules/wallpaper";
 const env = import.meta.env.MODE || 'development';
 import proxy from '@/config/host';
 // 开发模式
 const devRouterList = [...domainRouters, ...gitRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...appRouters, ...repoRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...backupRouters, ...scheduleRouters, ...toolsRouters, ...othersRouters]
 // 生产模式
 const prodRouterList = [...appRouters, ...repoRouters, ...gitRouters, ...IdeRouters, ...devopsRouters, ...discoveryRouters, ...monitorRouters, ...tracingRouters, ...traefikRouters, ...clusterRouters, ...caddyRouters, ...corednsRouters, ...nasRouters, ...AiRouters, ...backupRouters, ...testRouters, ...userInfoRouters]
-// nas内测模式
+// 独立nas-frp
 const nasRouterList = [...nasRouters]
+// 独立
+const wallpaperRouterList = [...wallpaperRouters]
+//
 export const asyncRouterList = [...baseRouters]
 const envName = proxy[env].NAME
 // 存放动态路由
@@ -72,6 +77,8 @@ switch (envName) {
   case "nas":
     asyncRouterList.push(...nasRouterList)
     break;
+  case "wallpaper":
+    asyncRouterList.push(...wallpaperRouterList)
   default:
     break;
 }
@@ -90,12 +97,6 @@ const defaultRouterList = [
   {
     path: '*',
     redirect: '/dashboard/base',
-  },
-  // 工具
-  {
-    path: '/tools',
-    name: 'tools',
-    component: () => import('@/pages/tools/card/index.vue'),
   },
   ...asyncRouterList,
 ];
