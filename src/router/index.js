@@ -60,7 +60,7 @@ const prodRouterList = [...appRouters, ...repoRouters, ...gitRouters, ...IdeRout
 const nasRouterList = [...nasRouters]
 // 独立
 const wallpaperRouterList = [...wallpaperRouters]
-//
+// 基础路由
 export const asyncRouterList = [...baseRouters]
 const envName = proxy[env].NAME
 // 存放动态路由
@@ -79,6 +79,7 @@ switch (envName) {
     break;
   case "wallpaper":
     asyncRouterList.push(...wallpaperRouterList)
+    break;
   default:
     break;
 }
