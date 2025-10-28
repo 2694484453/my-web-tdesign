@@ -12,11 +12,11 @@
       >
         <t-row justify="space-between">
           <div class="left-operation-container">
-            <t-button @click="handleSetupContract">添加仓库</t-button>
-            <t-button @click="handleExport" variant="base" theme="default" :disabled="!selectedRowKeys.length">导出仓库</t-button>
-            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
+<!--            <t-button @click="handleSetupContract">添加仓库</t-button>-->
+<!--            <t-button @click="handleExport" variant="base" theme="default" :disabled="!selectedRowKeys.length">导出仓库</t-button>-->
+<!--            <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>-->
           </div>
-          <t-col :span="3">
+          <t-col :span="3" style="margin-top: 10px">
             <t-form-item label="名称" name="name">
               <t-input v-model="searchForm.repoName" :style="{ width: '200px' }" placeholder="请输入内容"/>
             </t-form-item>
@@ -25,40 +25,23 @@
             <t-button theme="primary" type="submit" :style="{ marginLeft: '8px' }"> 查询</t-button>
             <t-button type="reset" variant="base" theme="default"> 重置</t-button>
           </t-col>
+          <t-button variant="outline" :icon="renderRefreshIcon" @click="loadingCount = loadingCount + 1">
+            刷新
+          </t-button>
         </t-row>
       </t-form>
       <div class="table-container">
-        <t-table
-          :columns="columns"
-          :data="data"
-          :rowKey="rowKey"
-          :verticalAlign="verticalAlign"
-          :hover="hover"
-          :selected-row-keys="selectedRowKeys"
-          :loading="dataLoading"
-          :headerAffixedTop="true"
-          :headerAffixProps="{ offsetTop: offsetTop, container: getContainer }"
-        >
-          <template #repoUrl="{ row }">
-            <a v-bind:href="row.repoUrl" target="_blank">{{ row.repoUrl }}</a>
-          </template>
-          <template #generated="{ row }">
-            <p>{{ new Date(row.generated).toLocaleString() }}</p>
-          </template>
-          <template #status="{ row }">
-            <t-tag v-show="row.status === 'success'" theme="success" variant="light">更新成功</t-tag>
-            <t-tag v-show="row.status === 'updating'" theme="warning" variant="light">更新中</t-tag>
-            <t-tag v-show="row.status === 'init'" theme="default" variant="light">未更新</t-tag>
-            <t-tag v-show="row.status === 'fail'" theme="danger" variant="light">更新失败</t-tag>
-            <t-tag v-show="row.status === 'deleting'" theme="warning" variant="light">删除中</t-tag>
-          </template>
-          <template #op="slotProps">
-            <a class="t-button-link" @click="handleClickUpdate(slotProps.row)">更新</a>
-            <a class="t-button-link" @click="handleClickDetail(slotProps.row)">详情</a>
-<!--            <a class="t-button-link" @click="handleClickEdit(slotProps.row)">编辑</a>-->
-            <a class="t-button-link" @click="handleClickDelete(slotProps.row)">删除</a>
-          </template>
-        </t-table>
+        <t-space direction="vertical" :key="loadingCount">
+          <t-space :breakLine="true" :style="{ height: '700px', 'overflow-y': 'scroll' }">
+            <t-image
+              v-for="item in data"
+              :key="item"
+              :src="item.url"
+              :style="{ width: '280px', height: '140px' }"
+              :lazy="true"
+            />
+          </t-space>
+        </t-space>
         <div style="margin-top: 10px">
           <t-pagination
             v-model="searchForm.pageNum"
@@ -216,7 +199,7 @@ export default Vue.extend({
       deleteType: -1,
       // 查询表单数据
       searchForm: {
-        repoName: "",
+        name: "",
         pageNum: 1,
         pageSize: 10
       },
@@ -262,7 +245,6 @@ export default Vue.extend({
   mounted() {
   },
   created() {
-    this.getTypeList()
     this.getList()
   },
   watch: {
@@ -404,22 +386,22 @@ export default Vue.extend({
         URL.revokeObjectURL(link.href); // 释放内存
       })
     },
-    getTypeList() {
-      this.$request.get("/imageRepo/typeList").then(res => {
-        this.typeList = res.data.data
-      }).catch((err) => {
-
-      })
-    },
+    // getTypeList() {
+    //   this.$request.get("/imageRepo/typeList").then(res => {
+    //     this.typeList = res.data.data
+    //   }).catch((err) => {
+    //
+    //   })
+    // },
     // 分页查询
     getList() {
       this.dataLoading = true;
-      this.$request.get('/helmRepo/page', {
+      this.$request.get('/wallpaper/list', {
         params: this.searchForm
       }).then((res) => {
         if (res.data.code === 200) {
           console.log(res.data)
-          this.data = res.data.rows;
+          this.data = res.data.data;
           this.pagination.total = res.data.total;
         }
       }).catch((e: Error) => {
